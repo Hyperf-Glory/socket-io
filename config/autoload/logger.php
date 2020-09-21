@@ -1,38 +1,49 @@
 <?php
 
-declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
+declare(strict_types = 1);
 
+use Monolog\Handler;
+use Monolog\Formatter;
+use Monolog\Logger;
 use App\Kernel\Log\AppendRequestIdProcessor;
 
 return [
     'default' => [
-        'handler' => [
-            'class' => Monolog\Handler\StreamHandler::class,
-            'constructor' => [
-                'stream' => BASE_PATH . '/runtime/logs/hyperf.log',
-                'level' => Monolog\Logger::DEBUG,
+        'handlers'   => [
+            [
+                'class'       => Handler\StreamHandler::class,
+                'constructor' => [
+                    'stream' => BASE_PATH . '/runtime/logs/hyperf.log',
+                    'level'  => Logger::INFO,
+                ],
+                'formatter'   => [
+                    'class'       => Formatter\LineFormatter::class,
+                    'constructor' => [
+                        'format'                => NULL,
+                        'dateFormat'            => 'Y-m-d H:i:s',
+                        'allowInlineLineBreaks' => true,
+                    ],
+                ],
             ],
-        ],
-        'formatter' => [
-            'class' => Monolog\Formatter\LineFormatter::class,
-            'constructor' => [
-                'format' => null,
-                'dateFormat' => 'Y-m-d H:i:s',
-                'allowInlineLineBreaks' => true,
+            [
+                'class'       => Handler\StreamHandler::class,
+                'constructor' => [
+                    'stream' => BASE_PATH . '/runtime/logs/hyperf-debug.log',
+                    'level'  => Logger::DEBUG,
+                ],
+                'formatter'   => [
+                    'class'       => Formatter\JsonFormatter::class,
+                    'constructor' => [
+                        'batchMode'     => Formatter\JsonFormatter::BATCH_MODE_JSON,
+                        'appendNewline' => true,
+                    ],
+                ],
             ],
         ],
         'processors' => [
             [
                 'class' => AppendRequestIdProcessor::class,
             ],
-        ],
+        ]
     ],
 ];

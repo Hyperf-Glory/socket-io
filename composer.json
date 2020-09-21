@@ -36,7 +36,9 @@
         "hyperf/amqp": "~2.0.0",
         "hyperf/model-cache": "~2.0.0",
         "hyperf/elasticsearch": "~2.0.0",
-        "hyperf/tracer": "~2.0.0"
+        "hyperf/tracer": "~2.0.0",
+        "hyperf/websocket-server": "^2.0",
+        "hyperf/websocket-client": "^2.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
@@ -57,7 +59,9 @@
         "psr-4": {
             "App\\": "app/"
         },
-        "files": []
+        "files": [
+            "app/Kernel/Functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
