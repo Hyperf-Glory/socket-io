@@ -15,16 +15,17 @@ use Hyperf\Utils\Coroutine;
 use Hyperf\WebSocketServer\Sender;
 use Swoole\Server;
 
-class ServerUtil
+class ServerSender
 {
+
     /**
      * @param       $data
      * @param array $fds
      */
-    public static function sendToAll($data, array $fds = []):void
+    public function sendToAll($data, array $fds = []) : void
     {
         foreach ($fds as $fd) {
-            self::push($fd, $data);
+            $this->push($fd, $data);
         }
     }
 
@@ -34,7 +35,7 @@ class ServerUtil
      *
      * @return mixed
      */
-    public static function push($data, int $fd)
+    public function push($data, int $fd)
     {
         return di(Sender::class)->push($fd, $data);
     }
@@ -48,7 +49,7 @@ class ServerUtil
      *
      * @return bool|mixed
      */
-    public static function disconnect(int $fd, int $code = 0, string $reason = '')
+    public function disconnect(int $fd, int $code = 0, string $reason = '')
     {
         return di(Sender::class)->disconnect($fd, $code, $reason);
     }
@@ -58,7 +59,7 @@ class ServerUtil
      *
      * @return void
      */
-    public static function close(int $fd) : void
+    public function close(int $fd) : void
     {
         if (Coroutine::inCoroutine()) {
             Coroutine::create(function () use ($fd)

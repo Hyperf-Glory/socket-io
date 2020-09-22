@@ -3,18 +3,26 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
-use App\Component\ServerUtil;
+use App\Component\ServerSender;
 use App\Constants\Log;
 use Hyperf\Contract\OnCloseInterface;
 use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
+use Hyperf\Di\Annotation\Inject;
+use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\Utils\Coroutine;
 use Hyperf\WebSocketServer\Context;
 use Psr\Container\ContainerInterface;
 use Swoole\Http\Request;
 use Hyperf\Logger\LoggerFactory;
 use Swoole\Websocket\Frame;
+use App\Annotation\Protocol;
 
+/**
+ * Class WebSocketController
+ * @package App\Controller
+ * @Protocol(name="234")
+ */
 class WebSocketController implements OnMessageInterface, OnOpenInterface, OnCloseInterface
 {
 
@@ -23,7 +31,14 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
      */
     protected $container;
 
+    /**
+     * @Inject()
+     * @var ServerSender
+     */
+    protected $sender;
+
     protected $logger;
+
 
     /**
      * @var RequestInterface
@@ -40,10 +55,11 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
     {
         $this->logger->info($frame->data);
         $server->push($frame->fd, 'Recv: ' . $frame->data);
-//        Coroutine::create(function ()use($frame){
-//            sleep(1);
-//            ServerUtil::close($frame->fd);
-//        });
+        Coroutine::create(function () use ($frame)
+        {
+            sleep(1);
+            $this->sender->close($frame->fd);
+        });
     }
 
     public function onClose($server, int $fd, int $reactorId) : void
@@ -54,8 +70,9 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
 
     public function onOpen($server, Request $request) : void
     {
-        Context::set(Log::CONTEXT_KEY,$request->fd);
+        Context::set(Log::CONTEXT_KEY, $request->fd);
         $server->push($request->fd, 'Opened');
+        var_dump($this->pro);
     }
 }
 

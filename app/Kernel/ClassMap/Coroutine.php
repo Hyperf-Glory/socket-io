@@ -42,6 +42,10 @@ class Coroutine
      * Returns null when running in non-coroutine context.
      *
      * @see https://github.com/swoole/swoole-src/pull/2669/files#diff-3bdf726b0ac53be7e274b60d59e6ec80R940
+     *
+     * @param null|int $coroutineId
+     *
+     * @return null|int
      */
     public static function parentId(?int $coroutineId = null): ?int
     {
@@ -58,6 +62,8 @@ class Coroutine
     }
 
     /**
+     * @param callable $callable
+     *
      * @return int Returns the coroutine ID of the coroutine just created.
      *             Returns -1 when coroutine create failed.
      */

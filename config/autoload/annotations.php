@@ -9,6 +9,8 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+use Hyperf\Utils\Coroutine;
+
 return [
     'scan' => [
         'paths' => [
@@ -16,6 +18,10 @@ return [
         ],
         'ignore_annotations' => [
             'mixin',
+        ],
+        'class_map' => [
+            // 需要映射的类名 => 类所在的文件地址
+            Coroutine::class => BASE_PATH . '/app/Kernel/ClassMap/Coroutine.php',
         ],
     ],
 ];
