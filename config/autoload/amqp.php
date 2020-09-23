@@ -1,14 +1,5 @@
 <?php
 
-declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
 return [
     'default' => [
         'host' => 'localhost',
@@ -16,6 +7,9 @@ return [
         'user' => 'guest',
         'password' => 'guest',
         'vhost' => '/',
+        'concurrent' => [
+            'limit' => 1,
+        ],
         'pool' => [
             'min_connections' => 1,
             'max_connections' => 10,
@@ -33,6 +27,7 @@ return [
             'context' => null,
             'keepalive' => false,
             'heartbeat' => 3,
+            'close_on_destruct' => false,
         ],
-    ],
+    ]
 ];

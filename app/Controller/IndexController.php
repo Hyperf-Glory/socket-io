@@ -10,7 +10,9 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 namespace App\Controller;
+use App\Amqp\Producer\ChatProducer;
 use App\Helper\StringHelper;
+use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Utils\Coroutine;
 use Hyperf\WebSocketClient\ClientFactory;
@@ -20,7 +22,6 @@ use App\Annotation\Protocol;
 /**
  * Class IndexController
  * @package App\Controller
- * @Protocol(name="123")
  */
 class IndexController extends AbstractController
 {
@@ -31,6 +32,12 @@ class IndexController extends AbstractController
     protected $clientFactory;
 
     /**
+     * @Inject()
+     * @var \Hyperf\Amqp\Producer
+     */
+    protected $producer;
+
+    /**
      *
      * @var
      */
@@ -38,6 +45,9 @@ class IndexController extends AbstractController
 
     public function index()
     {
+        $message = new ChatProducer('1');
+        var_dump($this->producer->produce($message));
+//        var_dump(AnnotationCollector::get(static::class));
 //        for ($i = 0;$i<100;$i++){
 //            Coroutine::create(function (){
 //                // 对端服务的地址，如没有提供 ws:// 或 wss:// 前缀，则默认补充 ws://

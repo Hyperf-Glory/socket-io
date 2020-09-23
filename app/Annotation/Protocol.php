@@ -7,27 +7,17 @@ use Hyperf\Di\Annotation\AnnotationCollector;
 
 /**
  * @Annotation
- * @Target({"CLASS","METHOD","PROPERTY"})
+ * @Target("ALL")
  */
 class Protocol extends AbstractAnnotation
 {
 
-    public $name;
+    public $cmd = '';
 
-    public function collectClass(string $className): void
-    {
-        AnnotationCollector::collectClass($className, static::class, $this);
-    }
+    public $data = '';
 
-    public function collectMethod(string $className, ?string $target): void
-    {
-        AnnotationCollector::collectMethod($className, $target, static::class, $this);
-    }
+    public $ext = '';
 
-    public function collectProperty(string $className, ?string $target): void
-    {
-        AnnotationCollector::collectProperty($className, $target, static::class, $this);
-    }
 }
 
 
