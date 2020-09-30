@@ -17,12 +17,12 @@ class RedisLock
     /**
      * @var array
      */
-    private array $lockedNames = [];
+    private  $lockedNames = [];
 
     /**
      * @var Redis
      */
-    private ?Redis $redis = NULL;
+    private   $redis = NULL;
 
     /**
      *

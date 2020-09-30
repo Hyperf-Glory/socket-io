@@ -1,5 +1,7 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace App\Annotation;
 
 use Hyperf\Di\Annotation\AbstractAnnotation;
@@ -17,7 +19,4 @@ class Protocol extends AbstractAnnotation
     public $data = '';
 
     public $ext = '';
-
 }
-
-

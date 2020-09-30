@@ -20,7 +20,7 @@ class ChatConsumer extends ConsumerMessage
         dump($data);
         $client = $this->container->get(ClientFactory::class)->get('ws1');
         dump($client->push('测试测试'));
-        while ($msg = $client->recv(2)){
+        while ($msg = $client->recv(2)) {
             dump($msg);
         }
 

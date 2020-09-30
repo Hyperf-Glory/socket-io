@@ -21,9 +21,10 @@ class ClientConnection extends BaseConnection implements ConnectionInterface
     protected $connection;
 
     protected $config = [
-        'host' => '127.0.0.1',
-        'port' => '9502',
-        'ws'   => 'ws://'
+        'host'       => '127.0.0.1',
+        'port'       => '9502',
+        'ws'         => 'ws://',
+        'auto_close' => false
     ];
 
     public function __construct(ContainerInterface $container, Pool $pool, array $config)
@@ -54,16 +55,24 @@ class ClientConnection extends BaseConnection implements ConnectionInterface
 
     public function reconnect() : bool
     {
-        $host   = $this->config['host'];
-        $port   = $this->config['port'];
-        $ws     = $this->config['ws'];
-        $uri    = sprintf('%s%s:%s', $ws, $host, $port);
-        $client = make(BClient::class, ['uri' => new Uri($uri)]);
+        $host      = $this->config['host'];
+        $port      = $this->config['port'];
+        $ws        = $this->config['ws'];
+        $autoClose = $this->config['auto_close'];
+        $uri       = sprintf('%s%s:%s', $ws, $host, $port);
+        $client    = make(BClient::class, ['uri' => new Uri($uri)]);
         if (!$client instanceof BClient) {
             throw new ConnectionException('Connection reconnect failed.');
         }
         $this->connection  = $client;
         $this->lastUseTime = microtime(true);
+
+        if ($autoClose) {
+            defer(function () use ($client)
+            {
+                $client->close();
+            });
+        }
 
         return true;
     }
