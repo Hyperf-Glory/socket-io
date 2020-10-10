@@ -36,7 +36,6 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
 
     protected $logger;
 
-
     /**
      * @var RequestInterface
      */
@@ -55,7 +54,7 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
         Coroutine::create(function () use ($frame)
         {
             var_dump($this->request);
-//            $this->sender->close($frame->fd);
+            //            $this->sender->close($frame->fd);
         });
     }
 
@@ -67,7 +66,7 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
 
     public function onOpen($server, Request $request) : void
     {
-        Context::set(Log::CONTEXT_KEY, $request->fd);
+        Context::set(Log::CONTEXT_KEY, ['uid' => $request->fd]);
         $server->push($request->fd, 'Opened');
     }
 }
