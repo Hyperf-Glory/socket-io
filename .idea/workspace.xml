@@ -1,94 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/.gitlab-ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/.gitlab-ci.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/.php_cs" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/.php_cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/.phpstorm.meta.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/.phpstorm.meta.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Amqp/Consumer/ChatConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Amqp/Consumer/ChatConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Amqp/Producer/ChatProducer.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Amqp/Producer/ChatProducer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Annotation/Protocol.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Annotation/Protocol.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Component/ConsistenHashing.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Component/ConsistenHashing.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Component/MessageParser.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Component/MessageParser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Component/Protocol.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Component/Protocol.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Component/ServerSender.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Component/ServerSender.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/Atomic.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/Atomic.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/ErrorCode.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/ErrorCode.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/Log.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/Log.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/Message.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/Message.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/Redis.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/Redis.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Constants/WsMessage.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Constants/WsMessage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Controller/AbstractController.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Controller/AbstractController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Controller/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Controller/IndexController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Controller/WebSocketController.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Controller/WebSocketController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Exception/BusinessException.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Exception/BusinessException.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Exception/Handler/AppExceptionHandler.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Exception/Handler/AppExceptionHandler.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/ArrayHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/ArrayHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/DateHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/DateHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/DirectoryHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/DirectoryHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/EncryptHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/EncryptHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/FileHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/FileHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/NumberHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/NumberHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Helper/StringHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Helper/StringHelper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/ClassMap/Coroutine.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/ClassMap/Coroutine.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Context/Coroutine.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Context/Coroutine.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Functions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Http/Response.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Http/Response.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Lock/RedisLock.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Lock/RedisLock.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Log/AppendRequestIdProcessor.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Log/AppendRequestIdProcessor.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/Log/LoggerFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/Log/LoggerFactory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/Client.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/Client.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/ClientConnection.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/ClientConnection.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/ClientFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/ClientFactory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/ClientProxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/ClientProxy.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/Exception/InvalidWebSocketConnectionException.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/Exception/InvalidWebSocketConnectionException.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/Exception/InvalidWebSocketProxyException.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/Exception/InvalidWebSocketProxyException.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/Pool/ClientPool.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/Pool/ClientPool.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Kernel/WebSocket/Pool/PoolFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Kernel/WebSocket/Pool/PoolFactory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Listener/DbQueryExecutedListener.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Listener/DbQueryExecutedListener.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Listener/QueueHandleListener.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Listener/QueueHandleListener.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Middleware/AuthMiddleware.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Middleware/AuthMiddleware.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Model/Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Model/Model.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/app/Process/AsyncQueueConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Process/AsyncQueueConsumer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/bin/hyperf.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/bin/hyperf.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/amqp.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/amqp.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/annotations.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/annotations.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/aspects.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/aspects.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/async_queue.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/async_queue.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/cache.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/cache.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/commands.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/commands.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/databases.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/databases.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/dependencies.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/dependencies.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/devtool.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/devtool.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/exceptions.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/exceptions.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/listeners.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/listeners.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/logger.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/logger.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/middlewares.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/middlewares.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/opentracing.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/opentracing.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/processes.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/processes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/redis.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/redis.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/server.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/server.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/autoload/websocket_client.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/autoload/websocket_client.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/config.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/container.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/container.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/routes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/deploy.test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/deploy.test.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/hyperf-chat 架构.png" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/hyperf-chat 架构.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/phpstan.neon" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/phpstan.neon" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/phpunit.xml" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/phpunit.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/test/Cases/ExampleTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/test/Cases/ExampleTest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/test/Http.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/test/Http.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/test/HttpTestCase.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/test/HttpTestCase.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg-service/test/bootstrap.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/test/bootstrap.php" afterDir="false" />
-    </list>
+    <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -299,7 +212,7 @@
       <workItem from="1601459866310" duration="3479000" />
       <workItem from="1601949383396" duration="10404000" />
       <workItem from="1602655821135" duration="391000" />
-      <workItem from="1602825503510" duration="20085000" />
+      <workItem from="1602825503510" duration="20619000" />
     </task>
     <servers />
   </component>
@@ -344,11 +257,11 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863237068" />
-    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1602863732652">
+    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1602864739854">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="473" y="178" width="530" height="522" key="find.popup/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600857703623" />
-    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1602863732652" />
+    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1602864739854" />
     <state x="385" y="179" width="670" height="676" key="search.everywhere.popup" timestamp="1602860229261">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
