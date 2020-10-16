@@ -45,8 +45,11 @@ class IndexController extends AbstractController
 
     public function index()
     {
-        $message = new ChatProducer('1');
-        var_dump($this->producer->produce($message));
+//        for ($i=0;$i<10000;$i++){
+//            $message = new ChatProducer("$i");
+//            var_dump($this->producer->produce($message));
+//        }
+
 //        var_dump(AnnotationCollector::get(static::class));
 //        for ($i = 0;$i<100;$i++){
 //            Coroutine::create(function (){

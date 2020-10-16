@@ -38,7 +38,8 @@
         "hyperf/elasticsearch": "~2.0.0",
         "hyperf/tracer": "~2.0.0",
         "hyperf/websocket-server": "^2.0",
-        "hyperf/websocket-client": "^2.0"
+        "hyperf/websocket-client": "^2.0",
+        "ext-redis": "*"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",

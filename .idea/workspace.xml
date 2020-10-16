@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
+      <change beforePath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Controller/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Controller/IndexController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings" doNotAsk="true">
+    <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1hPokB3A3M6ZrEucI6pFTdL3z0u" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="php.override.implement.member.chooser.php.doc" value="NONE" />
+    <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Kernel/WebSocket/Pool" />
+      <recent name="$PROJECT_DIR$/app/Kernel/WebSocket/Exception" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Kernel/WebSocket/Exception" />
+      <recent name="$PROJECT_DIR$/app/Kernel/WebSocket" />
+      <recent name="$PROJECT_DIR$/app/Constants" />
+      <recent name="$PROJECT_DIR$/app/Components" />
+      <recent name="$PROJECT_DIR$/app" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="" />
+      <created>1599922236098</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599922236098</updated>
+      <workItem from="1599922238783" duration="1303000" />
+      <workItem from="1600524658738" duration="169000" />
+      <workItem from="1600694794987" duration="6374000" />
+      <workItem from="1600771188591" duration="4953000" />
+      <workItem from="1600824064870" duration="64000" />
+      <workItem from="1600833370635" duration="12813000" />
+      <workItem from="1600959522928" duration="5265000" />
+      <workItem from="1601459866310" duration="3479000" />
+      <workItem from="1601949383396" duration="10404000" />
+      <workItem from="1602655821135" duration="391000" />
+      <workItem from="1602825503510" duration="1697000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser" timestamp="1601910367096">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600857897941" />
+    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832@0.23.1440.832" timestamp="1601910367096" />
+    <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1600859430034">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600859430034" />
+    <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1600696455996" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1600860074597">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600860074597" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1600791853453" />
+    <state x="359" y="156" key="NewPhpClassDialog" timestamp="1602560881268">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="359" y="156" key="NewPhpClassDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1602560881268" />
+    <state x="550" y="365" key="NewPhpFileDialog" timestamp="1602516803205">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1602499856838" />
+    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1602516803205" />
+    <state x="221" y="76" key="SettingsEditor" timestamp="1600695795177">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="221" y="76" key="SettingsEditor/0.23.1440.828@0.23.1440.828" timestamp="1599924002609" />
+    <state x="221" y="76" key="SettingsEditor/0.23.1440.832@0.23.1440.832" timestamp="1600695795177" />
+    <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1600699739971">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1440.832@0.23.1440.832" timestamp="1600699739971" />
+    <state x="473" y="178" width="530" height="522" key="find.popup" timestamp="1600857703623">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="473" y="178" width="530" height="522" key="find.popup/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600857703623" />
+    <state x="473" y="178" width="530" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1600792350713" />
+    <state x="385" y="179" width="670" height="676" key="search.everywhere.popup" timestamp="1601461005763">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="385" y="179" width="670" height="676" key="search.everywhere.popup/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1601461005763" />
+  </component>
+</project>
