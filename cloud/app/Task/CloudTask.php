@@ -65,5 +65,6 @@ class CloudTask
     {
         $this->logger->info(sprintf('Cloud broadcast push roomId:%s  data:%s', $roomId, $message));
         //TODO 获取对应房间内的fd
+
     }
 }

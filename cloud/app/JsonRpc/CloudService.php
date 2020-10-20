@@ -49,6 +49,12 @@ class CloudService implements InterfaceCloudService
         return 'close';
     }
 
+    /**
+     * @param string $keys 用户的唯一IDkey
+     * @param string $message
+     *
+     * @return mixed|void
+     */
     public function pushMessage(string $keys, string $message)
     {
         $this->logger->debug('cloud node: pushmsg');
@@ -56,6 +62,13 @@ class CloudService implements InterfaceCloudService
             $this->logger->error('cloud json-rpc pushmsg keys message is empty raw data');
             return;
         }
+        Coroutine::create(function () use ($keys,$message)
+        {
+            $keys = explode(',',$keys);
+            foreach ($keys as $key){
+                di(CloudTask::class)->push($key,$message);
+            }
+        });
     }
 
     public function broadcast(string $message)
