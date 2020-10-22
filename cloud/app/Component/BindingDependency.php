@@ -55,7 +55,14 @@ class BindingDependency
 
     public static function disconnect(int $fd)
     {
-
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        $key   = $redis->hGet(self::HASH_FD_TO_KEY_PREFIX, $fd);
+        if (empty($key)) {
+            return;
+        }
+        $roomId = $redis->get(sprintf('%s.%s', self::STRING_KEY_TO_ROOM, $key));
+        self::del($key, $fd, $roomId);
+        di(ServerSender::class)->disconnect($fd);
     }
 
     public static function buckets()
@@ -74,17 +81,22 @@ class BindingDependency
         return $redis->sMembers(sprintf('%s.%s', self::SET_ROOM_FD_PREFIX, $roomId)) ?? [];
     }
 
+    /**
+     * @param string $key
+     *
+     * @return null|int
+     */
     public static function fd(string $key)
     {
-
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        return (int)$redis->hGet(self::HASH_KEY_TO_FD_PREFIX, $key) ?? null;
     }
 
     public static function key(int $fd)
     {
-
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        return $redis->hGet(self::HASH_FD_TO_KEY_PREFIX, $fd) ?? null;
     }
-
-
 
 }
 
