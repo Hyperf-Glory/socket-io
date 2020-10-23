@@ -42,7 +42,8 @@
         "ext-redis": "*",
         "hyperf/task": "^2.0",
         "hyperf/consul": "^2.0",
-        "phper666/jwt-auth": "^3.0"
+        "phper666/jwt-auth": "^3.0",
+        "hyperf/rate-limit": "^2.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",

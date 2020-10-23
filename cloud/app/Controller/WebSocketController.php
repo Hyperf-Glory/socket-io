@@ -18,6 +18,7 @@ use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Logger\LoggerFactory;
+use Hyperf\RateLimit\Annotation\RateLimit;
 use Hyperf\Utils\Coroutine;
 use Hyperf\WebSocketServer\Context;
 use Psr\Container\ContainerInterface;
@@ -69,6 +70,10 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
         var_dump('closed');
     }
 
+    /**
+     * @param \Swoole\Http\Response|\Swoole\WebSocket\Server $server
+     * @param \Swoole\Http\Request                           $request
+     */
     public function onOpen($server, Request $request): void
     {
         Context::set(Log::CONTEXT_KEY, ['uid' => $request->fd]);

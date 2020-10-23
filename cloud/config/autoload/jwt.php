@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 return [
-    'login_type' => env('JWT_LOGIN_TYPE', 'mpop'), //  登录方式，sso为单点登录，mpop为多点登录
+    'login_type' => env('JWT_LOGIN_TYPE', 'sso'), //  登录方式，sso为单点登录，mpop为多点登录
 
     /**
      * 单点登录自定义数据中必须存在uid的键值，这个key你可以自行定义，只要自定义数据中存在该键即可
@@ -76,40 +76,16 @@ return [
      */
     'blacklist_cache_ttl' => env('JWT_TTL', 86400),
 
-    'blacklist_prefix' => 'phper666_jwt', // 黑名单缓存的前缀
+    'blacklist_prefix' => 'cloud_jwt', // 黑名单缓存的前缀
 
-    /**
-     * 区分不同场景的token，比如你一个项目可能会有多种类型的应用接口鉴权,下面自行定义，我只是举例子
-     * 下面的配置会自动覆盖根配置，比如application1会里面的数据会覆盖掉根数据
-     * 下面的scene会和根数据合并
-     * scene必须存在一个default
-     * 什么叫根数据，这个配置的一维数组，除了scene都叫根配置
-     */
     'scene' => [
         'default' => [],
-        'application1' => [
-            'secret' => 'application1', // 非对称加密使用字符串,请使用自己加密的字符串
+        'cloud' => [
+            'secret' => 'cloud', // 非对称加密使用字符串,请使用自己加密的字符串
             'login_type' => 'sso', //  登录方式，sso为单点登录，mpop为多点登录
-            'sso_key' => 'uid',
-            'ttl' => 7200, // token过期时间，单位为秒
-            'blacklist_cache_ttl' => env('JWT_TTL', 7200), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
-        ],
-        'application2' => [
-            'secret' => 'application2', // 非对称加密使用字符串,请使用自己加密的字符串
-            'login_type' => 'sso', //  登录方式，sso为单点登录，mpop为多点登录
-            'sso_key' => 'uid',
-            'ttl' => 7200, // token过期时间，单位为秒
-            'blacklist_cache_ttl' => env('JWT_TTL', 7200), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
-        ],
-        'application3' => [
-            'secret' => 'application3', // 非对称加密使用字符串,请使用自己加密的字符串
-            'login_type' => 'mppo', //  登录方式，sso为单点登录，mpop为多点登录
+            'sso_key' => 'cloud_uid',
             'ttl' => 7200, // token过期时间，单位为秒
             'blacklist_cache_ttl' => env('JWT_TTL', 7200), // 黑名单缓存token时间，注意：该时间一定要设置比token过期时间要大一点，默认为100秒,最好设置跟过期时间一样
         ]
     ],
-    'model' => [ // TODO 支持直接获取某模型的数据
-        'class' => '',
-        'pk' => 'uid'
-    ]
 ];
