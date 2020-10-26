@@ -16,40 +16,36 @@ class BindingDependency
 
     public const HASH_FD_TO_KEY_PREFIX = 'hash.fd_to_key_bind';
 
-    public const HASH_KEY_TO_ROOM_PREFIX = 'hash.key_to_room_bind';
+    public const HASH_KEY_TO_IP = 'string.key_to_ip_bind';
 
-    public const SET_ROOM_FD_PREFIX = 'set.room_fd_bind';
+    public const ZSET_IP_TO_KEY = 'zset.ip_to_key_bind';
 
-    public const STRING_KEY_TO_ROOM = 'string.key_to_fd_bind';
-
-    public static function put(string $key, int $fd, string $roomId = null)
+    public static function put(string $key, int $fd, string $ip = null)
     {
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         //bind key to fd
         $redis->hSet(self::HASH_KEY_TO_FD_PREFIX, $key, $fd);
         $redis->hSet(self::HASH_FD_TO_KEY_PREFIX, $fd, $key);
-        if (is_null($roomId)) {
+        if (is_null($ip)) {
             return;
         }
-        //check buckets exist roomid
-        if (!isset(self::$bucketsRoom[$roomId])) {
-            self::$bucketsRoom[$roomId] = $roomId;
+        if (!isset(self::$bucketsRoom[$ip])) {
+            self::$bucketsRoom[$ip] = $ip;
         }
-        $redis->set(sprintf('%s.%s', self::STRING_KEY_TO_ROOM, $key), $roomId);
-        //add fd to room
-        $redis->sAdd(sprintf('%s.%s', self::SET_ROOM_FD_PREFIX, $roomId), $fd);
+        $redis->hSet(self::HASH_KEY_TO_IP, $key, $ip);
+        $redis->sAdd(sprintf('%s.%s', self::ZSET_IP_TO_KEY, $ip), $key);
     }
 
-    public static function del(string $key, int $fd = null, string $roomId = null)
+    public static function del(string $key, int $fd = null, string $ip = null)
     {
         //del key to fd
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $redis->hDel(self::HASH_KEY_TO_FD_PREFIX, $key);
         $redis->hDel(self::HASH_FD_TO_KEY_PREFIX, $fd);
-        if (!is_null($roomId)) {
-            //del set room - fd
-            $redis->del(sprintf('%s.%s', self::STRING_KEY_TO_ROOM, $key));
-            $redis->sRem(sprintf('%s.%s', self::SET_ROOM_FD_PREFIX, $roomId), $fd);
+        if (!is_null($ip)) {
+            //del set ip - fd
+            $redis->hDel(self::HASH_KEY_TO_IP, $key);
+            $redis->sRem(sprintf('%s.%s', self::ZSET_IP_TO_KEY, $ip), $key);
         }
     }
 
@@ -60,25 +56,13 @@ class BindingDependency
         if (empty($key)) {
             return;
         }
-        $roomId = $redis->get(sprintf('%s.%s', self::STRING_KEY_TO_ROOM, $key));
-        self::del($key, $fd, $roomId);
-        di(ServerSender::class)->disconnect($fd);
+        $ip = $redis->hGet(self::HASH_KEY_TO_IP, $key);
+        self::del($key, $fd, $ip);
     }
 
     public static function buckets()
     {
         return self::$bucketsRoom;
-    }
-
-    /**
-     * @param null|string $roomId
-     *
-     * @return array
-     */
-    public static function roomfds(string $roomId = null)
-    {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        return $redis->sMembers(sprintf('%s.%s', self::SET_ROOM_FD_PREFIX, $roomId)) ?? [];
     }
 
     /**

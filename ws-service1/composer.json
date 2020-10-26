@@ -26,25 +26,11 @@
         "hyperf/process": "~2.0.0",
         "hyperf/redis": "~2.0.0",
         "hyperf/database": "~2.0.0",
-        "hyperf/json-rpc": "~2.0.0",
-        "hyperf/rpc": "~2.0.0",
-        "hyperf/rpc-client": "~2.0.0",
-        "hyperf/rpc-server": "~2.0.0",
-        "hyperf/service-governance": "^2.0",
         "hyperf/constants": "~2.0.0",
         "hyperf/async-queue": "~2.0.0",
-        "hyperf/amqp": "^2.0",
+        "hyperf/amqp": "~2.0.0",
         "hyperf/model-cache": "~2.0.0",
-        "hyperf/elasticsearch": "~2.0.0",
-        "hyperf/tracer": "~2.0.0",
-        "hyperf/websocket-server": "^2.0",
-        "hyperf/websocket-client": "^2.0",
-        "ext-redis": "*",
-        "hyperf/task": "^2.0",
-        "hyperf/consul": "^2.0",
-        "phper666/jwt-auth": "^3.0",
-        "hyperf/rate-limit": "^2.0",
-        "phpmailer/phpmailer": "^6.1"
+        "hyperf/tracer": "~2.0.0"
     },
     "require-dev": {
         "swoole/ide-helper": "^4.5",
@@ -52,8 +38,7 @@
         "mockery/mockery": "^1.0",
         "phpstan/phpstan": "^0.12",
         "hyperf/devtool": "~2.0.0",
-        "hyperf/testing": "~2.0.0",
-        "symfony/var-dumper": "^5.1"
+        "hyperf/testing": "~2.0.0"
     },
     "suggest": {
         "ext-openssl": "Required to use HTTPS.",
@@ -66,9 +51,7 @@
         "psr-4": {
             "App\\": "app/"
         },
-        "files": [
-            "app/Kernel/Functions.php"
-        ]
+        "files": []
     },
     "autoload-dev": {
         "psr-4": {

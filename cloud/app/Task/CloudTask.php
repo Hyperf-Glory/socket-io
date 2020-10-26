@@ -15,6 +15,7 @@ use App\Component\BindingDependency;
 use App\Component\ServerSender;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Server\Server;
+use Hyperf\Server\Server as SwooleServer;
 use Hyperf\Task\Annotation\Task;
 use Hyperf\Utils\Coroutine;
 use Psr\Container\ContainerInterface;
@@ -42,6 +43,9 @@ class CloudTask
 
     /**
      * @Task
+     *
+     * @param string $key
+     * @param string $message
      */
     public function push(string $key, string $message)
     {
@@ -49,13 +53,13 @@ class CloudTask
         if (!($fd = BindingDependency::fd($key))) {
             return;
         }
-        if (di(ServerSender::class)->isWsClient($fd)) {
-            di(ServerSender::class)->push($message, $fd);
-        }
+        di(SwooleServer::class)->getServer()->send($fd, $message);
     }
 
     /**
      * @Task
+     *
+     * @param string $message
      */
     public function broadcast(string $message)
     {
@@ -64,27 +68,9 @@ class CloudTask
         Coroutine::create(function () use ($fds, $message)
         {
             foreach ($fds as $fd) {
-                di(ServerSender::class)->push($message, $fd);
+                di(SwooleServer::class)->getServer()->send($fd, $message);
             }
         });
     }
 
-    /**
-     * @Task
-     */
-    public function broadcastRoom(string $roomId, string $message)
-    {
-        $this->logger->info(sprintf('Cloud broadcast push roomId:%s  data:%s', $roomId, $message));
-        if ((!$fds = BindingDependency::roomfds($roomId))) {
-            $this->logger->info(sprintf('roomId :%s is empty not user', $roomId));
-            return;
-        }
-        foreach ($fds as $fd) {
-            if (di(ServerSender::class)->isWsClient($fd)) {
-                di(ServerSender::class)->push($message, $fd);
-                continue;
-            }
-            $this->logger->info(sprintf("连接fd:{%s} 不是websocket或不存在,待发送数据:%s", $fd, $message));
-        }
-    }
 }
