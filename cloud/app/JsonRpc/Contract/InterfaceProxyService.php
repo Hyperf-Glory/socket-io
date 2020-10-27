@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -22,4 +22,6 @@ interface InterfaceProxyService
     public function pushMessage(string $keys, string $message);
 
     public function broadcast(string $message);
+
+    public function group(int $groupId, string $message);
 }

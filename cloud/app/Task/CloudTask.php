@@ -42,6 +42,8 @@ class CloudTask
     }
 
     /**
+     * 单点推送
+     * 根据用户key查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
      * @Task
      *
      * @param string $key
@@ -53,10 +55,11 @@ class CloudTask
         if (!($fd = BindingDependency::fd($key))) {
             return;
         }
-        di(SwooleServer::class)->getServer()->send($fd, $message);
     }
 
     /**
+     * 广播
+     * 获取所有的websocket服务器IP,然后进行推送
      * @Task
      *
      * @param string $message
@@ -64,13 +67,17 @@ class CloudTask
     public function broadcast(string $message)
     {
         $this->logger->info(sprintf('Cloud push data:%s', $message));
-        $fds = di(Server::class)->getServer()->connections;
-        Coroutine::create(function () use ($fds, $message)
-        {
-            foreach ($fds as $fd) {
-                di(SwooleServer::class)->getServer()->send($fd, $message);
-            }
-        });
+    }
+
+    /**
+     * 群聊
+     * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
+     * @param int    $groupId
+     * @param string $message
+     */
+    public function group(int $groupId, string $message)
+    {
+        $this->logger->info(sprintf('Cloud push group:%s  data:%s', $groupId, $message));
     }
 
 }

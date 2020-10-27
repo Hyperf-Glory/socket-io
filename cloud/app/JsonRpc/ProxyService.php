@@ -39,8 +39,9 @@ class ProxyService implements InterfaceProxyService
         $this->logger    = $container->get(LoggerFactory::class)->get();
     }
 
-
     /**
+     * 单点推送
+     *
      * @param string $keys 用户的唯一IDkey
      * @param string $message
      *
@@ -64,6 +65,7 @@ class ProxyService implements InterfaceProxyService
 
     /**
      * 广播
+     *
      * @param string $message
      */
     public function broadcast(string $message)
@@ -79,4 +81,22 @@ class ProxyService implements InterfaceProxyService
         });
     }
 
+    /**
+     * 群聊推送
+     *
+     * @param int    $groupId 群聊ID
+     * @param string $message
+     */
+    public function group(int $groupId, string $message)
+    {
+        if (empty($message)) {
+            $this->logger->error('cloud json-rpc broadcast  message is empty raw data');
+            return;
+        }
+        $this->logger->debug(sprintf('cloud json-rpc broadcast message:%s', $message));
+        Coroutine::create(function () use ($groupId, $message)
+        {
+            di(CloudTask::class)->group($groupId, $message);
+        });
+    }
 }
