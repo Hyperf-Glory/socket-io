@@ -72,12 +72,29 @@ class CloudTask
     /**
      * 群聊
      * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
+     *
      * @param int    $groupId
      * @param string $message
      */
     public function group(int $groupId, string $message)
     {
         $this->logger->info(sprintf('Cloud push group:%s  data:%s', $groupId, $message));
+        if (empty($groupId)) {
+            return;
+        }
+        //TODO 1.根据groupid获取uid
+        $guids = [
+          1,2,5,6
+        ];
+        $ips = [
+          '127.0.0.1',
+          '127.0.0.2',
+          '127.0.0.3',
+        ];
+        //TODO 2.根据ip获取uid
+        $ipuids = BindingDependency::getIpUid(array_rand($ips));
+        $ipUids = array_merge($guids,$ipuids);
+        //TODO 3.取出uid对应的fd
     }
 
 }
