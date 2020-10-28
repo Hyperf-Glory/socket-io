@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -15,12 +15,14 @@ use Hyperf\Utils\Codec\Json;
 
 class MessageParser
 {
-    public static function decode(string $data): array
+    public static function decode(string $data) : array
     {
-        return Json::decode($data, true);
+        $data   = sprintf('%s%s%s', pack('N', strlen($data)), $data, "\r\n");
+        $strlen = strlen($data);
+        return swoole_substr_json_decode($data, 4, $strlen - 6, true);
     }
 
-    public static function encode(array $data): string
+    public static function encode(array $data) : string
     {
         return Json::encode($data);
     }

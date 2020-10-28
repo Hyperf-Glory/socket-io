@@ -3,12 +3,18 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Component\BindingDependency;
+use App\Component\MessageParser;
+use App\Service\GroupService;
 use Hyperf\Contract\ContainerInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
+use Hyperf\ModelCache\Redis\HashGetMultiple;
 use Hyperf\RateLimit\Annotation\RateLimit;
+use Hyperf\Redis\Lua\Hash\HGetAllMultiple;
+use Hyperf\Redis\RedisFactory;
 
 /**
  * @Controller(prefix="/test")
@@ -70,7 +76,6 @@ class TestController extends AbstractController
         return ["QPS 2, 峰值2"];
     }
 
-
     public static function limitCallback(float $seconds, ProceedingJoinPoint $proceedingJoinPoint)
     {
         var_dump($seconds);
@@ -80,7 +85,62 @@ class TestController extends AbstractController
         return $proceedingJoinPoint->process();
     }
 
+    /**
+     * @RequestMapping(path="group")
+     */
+    public function group()
+    {
+        //TODO 1.根据groupid获取uid
+        $groupUids = make(GroupService::class)->getGroupUid(1);
+        $groupUids = array_column($groupUids, 'user_id');
+        $groupUids = [
+            1,
+            2,
+            5,
+            6
+        ];
+        $ips       = [
+            '127.0.0.1',
+        ];
+        var_dump(array_rand($ips));
+        //TODO 2.根据ip获取uid
+        $ipuids = BindingDependency::getIpUid('127.0.0.1');
+        $ipUids = array_intersect($groupUids, $ipuids);
+        //TODO 3.取出uid对应的fd
+        $fds = BindingDependency::fds($ipUids);
+        var_dump($fds);
+    }
 
+    /**
+     * @RequestMapping(path="json")
+     */
+    public function json()
+    {
+        $data      = [
+            'hello' => 'word',
+            'word'  => 'hello'
+        ];
+        $startTime = microtime(true);
+        $json      = json_encode($data);
+        dump(json_decode($json, true));
+        $endTime = microtime(true);
+        echo 'php_json执行了' . ($endTime - $startTime) * 1000 . ' ms' . PHP_EOL;
+    }
+
+    /**
+     * @RequestMapping(path="swoolejson")
+     */
+    public function swoolejson(){
+        $data1      = [
+            'hello' => 'word1',
+            'word'  => 'hello1'
+        ];
+        $startTime1 = microtime(true);
+        $json1      = json_encode($data1);
+        dump(MessageParser::decode($json1));
+        $endTime1 = microtime(true);
+        echo 'swoole_json执行了' . ($endTime1 - $startTime1) * 1000 . ' ms' . PHP_EOL;
+    }
 
 }
 

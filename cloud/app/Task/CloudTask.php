@@ -13,6 +13,7 @@ namespace App\Task;
 
 use App\Component\BindingDependency;
 use App\Component\ServerSender;
+use App\Service\GroupService;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Server\Server;
 use Hyperf\Server\Server as SwooleServer;
@@ -83,18 +84,21 @@ class CloudTask
             return;
         }
         //TODO 1.根据groupid获取uid
-        $guids = [
-          1,2,5,6
+        $groupUids = make(GroupService::class)->getGroupUid($groupId);
+        $groupUids = array_column($groupUids, 'user_id');
+        $groupUids     = [
+            1,
+            2,
+            5,
+            6
         ];
-        $ips = [
-          '127.0.0.1',
-          '127.0.0.2',
-          '127.0.0.3',
-        ];
+        $ips       = '127.0.0.1';
         //TODO 2.根据ip获取uid
-        $ipuids = BindingDependency::getIpUid(array_rand($ips));
-        $ipUids = array_merge($guids,$ipuids);
+        $ipuids = BindingDependency::getIpUid($ips);
+        $ipUids = array_intersect($groupUids, $ipuids);
         //TODO 3.取出uid对应的fd
+        $fds = BindingDependency::fds($ipUids);
+        var_dump($fds);
     }
 
 }

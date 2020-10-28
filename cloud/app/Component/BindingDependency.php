@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Component;
 
+use App\Helper\ArrayHelper;
 use Hyperf\Redis\RedisFactory;
 
 class BindingDependency
@@ -88,6 +89,17 @@ class BindingDependency
     {
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         return (int)$redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? null;
+    }
+
+    /**
+     * @param array $uids
+     *
+     * @return array
+     */
+    public static function fds(array $uids = [])
+    {
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        return ArrayHelper::multiArrayValues($redis->hMGet(self::HASH_UID_TO_FD_PREFIX, $uids) ?? []);
     }
 
     /**
