@@ -11,6 +11,7 @@ declare(strict_types = 1);
  */
 namespace App\JsonRpc;
 
+use App\JsonRpc\Contract\InterfaceProxyService;
 use App\Task\CloudTask;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;

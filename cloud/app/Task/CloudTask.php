@@ -21,6 +21,7 @@ use Hyperf\Server\Server;
 use Hyperf\Server\Server as SwooleServer;
 use Hyperf\Task\Annotation\Task;
 use Hyperf\Utils\Coroutine;
+use Hyperf\Utils\Exception\ParallelExecutionException;
 use Hyperf\Utils\Parallel;
 use Psr\Container\ContainerInterface;
 
@@ -87,31 +88,44 @@ class CloudTask
         if (empty($groupId)) {
             return;
         }
-        $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
         //TODO 1.根据groupid获取uid
-        $groupUids = make(GroupService::class)->getGroupUid($groupId);
+        $groupUids = make(GroupService::class)->getGroupUid(1);
         $groupUids = array_column($groupUids, 'user_id');
         /**
          * @var array $ips
          */
-        $ips         = array_values(config('websocket_server_ips'));
+        $serverIps   = (config('websocket_server_ips'));
+        $ips         = array_values($serverIps);
         $parallelCnt = count($ips);
+
         //利用swoole wait_group
-        $parallels   = new Parallel($parallelCnt);
-        for ($i = 0; $i < $parallelCnt; $i++) {
-            $parallels->add(function () use ($ips, $i,$groupUids)
+        $parallels = new Parallel($parallelCnt);
+        foreach ($serverIps as $server => $ip) {
+
+            $parallels->add(function () use ($ip, $server, $groupUids, $message)
             {
                 $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
                 //TODO 2.根据ip获取uid
-                $ipuids = BindingDependency::getIpUid($redis, $ips[$i]);
+                $ipuids = BindingDependency::getIpUid($redis, $ip);
                 $ipUids = array_intersect($groupUids, $ipuids);
                 //TODO 3.取出uid对应的fd
                 $fds = BindingDependency::fds($redis, $ipUids);
+                if (empty($fds)) {
+                    return false;
+                }
                 //创建 websoket客户端
-                $client = $this->container->get(ClientFactory::class)->get('default');
+                $client = $this->container->get(ClientFactory::class)->get($server);
+                //TODO 4.创建客户端发送消息
+                return $client->push($message);
             });
         }
-
+        try {
+            $results = $parallels->wait();
+        } catch (ParallelExecutionException $e) {
+            dump($e->getThrowables());
+            // $e->getResults() 获取协程中的返回值。
+            // $e->getThrowables() 获取协程中出现的异常。
+        }
     }
 
 }

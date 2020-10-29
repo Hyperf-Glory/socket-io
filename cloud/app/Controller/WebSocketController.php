@@ -18,7 +18,6 @@ use Hyperf\Contract\OnMessageInterface;
 use Hyperf\Contract\OnOpenInterface;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Logger\LoggerFactory;
-use Hyperf\RateLimit\Annotation\RateLimit;
 use Hyperf\Utils\Coroutine;
 use Hyperf\WebSocketServer\Context;
 use Psr\Container\ContainerInterface;

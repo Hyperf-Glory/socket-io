@@ -5,6 +5,7 @@ namespace App\Component;
 
 use App\Helper\ArrayHelper;
 use Hyperf\Redis\RedisFactory;
+use Hyperf\Redis\RedisProxy;
 
 class BindingDependency
 {
@@ -24,12 +25,12 @@ class BindingDependency
     /**
      *存储fd,ip,uid
      *
-     * @param \Redis      $redis
+     * @param RedisProxy  $redis
      * @param string      $uid
      * @param int         $fd
      * @param null|string $ip
      */
-    public static function put(\Redis $redis, string $uid, int $fd, string $ip = null)
+    public static function put(RedisProxy $redis, string $uid, int $fd, string $ip = null)
     {
         //bind key to fd
         $redis->hSet(self::HASH_UID_TO_FD_PREFIX, $uid, $fd);
@@ -47,12 +48,12 @@ class BindingDependency
     /**
      * 删除对应关系
      *
-     * @param \Redis      $redis
+     * @param RedisProxy  $redis
      * @param string      $uid
      * @param null|int    $fd
      * @param null|string $ip
      */
-    public static function del(\Redis $redis, string $uid, int $fd = null, string $ip = null)
+    public static function del(RedisProxy $redis, string $uid, int $fd = null, string $ip = null)
     {
         //del key to fd
         $redis->hDel(self::HASH_UID_TO_FD_PREFIX, $uid);
@@ -64,7 +65,7 @@ class BindingDependency
         }
     }
 
-    public static function disconnect(\Redis $redis, int $fd)
+    public static function disconnect(RedisProxy $redis, int $fd)
     {
         $uid = $redis->hGet(self::HASH_FD_TO_UID_PREFIX, $fd);
         if (empty($uid)) {
@@ -91,34 +92,37 @@ class BindingDependency
     }
 
     /**
-     * @param \Redis $redis
-     * @param array  $uids
+     * @param RedisProxy $redis
+     * @param array      $uids
      *
      * @return array
      */
-    public static function fds(\Redis $redis, array $uids = [])
+    public static function fds(RedisProxy $redis, array $uids = [])
     {
+        if (empty($uids)) {
+            return [];
+        }
         return ArrayHelper::multiArrayValues($redis->hMGet(self::HASH_UID_TO_FD_PREFIX, $uids) ?? []);
     }
 
     /**
-     * @param \Redis $redis
-     * @param int    $fd
+     * @param RedisProxy $redis
+     * @param int        $fd
      *
      * @return null|string
      */
-    public static function key(\Redis $redis, int $fd)
+    public static function key(RedisProxy $redis, int $fd)
     {
         return $redis->hGet(self::HASH_FD_TO_UID_PREFIX, $fd) ?? null;
     }
 
     /**
-     * @param \Redis      $redis
+     * @param RedisProxy  $redis
      * @param null|string $ip
      *
      * @return array|void
      */
-    public static function getIpUid(\Redis $redis,string $ip = null)
+    public static function getIpUid(RedisProxy $redis, string $ip = null)
     {
         if (empty($ip)) {
             return;
