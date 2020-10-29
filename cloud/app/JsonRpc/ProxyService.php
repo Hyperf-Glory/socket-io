@@ -41,26 +41,21 @@ class ProxyService implements InterfaceProxyService
 
     /**
      * 单点推送
-     *
-     * @param string $keys 用户的唯一IDkey
+     * Message:
+     *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"}}
+     * @param int    $uid 用户的唯一ID
      * @param string $message
      *
      * @return mixed|void
      */
-    public function pushMessage(string $keys, string $message)
+    public function pushMessage(int $uid, string $message)
     {
         $this->logger->debug('cloud node: pushmsg');
         if (empty($keys) || empty($message)) {
             $this->logger->error('cloud json-rpc pushmsg keys message is empty raw data');
             return;
         }
-        Coroutine::create(function () use ($keys, $message)
-        {
-            $keys = explode(',', $keys);
-            foreach ($keys as $key) {
-                di(CloudTask::class)->push($key, $message);
-            }
-        });
+        di(CloudTask::class)->push((string)$uid, $message);
     }
 
     /**
@@ -83,7 +78,8 @@ class ProxyService implements InterfaceProxyService
 
     /**
      * 群聊推送
-     *
+     * Message:
+     * {"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"}}
      * @param int    $groupId 群聊ID
      * @param string $message
      */

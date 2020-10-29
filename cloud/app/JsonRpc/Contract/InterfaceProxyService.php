@@ -14,12 +14,12 @@ namespace App\JsonRpc;
 interface InterfaceProxyService
 {
     /**
-     * @param string $keys 用户的唯一token
+     * @param int    $uid
      * @param string $message
      *
      * @return mixed
      */
-    public function pushMessage(string $keys, string $message);
+    public function pushMessage(int $uid, string $message);
 
     public function broadcast(string $message);
 

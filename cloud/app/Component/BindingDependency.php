@@ -24,13 +24,13 @@ class BindingDependency
     /**
      *存储fd,ip,uid
      *
+     * @param \Redis      $redis
      * @param string      $uid
      * @param int         $fd
      * @param null|string $ip
      */
-    public static function put(string $uid, int $fd, string $ip = null)
+    public static function put(\Redis $redis, string $uid, int $fd, string $ip = null)
     {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         //bind key to fd
         $redis->hSet(self::HASH_UID_TO_FD_PREFIX, $uid, $fd);
         $redis->hSet(self::HASH_FD_TO_UID_PREFIX, $fd, $uid);
@@ -47,14 +47,14 @@ class BindingDependency
     /**
      * 删除对应关系
      *
+     * @param \Redis      $redis
      * @param string      $uid
      * @param null|int    $fd
      * @param null|string $ip
      */
-    public static function del(string $uid, int $fd = null, string $ip = null)
+    public static function del(\Redis $redis, string $uid, int $fd = null, string $ip = null)
     {
         //del key to fd
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $redis->hDel(self::HASH_UID_TO_FD_PREFIX, $uid);
         $redis->hDel(self::HASH_FD_TO_UID_PREFIX, $fd);
         if (!is_null($ip)) {
@@ -64,15 +64,14 @@ class BindingDependency
         }
     }
 
-    public static function disconnect(int $fd)
+    public static function disconnect(\Redis $redis, int $fd)
     {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $uid   = $redis->hGet(self::HASH_FD_TO_UID_PREFIX, $fd);
+        $uid = $redis->hGet(self::HASH_FD_TO_UID_PREFIX, $fd);
         if (empty($uid)) {
             return;
         }
         $ip = $redis->hGet(self::HASH_UID_TO_IP, $uid);
-        self::del($uid, $fd, $ip);
+        self::del($redis, $uid, $fd, $ip);
     }
 
     public static function buckets()
@@ -81,49 +80,49 @@ class BindingDependency
     }
 
     /**
+     * @param \Redis $redis
      * @param string $uid
      *
      * @return null|int
      */
-    public static function fd(string $uid)
+    public static function fd(\Redis $redis, string $uid)
     {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         return (int)$redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? null;
     }
 
     /**
-     * @param array $uids
+     * @param \Redis $redis
+     * @param array  $uids
      *
      * @return array
      */
-    public static function fds(array $uids = [])
+    public static function fds(\Redis $redis, array $uids = [])
     {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         return ArrayHelper::multiArrayValues($redis->hMGet(self::HASH_UID_TO_FD_PREFIX, $uids) ?? []);
     }
 
     /**
-     * @param int $fd
+     * @param \Redis $redis
+     * @param int    $fd
      *
      * @return null|string
      */
-    public static function key(int $fd)
+    public static function key(\Redis $redis, int $fd)
     {
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         return $redis->hGet(self::HASH_FD_TO_UID_PREFIX, $fd) ?? null;
     }
 
     /**
+     * @param \Redis      $redis
      * @param null|string $ip
      *
      * @return array|void
      */
-    public static function getIpUid(string $ip = null)
+    public static function getIpUid(\Redis $redis,string $ip = null)
     {
         if (empty($ip)) {
             return;
         }
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         return $redis->sMembers(sprintf('%s.%s', self::ZSET_IP_TO_UID, $ip));
     }
 

@@ -116,6 +116,8 @@ class TestController extends AbstractController
      */
     public function json()
     {
+        $ips       = config('websocket_server_ips');
+        dump($ips);
         $data      = [
             'hello' => 'word',
             'word'  => 'hello'

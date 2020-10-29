@@ -13,12 +13,15 @@ namespace App\Task;
 
 use App\Component\BindingDependency;
 use App\Component\ServerSender;
+use App\Kernel\WebSocket\ClientFactory;
 use App\Service\GroupService;
 use Hyperf\Logger\LoggerFactory;
+use Hyperf\Redis\RedisFactory;
 use Hyperf\Server\Server;
 use Hyperf\Server\Server as SwooleServer;
 use Hyperf\Task\Annotation\Task;
 use Hyperf\Utils\Coroutine;
+use Hyperf\Utils\Parallel;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -44,16 +47,17 @@ class CloudTask
 
     /**
      * 单点推送
-     * 根据用户key查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
+     * 根据用户uid查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
      * @Task
      *
-     * @param string $key
+     * @param string $uid
      * @param string $message
      */
-    public function push(string $key, string $message)
+    public function push(string $uid, string $message)
     {
-        $this->logger->info(sprintf('Cloud push:%s  data:%s', $key, $message));
-        if (!($fd = BindingDependency::fd($key))) {
+        $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        $this->logger->info(sprintf('Cloud push:%s  data:%s', $uid, $message));
+        if (!($fd = BindingDependency::fd($redis, $uid))) {
             return;
         }
     }
@@ -83,22 +87,31 @@ class CloudTask
         if (empty($groupId)) {
             return;
         }
+        $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
         //TODO 1.根据groupid获取uid
         $groupUids = make(GroupService::class)->getGroupUid($groupId);
         $groupUids = array_column($groupUids, 'user_id');
-        $groupUids     = [
-            1,
-            2,
-            5,
-            6
-        ];
-        $ips       = '127.0.0.1';
-        //TODO 2.根据ip获取uid
-        $ipuids = BindingDependency::getIpUid($ips);
-        $ipUids = array_intersect($groupUids, $ipuids);
-        //TODO 3.取出uid对应的fd
-        $fds = BindingDependency::fds($ipUids);
-        var_dump($fds);
+        /**
+         * @var array $ips
+         */
+        $ips         = array_values(config('websocket_server_ips'));
+        $parallelCnt = count($ips);
+        //利用swoole wait_group
+        $parallels   = new Parallel($parallelCnt);
+        for ($i = 0; $i < $parallelCnt; $i++) {
+            $parallels->add(function () use ($ips, $i,$groupUids)
+            {
+                $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
+                //TODO 2.根据ip获取uid
+                $ipuids = BindingDependency::getIpUid($redis, $ips[$i]);
+                $ipUids = array_intersect($groupUids, $ipuids);
+                //TODO 3.取出uid对应的fd
+                $fds = BindingDependency::fds($redis, $ipUids);
+                //创建 websoket客户端
+                $client = $this->container->get(ClientFactory::class)->get('default');
+            });
+        }
+
     }
 
 }
