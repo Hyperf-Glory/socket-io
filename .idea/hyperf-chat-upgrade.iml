@@ -2,6 +2,7 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/bandwidth-throttle/token-bucket" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/doctrine/annotations" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/doctrine/inflector" />
@@ -45,6 +46,7 @@
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/paginator" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/pool" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/process" />
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/rate-limit" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/redis" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/rpc" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/hyperf/rpc-client" />
@@ -62,6 +64,8 @@
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/laminas/laminas-mime" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/laminas/laminas-stdlib" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/laminas/laminas-zendframework-bridge" />
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/malkusch/lock" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/markrogoyski/math-php" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/mockery/mockery" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/monolog/monolog" />
@@ -79,6 +83,8 @@
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpdocumentor/reflection-common" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpdocumentor/reflection-docblock" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpdocumentor/type-resolver" />
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phper666/jwt-auth" />
+      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpmailer/phpmailer" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpoption/phpoption" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpseclib/phpseclib" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/phpspec/prophecy" />
@@ -124,7 +130,6 @@
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-intl-idn" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-intl-normalizer" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-mbstring" />
-      <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-php70" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-php72" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-php73" />
       <excludeFolder url="file://$MODULE_DIR$/cloud/vendor/symfony/polyfill-php80" />
