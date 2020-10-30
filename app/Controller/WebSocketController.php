@@ -57,10 +57,6 @@ class WebSocketController implements OnMessageInterface, OnOpenInterface, OnClos
     {
         $this->logger->info($frame->data);
         $server->push($frame->fd, 'Recv: ' . $frame->data);
-        Coroutine::create(function () use ($frame) {
-            var_dump($this->request);
-            //            $this->sender->close($frame->fd);
-        });
     }
 
     public function onClose($server, int $fd, int $reactorId): void

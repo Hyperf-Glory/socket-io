@@ -11,6 +11,8 @@ declare(strict_types=1);
  */
 namespace App\Helper;
 
+use App\Constants\Consts;
+
 class EncryptHelper
 {
     /**

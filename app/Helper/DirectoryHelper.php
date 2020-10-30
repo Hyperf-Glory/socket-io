@@ -189,8 +189,8 @@ class DirectoryHelper
         }
 
         $dirs = [];
-        $dir = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS);
-        $iterator = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+        $dir = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $iterator = new \RecursiveIteratorIterator($dir, \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $single => $file) {
             $fpath = $file->getRealPath();
@@ -208,7 +208,7 @@ class DirectoryHelper
             @rmdir($dir);
         }
 
-        unset($objects, $object, $dirs);
+        unset($dir, $iterator, $dirs);
         return true;
     }
 

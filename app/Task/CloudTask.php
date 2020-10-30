@@ -50,7 +50,7 @@ class CloudTask
      * 单点推送
      * 根据用户uid查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
      * @Task
-     *
+     *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"},"type":"push"}
      * @param string $uid
      * @param string $message
      */
@@ -61,6 +61,7 @@ class CloudTask
         if (!($fd = BindingDependency::fd($redis, $uid))) {
             return;
         }
+
     }
 
     /**
@@ -69,62 +70,104 @@ class CloudTask
      * @Task
      *
      * @param string $message
+     *
+     * @return array
      */
     public function broadcast(string $message)
     {
         $this->logger->info(sprintf('Cloud push data:%s', $message));
-    }
-
-    /**
-     * 群聊
-     * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
-     *
-     * @param int    $groupId
-     * @param string $message
-     */
-    public function group(int $groupId, string $message)
-    {
-        $this->logger->info(sprintf('Cloud push group:%s  data:%s', $groupId, $message));
-        if (empty($groupId)) {
-            return;
-        }
-        //TODO 1.根据groupid获取uid
-        $groupUids = make(GroupService::class)->getGroupUid(1);
-        $groupUids = array_column($groupUids, 'user_id');
         /**
          * @var array $ips
          */
         $serverIps   = (config('websocket_server_ips'));
         $ips         = array_values($serverIps);
         $parallelCnt = count($ips);
-
-        //利用swoole wait_group
-        $parallels = new Parallel($parallelCnt);
+        $parallel    = new Parallel($parallelCnt);
         foreach ($serverIps as $server => $ip) {
-
-            $parallels->add(function () use ($ip, $server, $groupUids, $message)
+            $parallel->add(function () use ($ip, $server, $message)
             {
-                $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
-                //TODO 2.根据ip获取uid
-                $ipuids = BindingDependency::getIpUid($redis, $ip);
-                $ipUids = array_intersect($groupUids, $ipuids);
-                //TODO 3.取出uid对应的fd
-                $fds = BindingDependency::fds($redis, $ipUids);
-                if (empty($fds)) {
-                    return false;
-                }
-                //创建 websoket客户端
                 $client = $this->container->get(ClientFactory::class)->get($server);
-                //TODO 4.创建客户端发送消息
                 return $client->push($message);
             });
         }
         try {
-            $results = $parallels->wait();
+            return $parallel->wait();
         } catch (ParallelExecutionException $e) {
-            dump($e->getThrowables());
-            // $e->getResults() 获取协程中的返回值。
-            // $e->getThrowables() 获取协程中出现的异常。
+            /**
+             * @var ParallelExecutionException $ex
+             */
+            foreach ($e->getThrowables() as $server => $ex) {
+                $this->logger->error(sprintf('Server[%s]广播推送消息发生错误:%s[%s] in %s', $server, $ex->getMessage(), $ex->getLine(), $ex->getFile()));
+            }
+            foreach ($e->getResults() as $server => $result) {
+                $this->logger->info(sprintf('广播推送消息[%s]结果为[%s]', $server, $result === true ? '成功' : '失败'));
+            }
+            return $e->getResults();
+        }
+    }
+
+    /**
+     * 群聊
+     * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
+     *{"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"},"type":"group"}
+     * @param int    $groupId
+     * @param string $message
+     *
+     * @return null|array
+     */
+    public function group(int $groupId, string $message)
+    {
+        $this->logger->info(sprintf('Cloud push group:%s  data:%s', $groupId, $message));
+        if (empty($groupId)) {
+            return null;
+        }
+
+        $groupUids = make(GroupService::class)->getGroupUid($groupId);
+        $groupUids = array_column($groupUids, 'user_id');
+        /**
+         * @var array $ips
+         */
+        $serverIps = (config('websocket_server_ips'));
+
+        $ips = array_values($serverIps);
+
+        $parallelCnt = count($ips);
+
+        $parallel = new Parallel($parallelCnt);
+
+        foreach ($serverIps as $server => $ip) {
+            $parallel->add(function () use ($ip, $server, $groupUids, $message, $groupId)
+            {
+                $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
+
+                $ipuids = BindingDependency::getIpUid($redis, $ip);
+
+                $uids = array_intersect($groupUids, $ipuids);
+
+                $fds = BindingDependency::fds($redis, $uids);
+
+                if (empty($fds)) {
+                    throw new ParallelExecutionException(sprintf('Cloud push group:%s  server:%s data:%s,当前服务器暂无群员的在线用户', $groupId, $server, $message));
+                }
+
+                $client = $this->container->get(ClientFactory::class)->get($server);
+
+                return $client->push($message);
+            });
+        }
+        try {
+            return $parallel->wait();
+        } catch (ParallelExecutionException $e) {
+            /**
+             * @var ParallelExecutionException $ex
+             */
+            foreach ($e->getThrowables() as $server => $ex) {
+                $this->logger->error(sprintf('群组推送消息发生错误:%s[%s] in %s', $ex->getMessage(), $ex->getLine(), $ex->getFile()));
+            }
+            foreach ($e->getResults() as $server => $result) {
+                $this->logger->info(sprintf('群组推送消息[%s]结果为[%s]', $server, $result === true ? '成功' : '失败'));
+            }
+            return $e->getResults();
         }
     }
 
