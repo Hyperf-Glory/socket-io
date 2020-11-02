@@ -1,9 +1,10 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Component\MessageParser;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\Annotation\SocketIONamespace;
 use Hyperf\SocketIOServer\BaseNamespace;
@@ -21,9 +22,8 @@ class WebSocketController extends BaseNamespace
      *
      * @return string
      */
-    public function onEvent(\Hyperf\SocketIOServer\Socket $socket,$data)
+    public function onEvent(\Hyperf\SocketIOServer\Socket $socket, $data)
     {
-        dump($data);
         // 应答
         return 'Event Received: string';
     }
@@ -35,7 +35,6 @@ class WebSocketController extends BaseNamespace
      */
     public function onJoinRoom(Socket $socket, $data)
     {
-
         // 将当前用户加入房间
         $socket->join($data);
         // 向房间内其他用户推送（不含当前用户）
@@ -54,4 +53,5 @@ class WebSocketController extends BaseNamespace
         $data = Json::decode($data);
         $socket->to($data['room'])->emit('event', $socket->getSid() . " say: {$data['message']}");
     }
+
 }

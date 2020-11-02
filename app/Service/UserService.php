@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Component\Hash;
 use App\Model\ArticleClass;
 use App\Model\User;
+use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -86,10 +87,21 @@ class UserService
 
     public function sendEmailCode(string $email)
     {
-        $key = "email_code:{$email}";
+        $key      = "email_code:{$email}";
         $sms_code = mt_rand(100000, 999999);
-        $mail = make(PHPMailer::class);
+        $mail     = make(PHPMailer::class);
         //TODO 发送邮件
+    }
+
+    /**
+     * 获取用户所有的群聊ID
+     * @param int $uid
+     *
+     * @return array
+     */
+    public function getUserGroupIds(int $uid)
+    {
+        return UsersGroupMember::query()->where('user_id', $uid)->where('status', 0)->get()->pluck('group_id')->toarray();
     }
 
 }

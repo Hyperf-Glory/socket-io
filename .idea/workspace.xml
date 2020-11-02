@@ -3,14 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Component/BindingDependency.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Component/ClientManager.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Controller/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Controller/IndexController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Controller/WebSocketController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Controller/WebSocketController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/JsonRpc/Contract/InterfaceProxyService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/Contract/InterfaceProxyService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/JsonRpc/ProxyService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/ProxyService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/JsonRpc/Client/ProxyClient.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/Client/ProxyClient.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Kernel/SocketIO/SocketIO.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Kernel/SocketIO/SocketIO.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Service/UserService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Service/UserService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Task/CloudTask.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Task/CloudTask.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/autoload/dependencies.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/autoload/dependencies.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/autoload/server.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/autoload/server.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -330,7 +330,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DatabaseDriversLRU" value="sqlserver" />
+    <property name="DatabaseDriversLRU" value="sqlserver&#10;mysql" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -404,7 +404,7 @@
       <workItem from="1603708506937" duration="23900000" />
       <workItem from="1603939468238" duration="5251000" />
       <workItem from="1603980374392" duration="11255000" />
-      <workItem from="1604027184339" duration="34553000" />
+      <workItem from="1604027184339" duration="52029000" />
     </task>
     <servers />
   </component>
@@ -412,10 +412,10 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="640" y="104" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1602860382030">
+    <state x="283" y="23" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604329888223">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
-    <state x="640" y="104" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.832@0.23.1440.832" timestamp="1602860382030" />
+    <state x="283" y="23" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.832@0.23.1440.832" timestamp="1604329888223" />
     <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser" timestamp="1604282484127">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
@@ -426,30 +426,55 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="457" y="236" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603443556009" />
-    <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1604026265183">
+    <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1604308285633">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603708658487" />
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863062398" />
-    <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604026265183" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604243192853">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604308285633" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604315970331">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1604243192853" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604315970331" />
     <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1604296601062">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604296601062" />
+    <state width="230" height="195" key="DatabaseViewActions_Filter" timestamp="1604329401448">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="230" height="195" key="DatabaseViewActions_Filter/0.23.1440.832@0.23.1440.832" timestamp="1604329401448" />
+    <state width="958" height="223" key="GridCell.Tab.0.bottom" timestamp="1604329512808">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="958" height="223" key="GridCell.Tab.0.bottom/0.23.1440.832@0.23.1440.832" timestamp="1604329512808" />
+    <state width="958" height="223" key="GridCell.Tab.0.center" timestamp="1604329512807">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="958" height="223" key="GridCell.Tab.0.center/0.23.1440.832@0.23.1440.832" timestamp="1604329512807" />
+    <state width="958" height="223" key="GridCell.Tab.0.left" timestamp="1604329512806">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="958" height="223" key="GridCell.Tab.0.left/0.23.1440.832@0.23.1440.832" timestamp="1604329512806" />
+    <state width="958" height="223" key="GridCell.Tab.0.right" timestamp="1604329512807">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="958" height="223" key="GridCell.Tab.0.right/0.23.1440.832@0.23.1440.832" timestamp="1604329512807" />
+    <state width="167" height="539" key="HiddenNamespacesPopup" timestamp="1604329596723">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="167" height="539" key="HiddenNamespacesPopup/0.23.1440.832@0.23.1440.832" timestamp="1604329596722" />
     <state x="607" y="162" key="NewPhpClassDialog" timestamp="1603710747446">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="607" y="162" key="NewPhpClassDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603710747446" />
-    <state x="550" y="365" key="NewPhpFileDialog" timestamp="1604243430998">
+    <state x="550" y="365" key="NewPhpFileDialog" timestamp="1604328769018">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603882822423" />
-    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1604243430998" />
+    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1604328769018" />
     <state x="733" y="439" key="NewPhpFileDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604051232489" />
     <state x="221" y="76" key="SettingsEditor" timestamp="1603434633401">
       <screen x="0" y="23" width="1440" height="832" />
@@ -457,15 +482,17 @@
     <state x="221" y="76" key="SettingsEditor/0.23.1440.828@0.23.1440.828" timestamp="1599924002609" />
     <state x="221" y="76" key="SettingsEditor/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603434633401" />
     <state x="221" y="76" key="SettingsEditor/0.23.1440.832@0.23.1440.832" timestamp="1600695795177" />
-    <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1603985638961">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="133" y="145" width="1654" height="769" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604316008148">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1440.832@0.23.1440.832" timestamp="1603985638961" />
-    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1604116056105">
+    <state x="133" y="145" width="1654" height="769" key="com.intellij.history.integration.ui.views.FileHistoryDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604316008148" />
+    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1604326813954">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="473" y="178" width="530" height="522" key="find.popup/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600857703623" />
-    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1604116056105" />
+    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1604326813954" />
+    <state x="631" y="212" width="918" height="635" key="find.popup/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604316488373" />
     <state x="385" y="179" width="670" height="676" key="search.everywhere.popup" timestamp="1603982146469">
       <screen x="0" y="23" width="1440" height="832" />
     </state>

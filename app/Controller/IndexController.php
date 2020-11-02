@@ -12,7 +12,7 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Amqp\Producer\ChatProducer;
-use App\Component\BindingDependency;
+use App\Component\ClientManager;
 use App\Component\MessageParser;
 use App\Helper\StringHelper;
 use App\Service\GroupService;

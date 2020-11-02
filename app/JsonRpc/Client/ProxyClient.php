@@ -6,6 +6,11 @@ namespace App\JsonRpc\Client;
 use App\JsonRpc\Contract\InterfaceProxyService;
 use Hyperf\RpcClient\AbstractServiceClient;
 
+/**
+ * @deprecated
+ * Class ProxyClient
+ * @package App\JsonRpc\Client
+ */
 class ProxyClient extends AbstractServiceClient implements InterfaceProxyService
 {
 

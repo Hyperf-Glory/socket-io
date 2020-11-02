@@ -4,21 +4,14 @@ declare(strict_types = 1);
 namespace App\Component;
 
 use App\Helper\ArrayHelper;
-use Hyperf\Redis\RedisFactory;
 use Hyperf\Redis\RedisProxy;
 
-class BindingDependency
+class ClientManager
 {
-    /**
-     * @var array roomid => roomid
-     */
-    public static $bucketsRoom;
 
-    public const HASH_UID_TO_FD_PREFIX = 'hash.uid_to_fd_bind';
+    public const HASH_UID_TO_FD_PREFIX = 'hash.socket_user_fd';
 
-    public const HASH_FD_TO_UID_PREFIX = 'hash.fd_to_uid_bind';
-
-    public const HASH_UID_TO_IP = 'hash.uid_to_ip_bind';
+    public const HASH_FD_TO_UID_PREFIX = 'hash.socket_fd_user';
 
     public const ZSET_IP_TO_UID = 'zset.ip_to_uid_bind';
 
@@ -28,21 +21,12 @@ class BindingDependency
      * @param RedisProxy  $redis
      * @param string      $uid
      * @param int         $fd
-     * @param null|string $ip
      */
-    public static function put(RedisProxy $redis, string $uid, int $fd, string $ip = null)
+    public static function put(RedisProxy $redis, string $uid, int $fd)
     {
         //bind key to fd
         $redis->hSet(self::HASH_UID_TO_FD_PREFIX, $uid, $fd);
         $redis->hSet(self::HASH_FD_TO_UID_PREFIX, $fd, $uid);
-        if (is_null($ip)) {
-            return;
-        }
-        if (!isset(self::$bucketsRoom[$ip])) {
-            self::$bucketsRoom[$ip] = $ip;
-        }
-        $redis->hSet(self::HASH_UID_TO_IP, $uid, $ip);
-        $redis->sAdd(sprintf('%s.%s', self::ZSET_IP_TO_UID, $ip), $uid);
     }
 
     /**
@@ -51,18 +35,12 @@ class BindingDependency
      * @param RedisProxy  $redis
      * @param string      $uid
      * @param null|int    $fd
-     * @param null|string $ip
      */
-    public static function del(RedisProxy $redis, string $uid, int $fd = null, string $ip = null)
+    public static function del(RedisProxy $redis, string $uid, int $fd = null)
     {
         //del key to fd
         $redis->hDel(self::HASH_UID_TO_FD_PREFIX, $uid);
         $redis->hDel(self::HASH_FD_TO_UID_PREFIX, $fd);
-        if (!is_null($ip)) {
-            //del set ip - fd
-            $redis->hDel(self::HASH_UID_TO_IP, $uid);
-            $redis->sRem(sprintf('%s.%s', self::ZSET_IP_TO_UID, $ip), $uid);
-        }
     }
 
     public static function disconnect(RedisProxy $redis, int $fd)
@@ -71,13 +49,7 @@ class BindingDependency
         if (empty($uid)) {
             return;
         }
-        $ip = $redis->hGet(self::HASH_UID_TO_IP, $uid);
-        self::del($redis, $uid, $fd, $ip);
-    }
-
-    public static function buckets()
-    {
-        return self::$bucketsRoom;
+        self::del($redis, $uid, $fd);
     }
 
     /**
@@ -128,6 +100,17 @@ class BindingDependency
             return;
         }
         return $redis->sMembers(sprintf('%s.%s', self::ZSET_IP_TO_UID, $ip));
+    }
+
+    /**
+     * @param \Hyperf\Redis\RedisProxy $redis
+     * @param int                      $uid
+     *
+     * @return false|string
+     */
+    public static function isOnline(RedisProxy $redis, int $uid)
+    {
+        return $redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? false;
     }
 
 }

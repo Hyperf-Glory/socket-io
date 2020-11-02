@@ -11,7 +11,7 @@ declare(strict_types = 1);
  */
 namespace App\Task;
 
-use App\Component\BindingDependency;
+use App\Component\ClientManager;
 use App\Component\ServerSender;
 use App\Kernel\WebSocket\ClientFactory;
 use App\Service\GroupService;
@@ -59,7 +59,7 @@ class CloudTask
     {
         $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $this->logger->info(sprintf('Cloud push:%s  data:%s', $uid, $message));
-        if (!($fd = BindingDependency::fd($redis, $uid))) {
+        if (!($fd = ClientManager::fd($redis, $uid))) {
             return;
         }
     }
@@ -141,11 +141,11 @@ class CloudTask
             {
                 $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
 
-                $ipuids = BindingDependency::getIpUid($redis, $ip);
+                $ipuids = ClientManager::getIpUid($redis, $ip);
 
                 $uids = array_intersect($groupUids, $ipuids);
 
-                $fds = BindingDependency::fds($redis, $uids);
+                $fds = ClientManager::fds($redis, $uids);
 
                 if (empty($fds)) {
                     throw new ParallelExecutionException(sprintf('Cloud push group:%s  server:%s data:%s,当前服务器暂无群员的在线用户', $groupId, $server, $message));
