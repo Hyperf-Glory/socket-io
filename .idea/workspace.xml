@@ -2,60 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloud/app/Controller/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/app/Controller/IndexController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloud/app/Controller/TestController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloud/config/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/config.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloud/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/cloud/config/routes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.env.example" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.github/workflows/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.github/workflows/build.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.github/workflows/release.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.gitlab-ci.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.php_cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/.phpstorm.meta.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Constants/ErrorCode.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Controller/AbstractController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Controller/IndexController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Exception/BusinessException.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Exception/Handler/AppExceptionHandler.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Listener/DbQueryExecutedListener.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Listener/QueueHandleListener.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Model/Model.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/app/Process/AsyncQueueConsumer.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/bin/hyperf.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/composer.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/amqp.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/annotations.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/aspects.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/async_queue.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/cache.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/commands.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/databases.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/dependencies.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/devtool.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/exceptions.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/listeners.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/logger.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/middlewares.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/opentracing.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/processes.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/redis.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/autoload/server.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/config.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/container.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/config/routes.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/deploy.test.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/phpstan.neon" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/phpunit.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/test/Cases/ExampleTest.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/test/HttpTestCase.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ws-service1/test/bootstrap.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Amqp/Consumer/ChatConsumer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Controller/WebSocketController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Controller/WebSocketController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/JsonRpc/Contract/InterfaceProxyService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/Contract/InterfaceProxyService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/JsonRpc/ProxyService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/ProxyService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Task/CloudTask.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Task/CloudTask.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/autoload/dependencies.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/autoload/dependencies.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/autoload/server.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/autoload/server.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +20,13 @@
   <component name="ComposerSettings" doNotAsk="true">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
     <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -369,9 +331,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="DatabaseDriversLRU" value="sqlserver" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Kernel/SocketIO" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -383,20 +346,30 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/cloud/app/JsonRpc" />
-      <recent name="$PROJECT_DIR$/cloud" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/msg-service/app" />
-      <recent name="$PROJECT_DIR$/msg-service" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Kernel/SocketIO" />
       <recent name="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
       <recent name="$PROJECT_DIR$/msg-service/app" />
       <recent name="$PROJECT_DIR$/msg-service/app/Model" />
       <recent name="$PROJECT_DIR$/app/Kernel/WebSocket/Exception" />
-      <recent name="$PROJECT_DIR$/app/Kernel/WebSocket" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/cloud/app/JsonRpc" />
+      <recent name="$PROJECT_DIR$/cloud" />
+      <recent name="$PROJECT_DIR$/msg-service/app" />
+      <recent name="$PROJECT_DIR$/msg-service" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63343/hyperf-chat-upgrade/index.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript 调试.index.html" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -431,6 +404,7 @@
       <workItem from="1603708506937" duration="23900000" />
       <workItem from="1603939468238" duration="5251000" />
       <workItem from="1603980374392" duration="11255000" />
+      <workItem from="1604027184339" duration="34553000" />
     </task>
     <servers />
   </component>
@@ -442,11 +416,12 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="640" y="104" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.832@0.23.1440.832" timestamp="1602860382030" />
-    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser" timestamp="1603764119507">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser" timestamp="1604282484127">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603764119507" />
-    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832@0.23.1440.832" timestamp="1602863840062" />
+    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832@0.23.1440.832" timestamp="1604244836224" />
+    <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604282484127" />
     <state x="457" y="236" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1603443556009">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
@@ -457,21 +432,25 @@
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603708658487" />
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863062398" />
     <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604026265183" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1603987832177">
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604243192853">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1603987832177" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1604243192853" />
+    <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1604296601062">
+      <screen x="0" y="23" width="1920" height="1012" />
+    </state>
+    <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604296601062" />
     <state x="607" y="162" key="NewPhpClassDialog" timestamp="1603710747446">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="607" y="162" key="NewPhpClassDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603710747446" />
-    <state x="733" y="439" key="NewPhpFileDialog" timestamp="1604025922435">
-      <screen x="0" y="23" width="1920" height="1012" />
+    <state x="550" y="365" key="NewPhpFileDialog" timestamp="1604243430998">
+      <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603882822423" />
-    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1603808552787" />
-    <state x="733" y="439" key="NewPhpFileDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604025922435" />
+    <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1604243430998" />
+    <state x="733" y="439" key="NewPhpFileDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604051232489" />
     <state x="221" y="76" key="SettingsEditor" timestamp="1603434633401">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
@@ -482,11 +461,11 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="100" y="123" width="1240" height="632" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.23.1440.832@0.23.1440.832" timestamp="1603985638961" />
-    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1603811416343">
+    <state x="473" y="178" width="688" height="522" key="find.popup" timestamp="1604116056105">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="473" y="178" width="530" height="522" key="find.popup/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1600857703623" />
-    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1603811416343" />
+    <state x="473" y="178" width="688" height="522" key="find.popup/0.23.1440.832@0.23.1440.832" timestamp="1604116056105" />
     <state x="385" y="179" width="670" height="676" key="search.everywhere.popup" timestamp="1603982146469">
       <screen x="0" y="23" width="1440" height="832" />
     </state>

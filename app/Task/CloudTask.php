@@ -51,6 +51,7 @@ class CloudTask
      * 根据用户uid查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
      * @Task
      *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"},"type":"push"}
+     *
      * @param string $uid
      * @param string $message
      */
@@ -61,7 +62,6 @@ class CloudTask
         if (!($fd = BindingDependency::fd($redis, $uid))) {
             return;
         }
-
     }
 
     /**
@@ -110,6 +110,7 @@ class CloudTask
      * 群聊
      * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
      *{"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"},"type":"group"}
+     *
      * @param int    $groupId
      * @param string $message
      *
@@ -169,6 +170,11 @@ class CloudTask
             }
             return $e->getResults();
         }
+    }
+
+    public function publish(string $channel, string $message)
+    {
+
     }
 
 }

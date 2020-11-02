@@ -19,6 +19,8 @@ use Hyperf\Utils\Coroutine;
 use Psr\Container\ContainerInterface;
 
 /**
+ * 该类暂时废弃
+ * @deprecated
  * Class Cloud.
  * @RpcService(name="ProxyService", protocol="jsonrpc-tcp-length-check", server="jsonrpc", publishTo="consul")
  */
@@ -41,9 +43,11 @@ class ProxyService implements InterfaceProxyService
     }
 
     /**
+     * @deprecated
      * 单点推送
      * Message:
      *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"}}
+     *
      * @param int    $uid 用户的唯一ID
      * @param string $message
      *
@@ -61,7 +65,7 @@ class ProxyService implements InterfaceProxyService
 
     /**
      * 广播
-     *
+     * @deprecated
      * @param string $message
      */
     public function broadcast(string $message)
@@ -78,9 +82,11 @@ class ProxyService implements InterfaceProxyService
     }
 
     /**
+     * @deprecated
      * 群聊推送
      * Message:
      * {"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"}}
+     *
      * @param int    $groupId 群聊ID
      * @param string $message
      */
@@ -95,5 +101,23 @@ class ProxyService implements InterfaceProxyService
         {
             di(CloudTask::class)->group($groupId, $message);
         });
+    }
+
+    /**
+     * @deprecated
+     * @param string $channel
+     * @param string $message
+     */
+    public function publish(string $channel, string $message)
+    {
+        if (empty($message)) {
+            $this->logger->error('cloud json-rpc publish  message is empty raw data');
+            return;
+        }
+        if (empty($channel)) {
+            $this->logger->error('cloud json-rpc publish  channel is empty raw data');
+            return;
+        }
+
     }
 }

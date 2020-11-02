@@ -14,6 +14,7 @@ namespace App\Amqp\Consumer;
 use Hyperf\Amqp\Annotation\Consumer;
 use Hyperf\Amqp\Message\ConsumerMessage;
 use Hyperf\Amqp\Result;
+use Hyperf\Utils\Coroutine;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
@@ -23,6 +24,10 @@ class ChatConsumer extends ConsumerMessage
 {
     public function consumeMessage($data, AMQPMessage $message): string
     {
+        Coroutine::create(function () use ($data) {
+            [$packet, $opts] = unserialize($data->payload);
+            $this->doBroadcast($packet, $opts);
+        });
         return Result::ACK;
     }
 }

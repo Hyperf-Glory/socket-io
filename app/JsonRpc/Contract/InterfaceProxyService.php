@@ -11,9 +11,15 @@ declare(strict_types = 1);
  */
 namespace App\JsonRpc\Contract;
 
+/**
+ * @deprecated
+ * Interface InterfaceProxyService
+ * @package App\JsonRpc\Contract
+ */
 interface InterfaceProxyService
 {
     /**
+     *@deprecated
      * @param int    $uid
      * @param string $message
      *
@@ -21,7 +27,20 @@ interface InterfaceProxyService
      */
     public function pushMessage(int $uid, string $message);
 
+    /**
+     * @deprecated
+     * @param string $message
+     *
+     * @return mixed
+     */
     public function broadcast(string $message);
 
+    /**
+     * @deprecated
+     * @param int    $groupId
+     * @param string $message
+     *
+     * @return mixed
+     */
     public function group(int $groupId, string $message);
 }
