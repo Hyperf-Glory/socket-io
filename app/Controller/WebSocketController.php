@@ -54,4 +54,16 @@ class WebSocketController extends BaseNamespace
         $socket->to($data['room'])->emit('event', $socket->getSid() . " say: {$data['message']}");
     }
 
+    /**
+     * @Event("leave")
+     * @param \Hyperf\SocketIOServer\Socket $socket
+     * @param                               $data
+     */
+    public function onLeave(Socket $socket, $data)
+    {
+        $data  = MessageParser::decode($data);
+        $sid   = $data['sid'];
+        $rooms = $socket->getAdapter()->clientRooms($sid);
+        $socket->getAdapter()->del($sid, implode(",", $rooms));
+    }
 }

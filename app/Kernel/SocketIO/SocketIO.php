@@ -46,6 +46,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
      */
     public function onOpen($server, Request $request) : void
     {
+
         $isValidToken = false;
         $token        = $request->header['Authorization'] ?? '';
         if (strlen($token) > 0) {
@@ -66,6 +67,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         if ($sid) {
             //解除之前的关系
             $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string)$uid);
+            $this->to($sid)->emit('leave', '您的账号在其他地方登录,请注意是否是账号信息被泄漏,请及时更改密码!');
         }
         // 绑定用户与fd该功能
         $redis->hSet(self::HASH_UID_TO_FD_PREFIX, (string)$uid, $this->sidProvider->getSid($request->fd));
@@ -82,11 +84,13 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         }
         if (!$isOnline) {
             //获取所有好友的用户ID
-            $uids = $this->userFriendService->getFriends($uid);
-            $ffds = [];//所有好友的客户端ID
+            $uids       = $this->userFriendService->getFriends($uid);
+            $friendSids = [];//所有好友的客户端socketid(sid)
             foreach ($uids as $friend) {
-
+                $friendSids = array_push($friendSids, $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string)$friend));
             }
+            //推送好友上线通知
+            $this->to($sid)->emit('login_notify', $friendSids, ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
         }
         // 绑定聊天群
         parent::onOpen($server, $request);
