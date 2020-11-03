@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -34,30 +34,31 @@ class Response
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->response = $container->get(ResponseInterface::class);
+        $this->response  = $container->get(ResponseInterface::class);
     }
 
-    public function success($data = []): PsrResponseInterface
+    public function success(string $message, $data = []) : PsrResponseInterface
     {
         return $this->response->json([
-            'code' => 0,
-            'data' => $data,
+            'code'    => 200,
+            'data'    => $data,
+            'message' => $message
         ]);
     }
 
-    public function fail($code, $message = ''): PsrResponseInterface
+    public function fail($code, $message = '') : PsrResponseInterface
     {
         return $this->response->json([
-            'code' => $code,
+            'code'    => $code,
             'message' => $message,
         ]);
     }
 
-    public function redirect($url, $status = 302): PsrResponseInterface
+    public function redirect($url, $status = 302) : PsrResponseInterface
     {
         return $this->response()
-            ->withAddedHeader('Location', (string) $url)
-            ->withStatus($status);
+                    ->withAddedHeader('Location', (string)$url)
+                    ->withStatus($status);
     }
 
     public function cookie(Cookie $cookie)
@@ -67,24 +68,24 @@ class Response
         return $this;
     }
 
-    public function handleException(HttpException $throwable): PsrResponseInterface
+    public function handleException(HttpException $throwable) : PsrResponseInterface
     {
         return $this->response()
-            ->withAddedHeader('Server', 'Hyperf')
-            ->withStatus($throwable->getStatusCode())
-            ->withBody(new SwooleStream($throwable->getMessage()));
+                    ->withAddedHeader('Server', 'Hyperf')
+                    ->withStatus($throwable->getStatusCode())
+                    ->withBody(new SwooleStream($throwable->getMessage()));
     }
 
-    public function response(): PsrResponseInterface
+    public function response() : PsrResponseInterface
     {
         return Context::get(PsrResponseInterface::class);
     }
 
-    public function toWechatXML(string $xml, int $statusCode = 200): PsrResponseInterface
+    public function toWechatXML(string $xml, int $statusCode = 200) : PsrResponseInterface
     {
         return $this->response()
-            ->withStatus($statusCode)
-            ->withAddedHeader('content-type', 'application/xml; charset=utf-8')
-            ->withBody(new SwooleStream($xml));
+                    ->withStatus($statusCode)
+                    ->withAddedHeader('content-type', 'application/xml; charset=utf-8')
+                    ->withBody(new SwooleStream($xml));
     }
 }

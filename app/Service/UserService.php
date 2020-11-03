@@ -25,7 +25,9 @@ class UserService
      */
     public function register(string $mobile, string $password, string $nickname)
     {
+
         try {
+            Db::beginTransaction();
             $user             = new User();
             $user->nickname   = $nickname;
             $user->mobile     = $mobile;
@@ -39,8 +41,9 @@ class UserService
                 'class_name' => '我的笔记',
                 'is_default' => 1,
                 'sort'       => 1,
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => time()
             ]);
+            Db::commit();
         } catch (\Exception $e) {
             $result = false;
             Db::rollBack();;
@@ -113,6 +116,19 @@ class UserService
     public function get(int $uid)
     {
         return User::query()->where('id', $uid)->first() ?? null;
+    }
+
+    /**
+     * 验证用户密码是否正确
+     *
+     * @param string $input    用户输入密码
+     * @param string $password 账户密码
+     *
+     * @return bool
+     */
+    public function checkPassword(string $input, string $password)
+    {
+        return Hash::verify($input, $password);
     }
 
 }

@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  * This file is part of Hyperf.
  *
@@ -9,16 +10,26 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 use App\Milddleware\AuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
-Router::addServer('ws', function () {
+Router::addGroup('/api/auth/', function ()
+{
+    Router::post('register', 'App\Controller\AuthController@register');
+    Router::post('login', 'App\Controller\AuthController@login');
+    Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
+});
+
+Router::addServer('ws', function ()
+{
     Router::get('/', 'App\Controller\WebSocketController', [
-//        'middleware' => [AuthMiddleware::class],
+        'middleware' => [AuthMiddleware::class],
     ]);
 });
-Router::get('/favicon.ico', function () {
+Router::get('/favicon.ico', function ()
+{
     return '';
 });
