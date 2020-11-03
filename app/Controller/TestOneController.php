@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\JsonRpc\Contract\InterfaceUserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
@@ -46,5 +47,16 @@ class TestOneController extends AbstractController
     {
         dump($this->logger);
         dump($this->request);
+    }
+
+    /**
+     * @RequestMapping(path="rpc")
+     */
+    public function rpc()
+    {
+        $user = $this->container->get(InterfaceUserService::class);
+        $ret = $user->get(1);
+        return $ret;
+//        dump($ret);
     }
 }
