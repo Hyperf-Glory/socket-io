@@ -64,8 +64,8 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         WsContext::set('user', $uid);
         //判断用户是否在其它地方登录
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $redis->multi();
         $isOnline = $sid = $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string)$uid);
+        $redis->multi();
         if ($sid) {
             //解除之前的关系
             $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string)$uid);
