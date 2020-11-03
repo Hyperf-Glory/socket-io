@@ -95,6 +95,7 @@ class UserService
 
     /**
      * 获取用户所有的群聊ID
+     *
      * @param int $uid
      *
      * @return array
@@ -102,6 +103,16 @@ class UserService
     public function getUserGroupIds(int $uid)
     {
         return UsersGroupMember::query()->where('user_id', $uid)->where('status', 0)->get()->pluck('group_id')->toarray();
+    }
+
+    /**
+     * @param int $uid
+     *
+     * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|User
+     */
+    public function get(int $uid)
+    {
+        return User::query()->where('id', $uid)->first() ?? null;
     }
 
 }

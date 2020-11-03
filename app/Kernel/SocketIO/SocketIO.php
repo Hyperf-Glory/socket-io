@@ -5,7 +5,7 @@ use App\Component\ClientManager;
 use App\Log;
 
 use Hyperf\Redis\RedisFactory;
-use Hyperf\SocketIOServer\Collector\SocketIORouter;
+use Hyperf\WebSocketServer\Context as WsContext;
 use Phper666\JWTAuth\Exception\TokenValidException;
 use Phper666\JWTAuth\Util\JWTUtil;
 use Swoole\Http\Request;
@@ -59,7 +59,9 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             throw new TokenValidException('Token authentication does not pass', 401);
         }
         $userData = $this->jwt->getParserData($token);
-        $uid      = $userData['uid'] ?? 0;
+        $uid = $userData['uid'] ?? 0;
+        //TODO 建立json-rpc客户端获取用户详细信息
+        WsContext::set('user', $uid);
         //判断用户是否在其它地方登录
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $redis->multi();
@@ -90,7 +92,9 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
                 $friendSids = array_push($friendSids, $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string)$friend));
             }
             //推送好友上线通知
-            $this->to($sid)->emit('login_notify', $friendSids, ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
+            if ($friendSids) {
+                $this->to($sid)->emit('login_notify', $friendSids, ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
+            }
         }
         // 绑定聊天群
         parent::onOpen($server, $request);

@@ -13,6 +13,8 @@ namespace App\JsonRpc;
 
 use App\Constants\User;
 use App\JsonRpc\Contract\InterfaceUserService;
+use App\Model\User as UserModel;
+use App\Service\UserService as UserSer;
 use App\Task\CloudTask;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
@@ -35,10 +37,16 @@ class UserService implements InterfaceUserService
      */
     private $logger;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var \App\Service\UserService
+     */
+    private $userService;
+
+    public function __construct(ContainerInterface $container, UserSer $userService)
     {
-        $this->container = $container;
-        $this->logger    = $container->get(LoggerFactory::class)->get();
+        $this->container   = $container;
+        $this->logger      = $container->get(LoggerFactory::class)->get();
+        $this->userService = $userService;
     }
 
     public function register(string $mobile, string $password, string $smsCode, string $nickname)
@@ -64,5 +72,23 @@ class UserService implements InterfaceUserService
     public function forgetPassword(string $mobile, string $smsCode, string $password)
     {
 
+    }
+
+    public function get(int $uid) : ?array
+    {
+        try {
+            $user = $this->userService->get($uid);
+            if ($user) {
+                return [
+                    'id'       => $user->id,
+                    'nickname' => $user->nickname,
+                    'avatar'   => $user->avatar
+                ];
+            }
+            return null;
+        } catch (\Throwable $throwable) {
+            $this->logger->error(sprintf('json-rpc UserService Error getting user[%s] information', $uid));
+        }
+        return null;
     }
 }
