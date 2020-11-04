@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace App\JsonRpc\Contract;
 
 use App\Constants\User;
-use App\Model\User as UserModel;
 
 interface  InterfaceUserService
 {
@@ -19,4 +18,8 @@ interface  InterfaceUserService
     public function forgetPassword(string $mobile, string $smsCode, string $password);
 
     public function get(int $uid) : ?array;
+
+    public function checkToken(string $token);
+
+    public function decodeToken(string $token);
 }

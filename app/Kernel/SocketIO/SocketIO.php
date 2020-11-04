@@ -1,14 +1,11 @@
 <?php
 namespace App\Kernel;
 
-use App\Component\ClientManager;
 use App\JsonRpc\Contract\InterfaceUserService;
 use App\Log;
-
 use Hyperf\Redis\RedisFactory;
 use Hyperf\WebSocketServer\Context as WsContext;
 use Phper666\JWTAuth\Exception\TokenValidException;
-use Phper666\JWTAuth\Util\JWTUtil;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Hyperf\Di\Annotation\Inject;
@@ -42,17 +39,18 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
     protected $userFriendService;
 
     /**
-     * @param Response|\Swoole\WebSocket\Server $server
-     * @param \Swoole\Http\Request              $request
+     * @param \Swoole\Http\Response|\Swoole\WebSocket\Server $server
+     * @param \Swoole\Http\Request                           $request
+     *
+     * @throws \Throwable
      */
     public function onOpen($server, Request $request) : void
     {
         try {
             $isValidToken = false;
-            $token        = $request->header['Authorization'] ?? '';
+            $token        = $request->get['token'] ?? '';
             if (strlen($token) > 0) {
-                $token = JWTUtil::handleToken($token);
-                if ($token !== false && $this->jwt->checkToken($token)) {
+                if (di(InterfaceUserService::class)->checkToken($token)) {
                     $isValidToken = true;
                 }
             }
@@ -65,12 +63,13 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             return;
         }
 
-        $userData = $this->jwt->getParserData($token);
-        $uid      = $userData['uid'] ?? 0;
+        $userData = di(InterfaceUserService::class)->decodeToken($token);
+        $uid      = $userData['cloud_uid'] ?? 0;
         $rpcUser  = di(InterfaceUserService::class);
         $user     = $rpcUser->get($uid);
         //TODO 建立json-rpc客户端获取用户详细信息
-        WsContext::set('user', array_merge($user,
+        WsContext::set('user', array_merge(
+            ['user' => $user],
             ['sid' => $this->sidProvider->getSid($request->fd)]));
         //判断用户是否在其它地方登录
         $redis    = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
@@ -116,6 +115,8 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
      * @param \Swoole\Http\Response|\Swoole\Server $server
      * @param int                                  $fd
      * @param int                                  $reactorId
+     *
+     * @throws \Throwable
      */
     public function onClose($server, int $fd, int $reactorId) : void
     {
@@ -123,16 +124,15 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
          * @var array $user
          */
         $user = WsContext::get('user');
-
         // 获取客户端对应的用户ID
         // 清除用户绑定信息
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string)$user['id']);
+        $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string)$user['user']['id']);
         // 将fd 退出所有聊天室
         $this->getAdapter()->del($user['sid']);
         WsContext::destroy('user');
         //获取所有好友的用户ID
-        $uids       = $this->userFriendService->getFriends($user['id']);
+        $uids       = $this->userFriendService->getFriends($user['user']['id']);
         $friendSids = [];//所有好友的客户端socketid(sid)
         foreach ($uids as $friend) {
             $friendSids = array_push($friendSids, $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string)$friend));

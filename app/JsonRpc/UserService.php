@@ -57,6 +57,14 @@ class UserService implements InterfaceUserService
         $this->jwt         = $jwt;
     }
 
+    /**
+     * @param string $mobile
+     * @param string $password
+     * @param string $smsCode
+     * @param string $nickname
+     *
+     * @return array
+     */
     public function register(string $mobile, string $password, string $smsCode, string $nickname)
     {
         if (!ValidateHelper::isPhone($mobile)) {
@@ -73,6 +81,13 @@ class UserService implements InterfaceUserService
         return ['code' => 0, 'msg' => '账号注册失败,手机号已被其他(她)人使用...'];
     }
 
+    /**
+     * @param string $mobile
+     * @param string $password
+     *
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function login(string $mobile, string $password)
     {
         /**
@@ -92,7 +107,7 @@ class UserService implements InterfaceUserService
             'code'      => 1,
             'authorize' => [
                 'access_token' => $token,
-                'expires_in'   => $this->jwt->getTTL() - time(),
+                'expires_in'   => $this->jwt->getTTL(),
             ],
             'user_info' => [
                 'uid'      => $user->id,
@@ -104,11 +119,22 @@ class UserService implements InterfaceUserService
         ];
     }
 
+    /**
+     * @param string $token
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function logout(string $token)
     {
         $this->jwt->logout($token);
     }
 
+    /**
+     * @param string $mobile
+     * @param string $type
+     *
+     * @return array
+     */
     public function sendVerifyCode(string $mobile, string $type = User::REGISTER)
     {
         if (!di(Sms::class)->isUsages($type)) {
@@ -139,6 +165,13 @@ class UserService implements InterfaceUserService
         return $data;
     }
 
+    /**
+     * @param string $mobile
+     * @param string $smsCode
+     * @param string $password
+     *
+     * @return array
+     */
     public function forgetPassword(string $mobile, string $smsCode, string $password)
     {
         if (!ValidateHelper::isPhone($mobile) || empty($code) || empty($password)) {
@@ -157,6 +190,11 @@ class UserService implements InterfaceUserService
         return $bool ? ['code' => 1, 'msg' => '重置密码成功...'] : ['code' => 0, 'msg' => '重置密码失败...'];
     }
 
+    /**
+     * @param int $uid
+     *
+     * @return null|array
+     */
     public function get(int $uid) : ?array
     {
         try {
@@ -173,5 +211,27 @@ class UserService implements InterfaceUserService
             $this->logger->error(sprintf('json-rpc UserService Error getting user[%s] information', $uid));
         }
         return null;
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return bool
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \Throwable
+     */
+    public function checkToken(string $token)
+    {
+        return $this->jwt->checkToken($token);
+    }
+
+    /**
+     * @param string $token
+     *
+     * @return array
+     */
+    public function decodeToken(string $token)
+    {
+        return $this->jwt->getParserData($token);
     }
 }
