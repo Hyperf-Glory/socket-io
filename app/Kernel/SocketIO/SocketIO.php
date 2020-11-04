@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 namespace App\Kernel;
 
 use App\JsonRpc\Contract\InterfaceUserService;
@@ -7,7 +9,6 @@ use Hyperf\Redis\RedisFactory;
 use Hyperf\WebSocketServer\Context as WsContext;
 use Phper666\JWTAuth\Exception\TokenValidException;
 use Swoole\Http\Request;
-use Swoole\Http\Response;
 use Hyperf\Di\Annotation\Inject;
 
 class SocketIO extends \Hyperf\SocketIOServer\SocketIO
