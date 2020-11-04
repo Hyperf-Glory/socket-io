@@ -37,7 +37,7 @@ class Response
         $this->response  = $container->get(ResponseInterface::class);
     }
 
-    public function success(string $message, $data = []) : PsrResponseInterface
+    public function success(string $message = '', $data = []) : PsrResponseInterface
     {
         return $this->response->json([
             'code'    => 200,

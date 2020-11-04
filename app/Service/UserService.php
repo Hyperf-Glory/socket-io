@@ -58,7 +58,6 @@ class UserService
      * @param string $password
      *
      * @return int
-     * @throws \Crypto\HashException
      */
     public function resetPassword(string $mobile, string $password)
     {

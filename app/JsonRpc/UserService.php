@@ -106,7 +106,7 @@ class UserService implements InterfaceUserService
 
     public function logout(string $token)
     {
-
+        $this->jwt->logout($token);
     }
 
     public function sendVerifyCode(string $mobile, string $type = User::REGISTER)
@@ -141,7 +141,20 @@ class UserService implements InterfaceUserService
 
     public function forgetPassword(string $mobile, string $smsCode, string $password)
     {
-
+        if (!ValidateHelper::isPhone($mobile) || empty($code) || empty($password)) {
+            return ['code' => 0, 'msg' => '参数错误...'];
+        }
+        if (!ValidateHelper::checkPassword($password)) {
+            return ['code' => 0, 'msg' => '密码格式不正确...'];
+        }
+        if (!di(Sms::class)->check('forget_password', $mobile, $smsCode)) {
+            return ['code' => 0, 'msg' => '验证码填写错误...'];
+        }
+        $bool = $this->userService->resetPassword($mobile, $password);
+        if ($bool) {
+            di(Sms::class)->delCode('forget_password', $mobile);
+        }
+        return $bool ? ['code' => 1, 'msg' => '重置密码成功...'] : ['code' => 0, 'msg' => '重置密码失败...'];
     }
 
     public function get(int $uid) : ?array

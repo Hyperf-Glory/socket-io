@@ -9,6 +9,11 @@ use App\JsonRpc\Contract\InterfaceUserService;
 
 class AuthController extends AbstractController
 {
+    /**
+     * 注册接口
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function register()
     {
         $params = $this->request->all();
@@ -28,6 +33,10 @@ class AuthController extends AbstractController
         return $this->response->fail(301, $ret['msg']);
     }
 
+    /**
+     * 登录
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function login()
     {
         $params = $this->request->all();
@@ -46,11 +55,24 @@ class AuthController extends AbstractController
         return $this->response->fail(301, $ret['msg'] ?? '登录失败...');
     }
 
+    /**
+     * 退出登录
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function logout()
     {
-
+        $token   = $this->request->getHeaderLine('Authorization') ?? '';
+        $rpcUser = $this->container->get(InterfaceUserService::class);
+        $rpcUser->logout($token);
+        return $this->response->success('退出成功!');
     }
 
+    /**
+     * 发送验证码
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function sendVerifyCode()
     {
         $mobile = $this->request->post('mobile', '');
@@ -71,8 +93,21 @@ class AuthController extends AbstractController
         return $this->response->fail(301, $data['msg']);
     }
 
+    /**
+     * 忘记密码
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function forgetPassword()
     {
-
+        $mobile   = $this->request->post('mobile', '');
+        $code     = $this->request->post('sms_code', '');
+        $password = $this->request->post('password', '');
+        $rpcUser  = $this->container->get(InterfaceUserService::class);
+        $data     = $rpcUser->forgetPassword($mobile, $code, $password);
+        if (isset($data['code']) && $data['code'] == 1) {
+            return $this->response->success($data['msg']);
+        }
+        return $this->response->fail(301, '重置密码失败...');
     }
 }

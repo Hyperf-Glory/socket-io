@@ -159,6 +159,18 @@ class ValidateHelper
     }
 
     /**
+     * 验证登录密码格式
+     *
+     * @param string $password
+     *
+     * @return bool
+     */
+    public static function checkPassword(string $password)
+    {
+        return (boolean)preg_match('/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/', $password);
+    }
+
+    /**
      * 是否URL
      *
      * @param string $val
