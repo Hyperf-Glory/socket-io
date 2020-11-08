@@ -27,7 +27,7 @@ class WebSocketController extends BaseNamespace
     public function onEvent(\Hyperf\SocketIOServer\Socket $socket, $data)
     {
         dump($data);
-        $socket->emit('event', $socket->getSid() . " say: {$data['message']}");
+        $socket->emit('event', $socket->getSid() . " say: {}");
         // 应答
         return 'Event Received: string';
     }
