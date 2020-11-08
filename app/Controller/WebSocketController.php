@@ -12,6 +12,8 @@ use Hyperf\SocketIOServer\Socket;
 use Hyperf\Utils\Codec\Json;
 
 /**
+ * @example
+ * 42/socket.io/,["event",{"projectId":"88","theme":"getUserInfo","time":10000}]
  * @SocketIONamespace("/")
  */
 class WebSocketController extends BaseNamespace
@@ -24,6 +26,8 @@ class WebSocketController extends BaseNamespace
      */
     public function onEvent(\Hyperf\SocketIOServer\Socket $socket, $data)
     {
+        dump($data);
+        $socket->emit('event', $socket->getSid() . " say: {$data['message']}");
         // 应答
         return 'Event Received: string';
     }

@@ -125,7 +125,10 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
          * @var array $user
          */
         $user = WsContext::get('user');
-        // 获取客户端对应的用户ID
+        if (empty($user)) {
+            return;
+        }
+        // 获取客户端对应的c用户ID
         // 清除用户绑定信息
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string)$user['user']['id']);
