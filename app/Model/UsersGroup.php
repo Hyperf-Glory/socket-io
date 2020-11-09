@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -12,12 +12,12 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property string $group_name
- * @property string $group_profile
- * @property int $status
- * @property string $avatar
+ * @property int            $id
+ * @property int            $user_id
+ * @property string         $group_name
+ * @property string         $group_profile
+ * @property int            $status
+ * @property string         $avatar
  * @property \Carbon\Carbon $created_at
  */
 class UsersGroup extends Model
@@ -42,4 +42,30 @@ class UsersGroup extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
+
+    /**
+     * 判断用户是否是管理员
+     *
+     * @param int $uid     用户ID
+     * @param int $groupId 群ID
+     *
+     * @return mixed
+     */
+    public static function isManager(int $uid, int $groupId)
+    {
+        return UsersGroup::where('id', $groupId)->where('user_id', $uid)->exists();
+    }
+
+    /**
+     * 判断用户是否是群成员
+     *
+     * @param int $groupId 群ID
+     * @param int $uid     用户ID
+     *
+     * @return bool
+     */
+    public static function isMember(int $groupId, int $uid)
+    {
+        return UsersGroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('status', 0)->exists();
+    }
 }
