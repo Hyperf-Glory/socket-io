@@ -26,14 +26,6 @@ Router::addGroup('/api/auth/', function ()
 });
 
 /** ----------------------  结束   ------------------------------------ */
-/** ----------------------- 代理(消息推送服务) --------------------------------------- */
-Router::addGroup('/proxy/', function ()
-{
-    Router::post('groupNotify', 'App\Controller\ProxyController@groupNotify');
-    Router::post('revokeRecords', 'App\Controller\ProxyController@revokeRecords');
-    Router::post('forwardChatRecords', 'App\Controller\ProxyController@forwardChatRecords');
-});
-/** ----------------------  结束   ------------------------------------ */
 Router::addServer('ws', function ()
 {
     Router::get('/', 'App\Controller\WebSocketController', [

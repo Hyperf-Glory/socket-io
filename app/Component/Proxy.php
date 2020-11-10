@@ -1,9 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace App\Controller;
+namespace App\Component;
 
-class ProxyController extends AbstractController
+class Proxy
 {
     /**
      * 邀请入群通知  踢出群聊通知  自动退出群聊

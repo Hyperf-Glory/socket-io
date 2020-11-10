@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/JsonRpc/Client/UserClient.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/JsonRpc/GroupService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/GroupService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Service/GroupService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Service/GroupService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Controller/ProxyController.php" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -477,7 +474,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Cache" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Component" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -557,7 +554,7 @@
       <workItem from="1604722137677" duration="4525000" />
       <workItem from="1604933491569" duration="3623000" />
       <workItem from="1604995206098" duration="1137000" />
-      <workItem from="1605004916751" duration="2095000" />
+      <workItem from="1605004916751" duration="2594000" />
     </task>
     <servers />
   </component>
