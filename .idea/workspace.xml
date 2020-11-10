@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/app/Controller/ProxyController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Component/Proxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Component/Proxy.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -486,18 +486,18 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/Cache" />
-      <recent name="$PROJECT_DIR$/app/Kernel/SocketIO" />
-      <recent name="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
-      <recent name="$PROJECT_DIR$/msg-service/app" />
-      <recent name="$PROJECT_DIR$/msg-service/app/Model" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/JsonRpc" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cloud/app/JsonRpc" />
       <recent name="$PROJECT_DIR$/cloud" />
+      <recent name="$PROJECT_DIR$/msg-service/app" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Component" />
+      <recent name="$PROJECT_DIR$/app/Cache" />
+      <recent name="$PROJECT_DIR$/app/Kernel/SocketIO" />
+      <recent name="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
       <recent name="$PROJECT_DIR$/msg-service/app" />
     </key>
   </component>
@@ -554,7 +554,7 @@
       <workItem from="1604722137677" duration="4525000" />
       <workItem from="1604933491569" duration="3623000" />
       <workItem from="1604995206098" duration="1137000" />
-      <workItem from="1605004916751" duration="2594000" />
+      <workItem from="1605004916751" duration="5057000" />
     </task>
     <servers />
   </component>
@@ -583,11 +583,11 @@
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603708658487" />
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863062398" />
     <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604308285633" />
-    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1605005181869">
-      <screen x="0" y="23" width="1920" height="1012" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1605021724802">
+      <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1604936423288" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1605021724802" />
     <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605005181869" />
     <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604381152712" />
     <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1604296601062">
