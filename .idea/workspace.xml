@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hyperf-chat-upgrade.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Cache/LastMsgCache.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Cache/LastMsgCache.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Component/MessageParser.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Component/MessageParser.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Model/ChatRecord.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/JsonRpc/Client/UserClient.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/JsonRpc/GroupService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/JsonRpc/GroupService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Service/GroupService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Service/GroupService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -557,7 +556,8 @@
       <workItem from="1604659002996" duration="1581000" />
       <workItem from="1604722137677" duration="4525000" />
       <workItem from="1604933491569" duration="3623000" />
-      <workItem from="1604995206098" duration="859000" />
+      <workItem from="1604995206098" duration="1137000" />
+      <workItem from="1605004916751" duration="2095000" />
     </task>
     <servers />
   </component>
@@ -586,11 +586,12 @@
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603708658487" />
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863062398" />
     <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604308285633" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604936423288">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1605005181869">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
     <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1604936423288" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605005181869" />
     <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604381152712" />
     <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1604296601062">
       <screen x="0" y="23" width="1920" height="1012" />
@@ -624,12 +625,13 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="607" y="162" key="NewPhpClassDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603710747446" />
-    <state x="550" y="383" key="NewPhpFileDialog" timestamp="1604848047348">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="733" y="438" key="NewPhpFileDialog" timestamp="1605006382993">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603882822423" />
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1604412725178" />
     <state x="550" y="383" key="NewPhpFileDialog/0.23.1440.877@0.23.1440.877" timestamp="1604848047348" />
+    <state x="733" y="438" key="NewPhpFileDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605006382993" />
     <state x="733" y="439" key="NewPhpFileDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604401104665" />
     <state x="221" y="76" key="SettingsEditor" timestamp="1603434633401">
       <screen x="0" y="23" width="1440" height="832" />

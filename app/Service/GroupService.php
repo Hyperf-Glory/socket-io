@@ -221,13 +221,107 @@ class GroupService
         }
     }
 
+    /**
+     * 退出群组
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function quit(int $uid, int $groupId)
     {
-        // TODO: Implement quit() method.
+        $recordId = 0;
+        DB::beginTransaction();
+        try {
+            $res = UserGroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('group_owner', 0)->update(['status' => 1]);
+            if ($res) {
+                UserChatList::where('uid', $uid)->where('type', 2)->where('group_id', $groupId)->update(['status' => 0]);
+
+                $result = ChatRecords::create([
+                    'msg_type'   => 3,
+                    'source'     => 2,
+                    'user_id'    => 0,
+                    'receive_id' => $groupId,
+                    'content'    => $uid,
+                    'created_at' => date('Y-m-d H:i;s')
+                ]);
+
+                if (!$result) {
+                    throw new \Exception('添加群通知记录失败 : quitGroupChat');
+                }
+
+                $result2 = ChatRecordsInvite::create([
+                    'record_id'       => $result->id,
+                    'type'            => 2,
+                    'operate_user_id' => $uid,
+                    'user_ids'        => $uid
+                ]);
+
+                if (!$result2) {
+                    throw new \Exception('添加群通知记录失败2  : quitGroupChat');
+                }
+
+                $recordId = $result->id;
+            }
+
+            DB::commit();
+            return [true, $recordId];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [false, 0];
+        }
     }
 
+    /**
+     * 踢出群组(管理员特殊权限)
+     *
+     * @param int   $groupId
+     * @param int   $uid
+     * @param array $memberIds
+     */
     public function removeMember(int $groupId, int $uid, array $memberIds)
     {
-        // TODO: Implement removeMember() method.
+        if (!UserGroup::isManager($uid, $groupId)) {
+            return [false, 0];
+        }
+
+        DB::beginTransaction();
+        try {
+            //更新用户状态
+            if (!UsersGroupMember::where('group_id', $groupId)->whereIn('user_id', $memberIds)->where('group_owner', 0)->update(['status' => 1])) {
+                throw new Exception('修改群成员状态失败');
+            }
+
+            $result = ChatRecords::create([
+                'msg_type'   => 3,
+                'source'     => 2,
+                'user_id'    => 0,
+                'receive_id' => $groupId,
+                'created_at' => date('Y-m-d H:i;s')
+            ]);
+
+            if (!$result) {
+                throw new \Exception('添加群通知记录失败1');
+            }
+
+            $result2 = ChatRecordsInvite::create([
+                'record_id'       => $result->id,
+                'type'            => 3,
+                'operate_user_id' => $uid,
+                'user_ids'        => implode(',', $memberIds)
+            ]);
+
+            if (!$result2) {
+                throw new \Exception('添加群通知记录失败2');
+            }
+
+            DB::commit();
+            return [true, $result->id];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return [false, 0];
+        }
     }
 }

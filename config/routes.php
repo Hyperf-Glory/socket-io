@@ -16,13 +16,24 @@ use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
+/** ---------------------- HTTP鉴权 -------------------------- */
 Router::addGroup('/api/auth/', function ()
 {
+    // ------- 鉴权 ----------//
     Router::post('register', 'App\Controller\AuthController@register');
     Router::post('login', 'App\Controller\AuthController@login');
     Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
 });
 
+/** ----------------------  结束   ------------------------------------ */
+/** ----------------------- 代理(消息推送服务) --------------------------------------- */
+Router::addGroup('/proxy/', function ()
+{
+    Router::post('groupNotify', 'App\Controller\ProxyController@groupNotify');
+    Router::post('revokeRecords', 'App\Controller\ProxyController@revokeRecords');
+    Router::post('forwardChatRecords', 'App\Controller\ProxyController@forwardChatRecords');
+});
+/** ----------------------  结束   ------------------------------------ */
 Router::addServer('ws', function ()
 {
     Router::get('/', 'App\Controller\WebSocketController', [
