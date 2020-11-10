@@ -2,6 +2,7 @@
 
 namespace App\Cache;
 
+use App\Component\MessageParser;
 use Hyperf\Redis\RedisFactory;
 
 /**
@@ -44,7 +45,7 @@ class LastMsgCache
     public static function set(array $message, int $receive, $sender = 0)
     {
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $redis->hset(self::_name($sender), self::_key($receive, $sender), serialize($message));
+        $redis->hset(self::_name($sender), self::_key($receive, $sender), MessageParser::serialize($message));
     }
 
     /**
@@ -59,6 +60,6 @@ class LastMsgCache
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $data = $redis->hget(self::_name($sender), self::_key($receive, $sender));
 
-        return $data ? unserialize($data) : null;
+        return $data ? MessageParser::unserialize($data) : null;
     }
 }
