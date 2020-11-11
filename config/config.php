@@ -22,12 +22,13 @@ return [
     {
         return Json::decode(env('WEBSOCKET_SERVER_IPS'), true) ?? [];
     }),
+    'image_url'                  => 'https://image.com',
     'scan_cacheable'             => env('SCAN_CACHEABLE', true),
     StdoutLoggerInterface::class => [
         'log_level' => [
             LogLevel::ALERT,
             LogLevel::CRITICAL,
-//            LogLevel::DEBUG,
+            //            LogLevel::DEBUG,
             LogLevel::EMERGENCY,
             LogLevel::ERROR,
             LogLevel::INFO,

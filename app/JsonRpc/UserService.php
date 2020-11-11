@@ -15,7 +15,7 @@ use App\Component\Sms;
 use App\Constants\User;
 use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceUserService;
-use App\Model\User as UserModel;
+use App\Model\Users as UserModel;
 use App\Service\UserService as UserSer;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;

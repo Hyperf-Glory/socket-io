@@ -5,7 +5,7 @@ namespace App\Service;
 
 use App\Component\Hash;
 use App\Model\ArticleClass;
-use App\Model\User;
+use App\Model\Users;
 use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
@@ -28,7 +28,7 @@ class UserService
 
         try {
             Db::beginTransaction();
-            $user             = new User();
+            $user             = new Users();
             $user->nickname   = $nickname;
             $user->mobile     = $mobile;
             $user->password   = Hash::make($password);
@@ -61,7 +61,7 @@ class UserService
      */
     public function resetPassword(string $mobile, string $password)
     {
-        return User::query()->where('mobile', $mobile)->update([
+        return Users::query()->where('mobile', $mobile)->update([
             'password' => Hash::make($password)
         ]);
     }
@@ -76,12 +76,12 @@ class UserService
      */
     public function changeMobile(int $uid, string $mobile)
     {
-        $uid = User::query()->where('mobile', $mobile)->value('id');
+        $uid = Users::query()->where('mobile', $mobile)->value('id');
         if ($uid) {
             return [false, '手机号已被他人绑定'];
         }
 
-        $bool = User::query()->where('uid', $uid)->update([
+        $bool = Users::query()->where('uid', $uid)->update([
             'mobile' => $mobile
         ]);
         return [(bool)$bool, null];
@@ -110,11 +110,11 @@ class UserService
     /**
      * @param int $uid
      *
-     * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|User
+     * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|Users
      */
     public function get(int $uid)
     {
-        return User::query()->where('id', $uid)->first() ?? null;
+        return Users::query()->where('id', $uid)->first() ?? null;
     }
 
     /**
