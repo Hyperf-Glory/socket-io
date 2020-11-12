@@ -3,8 +3,13 @@ declare(strict_types = 1);
 
 namespace App\JsonRpc;
 
+use App\Helper\StringHelper;
 use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceGroupService;
+use App\Model\UsersFriends;
+use App\Model\UsersGroup;
+use App\Model\UsersGroupMember;
+use App\Model\UsersGroupNotice;
 use App\Service\UserService as UserSer;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
@@ -190,5 +195,191 @@ class GroupService implements InterfaceGroupService
             'code' => 0,
             'msg'  => '群聊用户移除失败...'
         ];
+    }
+
+    /**
+     * 设置用户群名片
+     *
+     * @param int    $uid
+     * @param int    $groupId
+     * @param string $visitCard
+     *
+     * @return array|mixed
+     */
+    public function setGroupCard(int $uid, int $groupId, string $visitCard)
+    {
+        if (empty($uid) || empty($groupId) || empty($visitCard)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!ValidateHelper::isInteger($groupId) || !ValidateHelper::isInteger($uid)) {
+            return ['code' => 0, 'msg' => '参数错误...'];
+        }
+        if (UsersGroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('status', 0)->update(['visit_card' => $visitCard])) {
+            return ['code' => 1, 'msg' => '设置成功...'];
+        }
+        return ['code' => 0, 'msg' => '设置失败...'];
+    }
+
+    /**
+     * 获取用户可邀请加入群组的好友列表
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return array|mixed
+     */
+    public function getInviteFriends(int $uid, int $groupId)
+    {
+        if (empty($uid) || empty($groupId) || empty($visitCard)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!ValidateHelper::isInteger($groupId) || !ValidateHelper::isInteger($uid)) {
+            return ['code' => 0, 'msg' => '参数错误...'];
+        }
+        $friends = UsersFriends::getUserFriends($uid);
+        if ($groupId > 0 && $friends) {
+            if ($ids = UsersGroupMember::getGroupMemberIds($groupId)) {
+                foreach ($friends as $k => $item) {
+                    if (in_array($item['id'], $ids)) {
+                        unset($friends[$k]);
+                    }
+                }
+            }
+            $friends = array_values($friends);
+        }
+        return ['code' => 1, 'msg' => '获取好友成功...', 'data' => ['friends' => $friends]];
+    }
+
+    /**
+     * 获取群组成员列表
+     *
+     * @param int $groupId
+     * @param int $uid
+     *
+     * @return array|mixed
+     */
+    public function getGroupMembers(int $groupId, int $uid)
+    {
+        if (empty($uid) || empty($groupId)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!UsersGroup::isMember($groupId, $uid)) {
+            return ['code' => 0, 'msg' => '非法操作'];
+        }
+        $members = UsersGroupMember::select([
+            'users_group_member.id',
+            'users_group_member.group_owner as is_manager',
+            'users_group_member.visit_card',
+            'users_group_member.user_id',
+            'users.avatar',
+            'users.nickname',
+            'users.gender',
+            'users.motto',
+        ])
+                                   ->leftJoin('users', 'users.id', '=', 'users_group_member.user_id')
+                                   ->where([
+                                       ['users_group_member.group_id', '=', $groupId],
+                                       ['users_group_member.status', '=', 0],
+                                   ])->orderBy('is_manager', 'desc')->get()->toArray();
+        return [
+            'code' => 1,
+            'data' => [
+                'members' => $members
+            ]
+        ];
+    }
+
+    /**
+     * 获取群组公告列表
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return array|mixed
+     */
+    public function getGroupNotices(int $uid, int $groupId)
+    {
+        if (empty($uid) || empty($groupId)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!UsersGroup::isMember($groupId, $uid)) {
+            return ['code' => 0, 'msg' => '非法操作'];
+        }
+        $rows = UsersGroupNotice::leftJoin('users', 'users.id', '=', 'users_group_notice.user_id')
+                                ->where([['users_group_notice.group_id', '=', $groupId], ['users_group_notice.is_delete', '=', 0]])
+                                ->orderBy('users_group_notice.id', 'desc')
+                                ->get([
+                                    'users_group_notice.id',
+                                    'users_group_notice.user_id',
+                                    'users_group_notice.title',
+                                    'users_group_notice.content',
+                                    'users_group_notice.created_at',
+                                    'users_group_notice.updated_at',
+                                    'users.avatar',
+                                    'users.nickname',
+                                ])->toArray();
+        return ['code' => 1, 'data' => $rows];
+    }
+
+    /**
+     * 编辑群公告
+     *
+     * @param int    $uid
+     * @param int    $noticeid
+     * @param int    $groupId
+     * @param string $title
+     * @param string $content
+     *
+     * @return array|mixed
+     */
+    public function editNotice(int $uid, int $noticeid, int $groupId, string $title, string $content)
+    {
+        if (empty($uid) || empty($groupId) || empty($title) || empty($content)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!UsersGroup::isManager($uid, $groupId)) {
+            return ['code' => 0, 'msg' => '非管理员禁止操作...'];
+        }
+        // 判断是否是新增数据
+        if (empty($noticeid)) {
+            $result = UsersGroupNotice::create([
+                'group_id'   => $groupId,
+                'title'      => $title,
+                'content'    => $content,
+                'user_id'    => $uid,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            if (!$result) {
+                return ['code' => 0, 'msg' => '添加群公告信息失败...'];
+            }
+
+            // ... 推送群消息
+            return ['code' => 1, 'msg' => '添加群公告信息成功...'];
+        }
+        $ret = UsersGroupNotice::where('id', $noticeid)->update(['title' => $title, 'content' => $content, 'updated_at' => date('Y-m-d H:i:s')]);
+        return $ret ? ['code' => 1, 'msg' => '修改群公告信息成功...'] : ['code' => 0, 'msg' => '修改群公告信息成功...'];
+    }
+
+    /**
+     *  删除群公告(软删除)
+     *
+     * @param int $uid
+     * @param int $groupId
+     * @param int $noticeId
+     *
+     * @return array|mixed
+     */
+    public function deleteNotice(int $uid, int $groupId, int $noticeId)
+    {
+        if (empty($uid) || empty($groupId) || empty($noticeId)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        if (!UsersGroup::isManager($uid, $groupId)) {
+            return ['code' => 0, 'msg' => '非管理员禁止操作...'];
+        }
+        $result = UsersGroupNotice::where('id', $noticeId)->where('group_id', $groupId)->update(['is_delete' => 1, 'deleted_at' => date('Y-m-d H:i:s')]);
+        return $result ? ['code' => 1, 'msg' => '删除公告成功...'] : ['code' => 0, 'msg' => '删除公告失败...'];
     }
 }

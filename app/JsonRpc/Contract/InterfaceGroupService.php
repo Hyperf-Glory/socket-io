@@ -57,4 +57,69 @@ interface InterfaceGroupService
      */
     public function removeMember(int $groupId, int $uid, array $memberIds);
 
+    /**
+     * 设置用户群名片
+     *
+     * @param int    $uid
+     * @param int    $groupId
+     * @param string $visitCard
+     *
+     * @return mixed
+     */
+    public function setGroupCard(int $uid,int $groupId,string $visitCard);
+
+    /**
+     * 获取用户可邀请加入群组的好友列表
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return mixed
+     */
+    public function getInviteFriends(int $uid,int $groupId);
+
+    /**
+     * 获取群组成员列表
+     *
+     * @param int $groupId
+     *
+     * @param int $uid
+     *
+     * @return mixed
+     */
+    public function getGroupMembers(int $groupId,int $uid);
+
+    /**
+     * 获取群组公告列表
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return mixed
+     */
+    public function getGroupNotices(int $uid,int $groupId);
+
+    /**
+     * 创建/编辑群公告
+     *
+     * @param int    $uid
+     * @param int    $noticeid
+     * @param int    $groupId
+     * @param string $title
+     * @param string $content
+     *
+     * @return mixed
+     */
+    public function editNotice(int $uid,int $noticeid,int $groupId,string $title,string $content);
+
+    /**
+     * 删除群公告(软删除)
+     *
+     * @param int $uid
+     * @param int $groupId
+     * @param int $noticeId
+     *
+     * @return mixed
+     */
+    public function deleteNotice(int $uid,int $groupId,int $noticeId);
 }

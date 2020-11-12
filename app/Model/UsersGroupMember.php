@@ -42,4 +42,16 @@ class UsersGroupMember extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'group_id' => 'integer', 'user_id' => 'integer', 'group_owner' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
+
+    /**
+     * 获取聊天群成员ID
+     *
+     * @param int $groupId
+     *
+     * @return mixed
+     */
+    public static function getGroupMemberIds(int $groupId)
+    {
+        return UsersGroupMember::where('group_id', $groupId)->where('status', 0)->pluck('user_id')->toArray();
+    }
 }
