@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="3a672aa2-550c-4b87-820d-bdde6dfa6d12" name="默认的" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Component/Proxy.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Component/Proxy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Controller/GroupController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Controller/GroupController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Helper/ValidateHelper.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Helper/ValidateHelper.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/Http.php" beforeDir="false" afterPath="$PROJECT_DIR$/test/Http.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -474,7 +478,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Component" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Middleware" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -484,20 +488,21 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="php.override.implement.member.chooser.php.doc" value="NONE" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/Middleware" />
+      <recent name="$PROJECT_DIR$/app/Component" />
+      <recent name="$PROJECT_DIR$/app/Cache" />
+      <recent name="$PROJECT_DIR$/app/Kernel/SocketIO" />
+      <recent name="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/JsonRpc" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/cloud/app/JsonRpc" />
       <recent name="$PROJECT_DIR$/cloud" />
-      <recent name="$PROJECT_DIR$/msg-service/app" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/app/Component" />
-      <recent name="$PROJECT_DIR$/app/Cache" />
-      <recent name="$PROJECT_DIR$/app/Kernel/SocketIO" />
-      <recent name="$PROJECT_DIR$/cloud/app/Kernel/Jwt" />
       <recent name="$PROJECT_DIR$/msg-service/app" />
     </key>
   </component>
@@ -554,7 +559,8 @@
       <workItem from="1604722137677" duration="4525000" />
       <workItem from="1604933491569" duration="3623000" />
       <workItem from="1604995206098" duration="1137000" />
-      <workItem from="1605004916751" duration="5057000" />
+      <workItem from="1605004916751" duration="5156000" />
+      <workItem from="1605064125477" duration="15635000" />
     </task>
     <servers />
   </component>
@@ -566,33 +572,37 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="283" y="23" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1440.832@0.23.1440.832" timestamp="1604329888223" />
-    <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser" timestamp="1604934352952">
-      <screen x="0" y="23" width="1440" height="832" />
+    <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser" timestamp="1605156989133">
+      <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603764119507" />
     <state x="524" y="119" key="#com.intellij.ide.util.MemberChooser/0.23.1440.832@0.23.1440.832" timestamp="1604934352952" />
     <state x="524" y="124" key="#com.intellij.ide.util.MemberChooser/0.23.1440.877@0.23.1440.877" timestamp="1604848079073" />
+    <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser/1920.262.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605156989133" />
     <state x="699" y="140" key="#com.intellij.ide.util.MemberChooser/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604381170035" />
     <state x="457" y="236" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1603443556009">
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="457" y="236" key="#com.intellij.ide.util.TreeClassChooserDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603443556009" />
-    <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1604308285633">
+    <state x="480" y="23" width="950" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1605150947976">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603708658487" />
-    <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1602863062398" />
+    <state x="360" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1440.832@0.23.1440.832" timestamp="1605107038720" />
+    <state x="480" y="23" width="950" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.262.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605150947976" />
     <state x="480" y="23" width="712" height="1012" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604308285633" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1605021724802">
-      <screen x="0" y="23" width="1440" height="832" />
-    </state>
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
-    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1605021724802" />
-    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605005181869" />
-    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604381152712" />
-    <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1604296601062">
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1605164523036">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603449113201" />
+    <state x="458" y="201" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1440.832@0.23.1440.832" timestamp="1605107086799" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605005181869" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.262.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605164523036" />
+    <state x="611" y="240" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604381152712" />
+    <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#" timestamp="1605092714638">
+      <screen x="0" y="23" width="1920" height="1012" />
+    </state>
+    <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#/1920.262.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605092714638" />
     <state x="649" y="464" key="#com.jetbrains.php.lang.intentions.PhpImportClassDialog#/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604296601062" />
     <state width="230" height="195" key="DatabaseViewActions_Filter" timestamp="1604329401448">
       <screen x="0" y="23" width="1440" height="832" />
@@ -622,13 +632,14 @@
       <screen x="0" y="23" width="1440" height="832" />
     </state>
     <state x="607" y="162" key="NewPhpClassDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603710747446" />
-    <state x="733" y="438" key="NewPhpFileDialog" timestamp="1605006382993">
+    <state x="733" y="438" key="NewPhpFileDialog" timestamp="1605156748655">
       <screen x="0" y="23" width="1920" height="1012" />
     </state>
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832/-1920.-16.1920.1057@0.23.1440.832" timestamp="1603882822423" />
     <state x="550" y="365" key="NewPhpFileDialog/0.23.1440.832@0.23.1440.832" timestamp="1604412725178" />
     <state x="550" y="383" key="NewPhpFileDialog/0.23.1440.877@0.23.1440.877" timestamp="1604848047348" />
     <state x="733" y="438" key="NewPhpFileDialog/1920.141.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605006382993" />
+    <state x="733" y="438" key="NewPhpFileDialog/1920.262.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1605156748655" />
     <state x="733" y="439" key="NewPhpFileDialog/1920.62.1440.877/0.23.1920.1012@0.23.1920.1012" timestamp="1604401104665" />
     <state x="221" y="76" key="SettingsEditor" timestamp="1603434633401">
       <screen x="0" y="23" width="1440" height="832" />

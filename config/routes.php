@@ -12,11 +12,12 @@ declare(strict_types = 1);
  */
 
 use App\Milddleware\AuthMiddleware;
+use App\Milddleware\HttpAuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
-/** ---------------------- HTTP鉴权 -------------------------- */
+/** ---------------------- HTTP-Auth -------------------------- */
 Router::addGroup('/api/auth/', function ()
 {
     // ------- 鉴权 ----------//
@@ -25,6 +26,16 @@ Router::addGroup('/api/auth/', function ()
     Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
 });
 
+/** ----------------------  结束   ------------------------------------ */
+/** --------------------- HTTP-Group -------------------------- */
+Router::addGroup('/api/group/', function ()
+{
+    Router::post('create', 'App\Controller\GroupController@create');
+    Router::post('detail', 'App\Controller\GroupController@detail');
+    Router::post('editDetail', 'App\Controller\GroupController@editDetail');
+}, [
+    'middleware' => [HttpAuthMiddleware::class]
+]);
 /** ----------------------  结束   ------------------------------------ */
 Router::addServer('ws', function ()
 {

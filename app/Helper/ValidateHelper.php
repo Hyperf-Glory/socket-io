@@ -2,6 +2,8 @@
 
 namespace App\Helper;
 
+use App\Component\MessageParser;
+
 class ValidateHelper
 {
 
@@ -91,7 +93,7 @@ class ValidateHelper
             return false;
         }
 
-        @json_decode($val);
+        MessageParser::decode($val);
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
