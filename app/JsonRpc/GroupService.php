@@ -382,4 +382,51 @@ class GroupService implements InterfaceGroupService
         $result = UsersGroupNotice::where('id', $noticeId)->where('group_id', $groupId)->update(['is_delete' => 1, 'deleted_at' => date('Y-m-d H:i:s')]);
         return $result ? ['code' => 1, 'msg' => '删除公告成功...'] : ['code' => 0, 'msg' => '删除公告失败...'];
     }
+
+    /**
+     * 获取群信息接口
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return array|mixed
+     */
+    public function detail(int $uid, int $groupId)
+    {
+        if (empty($uid) || empty($groupId)) {
+            return ['code' => 0, 'msg' => '参数不正确...'];
+        }
+        /**
+         * @var UsersGroup|\App\Model\Users $groupInfo
+         */
+        $groupInfo = UsersGroup::leftJoin('users', 'users.id', '=', 'users_group.user_id')
+                               ->where('users_group.id', $groupId)->where('users_group.status', 0)->first([
+                'users_group.id',
+                'users_group.user_id',
+                'users_group.group_name',
+                'users_group.group_profile',
+                'users_group.avatar',
+                'users_group.created_at',
+                'users.nickname'
+            ]);
+        if (!$groupInfo) {
+            return ['code' => 1, 'data' => []];
+        }
+        $notice = UsersGroupNotice::where('group_id', $groupId)->where('is_delete', 0)->orderBy('id', 'desc')->first(['title', 'content']);
+        return [
+            'code' => 1,
+            'data' => [
+                'group_id'         => $groupInfo->id,
+                'group_name'       => $groupInfo->group_name,
+                'group_profile'    => $groupInfo->group_profile,
+                'avatar'           => $groupInfo->avatar,
+                'created_at'       => $groupInfo->created_at,
+                'is_manager'       => $groupInfo->user_id == $uid,
+                'manager_nickname' => $groupInfo->nickname,
+                'visit_card'       => UserGroupMember::visitCard($uid, $groupId),
+                'not_disturb'      => UserChatList::where('uid', $uid)->where('group_id', $groupId)->where('type', 2)->value('not_disturb') ?? 0,
+                'notice'           => $notice ? $notice->toArray() : []
+            ]
+        ];
+    }
 }

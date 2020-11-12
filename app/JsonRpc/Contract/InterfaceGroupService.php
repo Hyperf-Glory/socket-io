@@ -122,4 +122,14 @@ interface InterfaceGroupService
      * @return mixed
      */
     public function deleteNotice(int $uid,int $groupId,int $noticeId);
+
+    /**
+     * 获取群信息接口
+     *
+     * @param int $uid
+     * @param int $groupId
+     *
+     * @return mixed
+     */
+    public function detail(int $uid,int $groupId);
 }
