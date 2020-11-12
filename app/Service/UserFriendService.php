@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Service;
 
-use Hyperf\DB\DB;
+use Hyperf\DbConnection\Db;
 
 class UserFriendService
 {
@@ -30,8 +30,9 @@ from im_users_friends
 where user2 = ?
   and `status` = 1
 SQL;
-            return DB::query($sql, [
-                $uid,$uid
+            return Db::select($sql, [
+                $uid,
+                $uid
             ]);
         } catch (\Throwable $throwable) {
             throw new $throwable;
