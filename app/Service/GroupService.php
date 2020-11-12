@@ -89,8 +89,8 @@ class GroupService
                     'user_ids'        => implode(',', $friendIds)
                 ]);
                 Db::commit();
-                LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $group, 0);
-                return [true, ['record_id' => $result, 'group_id' => $group]];
+                LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $group->id, 0);
+                return [true, ['record_id' => $result, 'group_id' => $group->id]];
             }
         } catch (\Throwable $throwable) {
             Db::rollBack();

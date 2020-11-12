@@ -3,14 +3,21 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Component\Proxy;
 use App\JsonRpc\Contract\InterfaceGroupService;
 use App\JsonRpc\Contract\InterfaceUserService;
+use Hyperf\SocketIOServer\SocketIO;
+use Hyperf\Utils\Coroutine;
 
 class GroupController extends AbstractController
 {
+    /**
+     *创建群聊
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function create()
     {
-
         $params   = $this->request->all();
         $user     = $this->request->getAttribute('user');
         $friends  = array_filter(explode(',', $params['uids']));
@@ -21,6 +28,18 @@ class GroupController extends AbstractController
             'profile' => $params['group_profile'],
         ], array_unique($friends));
         //TODO 创建群组
+        if (isset($ret['code']) && $ret['code'] == 1) {
+            //群聊创建成功后需要创建聊天室并发送消息通知
+            Coroutine::create(function () use ($ret)
+            {
+                $proxy = $this->container->get(Proxy::class);
+                $proxy->groupNotify($ret['data']['record_id']);
+            });
+            return $this->response->success('创建群聊成功...', [
+                'group_id' => $ret['data']['group_id']
+            ]);
+        }
+        return $this->response->fail(305, '创建群聊失败，请稍后再试...');
     }
 
     public function detail()
