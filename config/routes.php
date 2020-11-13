@@ -30,9 +30,20 @@ Router::addGroup('/api/auth/', function ()
 Router::addGroup('/api/user/', function ()
 {
     Router::get('setting', 'App\Controller\UserController@setting');
-    Router::get('friendApplyNum', 'App\Controller\UserController@friendApplyNum');
-});
+    Router::get('friend-apply-num', 'App\Controller\UserController@friendApplyNum');
+}, [
+    'middleware' => [HttpAuthMiddleware::class]
+]);
 /** ----------------------  结束   ------------------------------------ */
+/** ---------------------- HTTP-Talk -------------------------- */
+Router::addGroup('/api/talk/', function ()
+{
+    Router::get('list', 'App\Controller\TalkController@list');
+}, [
+    'middleware' => [HttpAuthMiddleware::class]
+]);
+/** ----------------------  结束   ------------------------------------ */
+
 /** --------------------- HTTP-Group -------------------------- */
 Router::addGroup('/api/group/', function ()
 {

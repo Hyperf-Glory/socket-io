@@ -14,6 +14,7 @@ class TalkController extends AbstractController
     public function __construct(TalkService $service)
     {
         $this->service = $service;
+        parent::__construct();
     }
 
     /**
@@ -29,7 +30,7 @@ class TalkController extends AbstractController
             $this->service->updateUnreadTalkList($user['id'], $result);
         }
         // 获取聊天列表
-        $rows = $this->talkService->talks($user['id']);
+        $rows = $this->service->talks($user['id']);
         if ($rows) {
             $rows = ArrayHelper::sortByField($rows, 'updated_at');
         }

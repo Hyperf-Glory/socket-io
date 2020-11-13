@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Cache\ApplyNumCache;
-use App\JsonRpc\Contract\InterfaceUserService;
 use App\Service\UserService;
 
 class UserController extends AbstractController
@@ -14,10 +13,11 @@ class UserController extends AbstractController
     public function __construct(UserService $service)
     {
         $this->service = $service;
+        parent::__construct();
     }
 
     /**
-     * //TODO 11.13日需要完成的
+     *
      */
     public function setting()
     {

@@ -55,7 +55,8 @@ class HttpAuthMiddleware implements MiddlewareInterface
 
         if ($isValidToken) {
             $jwtData = di(InterfaceUserService::class)->decodeToken($token);
-            $user    = di(InterfaceUserService::class)->get($jwtData['id']);
+            $user    = di(InterfaceUserService::class)->get($jwtData['cloud_uid']);
+
             if (empty($user)) {
                 throw new \Exception(ErrorCode::AUTH_ERROR);
             }

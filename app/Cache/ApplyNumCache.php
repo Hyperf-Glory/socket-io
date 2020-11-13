@@ -28,7 +28,7 @@ class ApplyNumCache
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         }
-        return $redis->hget(self::KEY, $uid);
+        return $redis->hget(self::KEY, (string)$uid);
     }
 
     /**
@@ -45,7 +45,7 @@ class ApplyNumCache
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         }
 
-        return $redis->hincrby(self::KEY, $uid, 1);
+        return $redis->hincrby(self::KEY, (string)$uid, 1);
     }
 
     /**
@@ -59,6 +59,6 @@ class ApplyNumCache
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         }
-        $redis->get(env('CLOUD_REDIS'))->hdel(self::KEY, $uid);
+        $redis->get(env('CLOUD_REDIS'))->hdel(self::KEY, (string)$uid);
     }
 }
