@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Cache\ApplyNumCache;
 use App\JsonRpc\Contract\InterfaceUserService;
 use App\Service\UserService;
 
@@ -45,6 +46,9 @@ class UserController extends AbstractController
      */
     public function friendApplyNum()
     {
-
+        $user = $this->request->getAttribute('user');
+        return $this->response->success('success', [
+            'unread_num' => ApplyNumCache::get($user['id'])
+        ]);
     }
 }

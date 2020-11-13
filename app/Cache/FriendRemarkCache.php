@@ -21,7 +21,7 @@ class FriendRemarkCache
      * @param string                        $remark 好友备注
      * @param null|\Hyperf\Redis\RedisProxy $redis
      */
-    public static function set(int $uid, int $fid, string $remark, ?RedisProxy $redis)
+    public static function set(int $uid, int $fid, string $remark, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
@@ -39,7 +39,7 @@ class FriendRemarkCache
      *
      * @return string
      */
-    public static function get(int $uid, int $fid, ?RedisProxy $redis)
+    public static function get(int $uid, int $fid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));

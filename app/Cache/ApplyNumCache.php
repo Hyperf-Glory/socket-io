@@ -23,7 +23,7 @@ class ApplyNumCache
      *
      * @return string
      */
-    public static function get(int $uid, ?RedisProxy $redis)
+    public static function get(int $uid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
@@ -39,7 +39,7 @@ class ApplyNumCache
      *
      * @return int
      */
-    public static function setInc(int $uid, ?RedisProxy $redis)
+    public static function setInc(int $uid, ?RedisProxy $redis= null)
     {
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
@@ -54,7 +54,7 @@ class ApplyNumCache
      * @param int                           $uid
      * @param null|\Hyperf\Redis\RedisProxy $redis
      */
-    public static function del(int $uid, ?RedisProxy $redis)
+    public static function del(int $uid, ?RedisProxy $redis= null)
     {
         if (is_null($redis)) {
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
