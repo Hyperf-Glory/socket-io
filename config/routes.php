@@ -29,8 +29,8 @@ Router::addGroup('/api/auth/', function ()
 /** ---------------------- HTTP-User -------------------------- */
 Router::addGroup('/api/user/', function ()
 {
-    Router::get('setting', 'App\Controller\UserController@setting');
-    Router::get('friend-apply-num', 'App\Controller\UserController@friendApplyNum');
+    Router::get('setting', 'App\Controller\UserController@getUserSetting');
+    Router::get('friend-apply-num', 'App\Controller\UserController@getApplyUnreadNum');
     Router::get('friends', 'App\Controller\UserController@getUserFriends');
     Router::post('remove-friend', 'App\Controller\UserController@removeFriend');
     Router::get('user-groups', 'App\Controller\UserController@getUserGroups');
