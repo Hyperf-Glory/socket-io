@@ -26,7 +26,7 @@ class ApplyNumCache
     public static function get(int $uid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            $redis = self::redis();
         }
         return $redis->hget(self::KEY, (string)$uid);
     }
@@ -39,10 +39,10 @@ class ApplyNumCache
      *
      * @return int
      */
-    public static function setInc(int $uid, ?RedisProxy $redis= null)
+    public static function setInc(int $uid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            $redis = self::redis();
         }
 
         return $redis->hincrby(self::KEY, (string)$uid, 1);
@@ -54,11 +54,21 @@ class ApplyNumCache
      * @param int                           $uid
      * @param null|\Hyperf\Redis\RedisProxy $redis
      */
-    public static function del(int $uid, ?RedisProxy $redis= null)
+    public static function del(int $uid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            $redis = self::redis();
         }
         $redis->get(env('CLOUD_REDIS'))->hdel(self::KEY, (string)$uid);
+    }
+
+    /**
+     * 获取Redis连接
+     *
+     * @return RedisProxy
+     */
+    private static function redis()
+    {
+        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
     }
 }
