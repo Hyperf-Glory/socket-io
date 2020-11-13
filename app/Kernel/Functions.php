@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  * This file is part of Hyperf.
  *
@@ -9,6 +10,7 @@ declare(strict_types=1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
+
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
@@ -16,10 +18,12 @@ use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ServerRequestInterface;
 
-if (! function_exists('di')) {
+if (!function_exists('di')) {
     /**
      * Finds an entry of the container by its identifier and returns it.
+     *
      * @param null|string $id
+     *
      * @return mixed|\Psr\Container\ContainerInterface
      */
     function di($id = null)
@@ -33,35 +37,35 @@ if (! function_exists('di')) {
     }
 }
 
-if (! function_exists('format_throwable')) {
+if (!function_exists('format_throwable')) {
     /**
      * Format a throwable to string.
      *
      * @param \Throwable $throwable
      */
-    function format_throwable(Throwable $throwable): string
+    function format_throwable(Throwable $throwable) : string
     {
         return di()->get(FormatterInterface::class)->format($throwable);
     }
 }
 
-if (! function_exists('queue_push')) {
+if (!function_exists('queue_push')) {
     /**
      * Push a job to async queue.
      */
-    function queue_push(JobInterface $job, int $delay = 0, string $key = 'default'): bool
+    function queue_push(JobInterface $job, int $delay = 0, string $key = 'default') : bool
     {
         $driver = di()->get(DriverFactory::class)->get($key);
         return $driver->push($job, $delay);
     }
 }
-if (! function_exists('verifyIp')) {
+if (!function_exists('verifyIp')) {
     function verifyIp($realip)
     {
         return filter_var($realip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
     }
 }
-if (! function_exists('getClientIp')) {
+if (!function_exists('getClientIp')) {
     function getClientIp()
     {
         try {
@@ -89,5 +93,23 @@ if (! function_exists('getClientIp')) {
             return '0.0.0.0';
         }
         return '0.0.0.0';
+    }
+}
+
+/**
+ * 替换文本中的url 为 a标签
+ *
+ * @param string $str
+ *
+ * @return null|string|string[]
+ */
+if (!function_exists('replace_url_link')) {
+    function replace_url_link(string $str)
+    {
+        $re = '@((https|http)?://([-\w\.]+)+(:\d+)?(/([\w/_\-.#%]*(\?\S+)?)?)?)@';
+        return preg_replace_callback($re, function ($matches)
+        {
+            return sprintf('<a href="%s" target="_blank">%s</a>', trim($matches[0], '&quot;'), $matches[0]);
+        }, $str);
     }
 }
