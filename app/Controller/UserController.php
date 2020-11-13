@@ -3,14 +3,41 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\JsonRpc\Contract\InterfaceUserService;
+use App\Service\UserService;
+
 class UserController extends AbstractController
 {
+    private $service;
+
+    public function __construct(UserService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * //TODO 11.13日需要完成的
      */
     public function setting()
     {
-
+        $user = $this->request->getAttribute('user');
+        $info = $this->service->findById($user['id'], ['id', 'nickname', 'avatar', 'motto', 'gender']);
+        return $this->response->success('success', [
+            'user_info' => [
+                'uid'      => $info->id,
+                'nickname' => $info->nickname,
+                'avatar'   => $info->avatar,
+                'motto'    => $info->motto,
+                'gender'   => $info->gender,
+            ],
+            'setting'   => [
+                'theme_mode'            => '',
+                'theme_bag_img'         => '',
+                'theme_color'           => '',
+                'notify_cue_tone'       => '',
+                'keyboard_event_notify' => '',
+            ]
+        ]);
     }
 
     /**

@@ -25,7 +25,13 @@ Router::addGroup('/api/auth/', function ()
     Router::post('login', 'App\Controller\AuthController@login');
     Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
 });
-
+/** ----------------------  结束   ------------------------------------ */
+/** ---------------------- HTTP-User -------------------------- */
+Router::addGroup('/api/user/', function ()
+{
+    Router::get('setting', 'App\Controller\UserController@setting');
+    Router::get('friendApplyNum', 'App\Controller\UserController@friendApplyNum');
+});
 /** ----------------------  结束   ------------------------------------ */
 /** --------------------- HTTP-Group -------------------------- */
 Router::addGroup('/api/group/', function ()

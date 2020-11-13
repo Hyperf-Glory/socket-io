@@ -234,4 +234,7 @@ class UserService implements InterfaceUserService
     {
         return $this->jwt->getParserData($token);
     }
+
+
+
 }

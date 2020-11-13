@@ -130,4 +130,17 @@ class UserService
         return Hash::verify($input, $password);
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @param int   $uid
+     * @param array $field 查询字段
+     *
+     * @return mixed|Users
+     */
+    public function findById(int $uid, $field = ['*'])
+    {
+        return Users::where('id', $uid)->first($field);
+    }
+
 }
