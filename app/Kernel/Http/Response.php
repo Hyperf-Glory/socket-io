@@ -40,17 +40,34 @@ class Response
     public function success(string $message = '', $data = []) : PsrResponseInterface
     {
         return $this->response->json([
-            'code'    => 200,
-            'data'    => $data,
-            'message' => $message
+            'code' => 200,
+            'data' => $data,
+            'msg'  => $message
         ]);
     }
 
     public function fail($code, $message = '') : PsrResponseInterface
     {
         return $this->response->json([
-            'code'    => $code,
-            'message' => $message,
+            'code' => $code,
+            'msg'  => $message,
+        ]);
+    }
+
+    public function parmasError($message = '请求参数错误') : PsrResponseInterface
+    {
+        return $this->response->json([
+            'code' => 301,
+            'msg'  => $message,
+        ]);
+    }
+
+    public function error(string $msg, $data = []) : PsrResponseInterface
+    {
+        return $this->response->json([
+            'code' => 305,
+            'msg'  => $msg,
+            'data' => $data
         ]);
     }
 

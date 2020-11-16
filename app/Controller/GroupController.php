@@ -39,7 +39,7 @@ class GroupController extends AbstractController
                 'group_id' => $ret['data']['group_id']
             ]);
         }
-        return $this->response->fail(305, '创建群聊失败，请稍后再试...');
+        return $this->response->error('创建群聊失败，请稍后再试...');
     }
 
     public function detail()

@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Component\Hash;
 use App\Model\ArticleClass;
 use App\Model\Users;
+use App\Model\UsersChatList;
 use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
 use Hyperf\Di\Annotation\Inject;
@@ -141,6 +142,40 @@ class UserService
     public function findById(int $uid, $field = ['*'])
     {
         return Users::where('id', $uid)->first($field);
+    }
+
+    /**
+     * 获取用户所在的群聊
+     *
+     * @param int $uid 用户ID
+     * @return mixed
+     */
+    public function getUserChatGroups(int $uid)
+    {
+        $items = UsersGroupMember::select(['users_group.id', 'users_group.group_name', 'users_group.avatar', 'users_group.group_profile', 'users_group.user_id as group_user_id'])
+                                ->join('users_group', 'users_group.id', '=', 'users_group_member.group_id')
+                                ->where([
+                                    ['users_group_member.user_id', '=', $uid],
+                                    ['users_group_member.status', '=', 0]
+                                ])
+                                ->orderBy('id', 'desc')->get()->toarray();
+
+        foreach ($items as $key => $item) {
+            // 判断当前用户是否是群主
+            $items[$key]['isGroupLeader'] = $item['group_user_id'] == $uid;
+
+            //删除无关字段
+            unset($items[$key]['group_user_id']);
+
+            // 是否消息免打扰
+            $items[$key]['not_disturb'] = UsersChatList::where([
+                ['uid', '=', $uid],
+                ['type', '=', 2],
+                ['group_id', '=', $item['id']]
+            ])->value('not_disturb');
+        }
+
+        return $items;
     }
 
 }

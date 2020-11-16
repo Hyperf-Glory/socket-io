@@ -18,7 +18,7 @@ class AuthController extends AbstractController
     {
         $params = $this->request->all();
         if (!ValidateHelper::isPhone($params['mobile'])) {
-            return $this->response->fail(301, '手机号格式不正确...');
+            return $this->response->parmasError('手机号格式不正确...');
         }
         $rpcUser = $this->container->get(InterfaceUserService::class);
         $ret     = $rpcUser->register(
@@ -30,7 +30,7 @@ class AuthController extends AbstractController
         if (isset($ret['code']) && $ret['code'] == 1) {
             return $this->response->success('账号注册成功!');
         }
-        return $this->response->fail(301, $ret['msg']);
+        return $this->response->error($ret['msg']);
     }
 
     /**
@@ -41,7 +41,7 @@ class AuthController extends AbstractController
     {
         $params = $this->request->all();
         if (!ValidateHelper::isPhone($params['mobile'])) {
-            return $this->response->fail(301, '手机号格式不正确...');
+            return $this->response->parmasError('手机号格式不正确...');
         }
         $rpcUser = $this->container->get(InterfaceUserService::class);
         $ret     = $rpcUser->login($params['mobile'], $params['password']);
@@ -52,7 +52,7 @@ class AuthController extends AbstractController
                 'userInfo'  => $ret['user_info']
             ]);
         }
-        return $this->response->fail(301, $ret['msg'] ?? '登录失败...');
+        return $this->response->error($ret['msg'] ?? '登录失败...');
     }
 
     /**
@@ -78,10 +78,10 @@ class AuthController extends AbstractController
         $mobile = $this->request->post('mobile', '');
         $type   = $this->request->post('type', '');
         if (!di(Sms::class)->isUsages($type)) {
-            return $this->response->fail(301, '验证码发送失败...');
+            return $this->response->error('验证码发送失败...');
         }
         if (!ValidateHelper::isPhone($mobile)) {
-            return $this->response->fail(301, '手机号格式不正确...');
+            return $this->response->error('手机号格式不正确...');
         }
 
         $rpcUser = $this->container->get(InterfaceUserService::class);
@@ -90,7 +90,7 @@ class AuthController extends AbstractController
         if (isset($data['code']) && $data['code'] == 1) {
             return $this->response->success('验证码发送成功!', $data);
         }
-        return $this->response->fail(301, $data['msg']);
+        return $this->response->error($data['msg']);
     }
 
     /**
@@ -108,6 +108,6 @@ class AuthController extends AbstractController
         if (isset($data['code']) && $data['code'] == 1) {
             return $this->response->success($data['msg']);
         }
-        return $this->response->fail(301, '重置密码失败...');
+        return $this->response->error('重置密码失败...');
     }
 }
