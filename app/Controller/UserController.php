@@ -104,5 +104,6 @@ class UserController extends AbstractController
             return $this->response->fail(301,'参数错误!');
         }
         //TODO 编辑个人资料
+        //待驾照拿到之后继续更新
     }
 }
