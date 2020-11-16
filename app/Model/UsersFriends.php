@@ -76,4 +76,37 @@ SQL;
 
         return $rows;
     }
+
+    /**
+     * 判断用户之间是否存在好友关系
+     *
+     * @param int $uid1
+     * @param int $uid2
+     *
+     * @return bool
+     */
+    public static function isFriend(int $uid1, int $uid2)
+    {
+        // 比较大小交换位置
+        if ($uid1 > $uid2) {
+            [$uid1, $uid2] = [$uid2, $uid1];
+        }
+
+        return self::where('user1', $uid1)->where('user2', $uid2)->where('status', 1)->exists();
+    }
+
+    /**
+     * 获取指定用户的所有朋友的用户ID
+     *
+     * @param int $user_id 指定用户ID
+     * @return array
+     */
+    public static function getFriendIds(int $user_id)
+    {
+        $sql = "SELECT user2 as uid from im_users_friends where user1 = {$user_id} and `status` = 1 UNION all SELECT user1 as uid from im_users_friends where user2 = {$user_id} and `status` = 1";
+        return array_map(function ($item) {
+            return $item->uid;
+        }, Db::select($sql));
+    }
+
 }
