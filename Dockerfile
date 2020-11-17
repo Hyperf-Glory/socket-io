@@ -58,23 +58,24 @@ RUN cd /tmp \
     && cd /tmp \
     && pecl install redis \
     && echo "extension=redis.so" > /etc/php7/conf.d/redis.ini
-RUN cd /tmp \
-    && wget https://github.com/alanxz/rabbitmq-c/archive/v0.10.0.tar.gz \
-    && mkdir -p amqp \
-    && tar -zxvf v0.10.0.tar.gz - C amqp --strip-components=1 \
-    && cd amqp \
-    && mkdir build && cd build \
-    && cmake .. \
-    && cmake --build . --target install
-RUN cd /tmp \
-    && wget https://pecl.php.net/get/amqp-1.10.2.tgz \
-    && tar -zxvf amqp-1.10.2.tgz \
-    && cd amqp-1.10.2 \
-    && phpize \
-    && ./configure --with-librabbitmq-dir=/usr/local \
-    && make \
-    && make install
-    && echo "extension=amqp.so" > /etc/php7/conf.d/amqp.ini
+
+#RUN cd /tmp \
+#    && curl -Sl https://github.com/alanxz/rabbitmq-c/archive/v0.10.0.tar.gz -o amqp.tar.gz \
+#    && mkdir -p amqp \
+#    && tar -zxvf amqp.tar.gz - C amqp --strip-components=1 \
+#    && cd amqp \
+#    && mkdir build && cd build \
+#    && cmake .. \
+#    && cmake --build . --target install
+#RUN cd /tmp \
+#    && wget https://pecl.php.net/get/amqp-1.10.2.tgz \
+#    && tar -zxvf amqp-1.10.2.tgz \
+#    && cd amqp-1.10.2 \
+#    && phpize \
+#    && ./configure --with-librabbitmq-dir=/usr/local \
+#    && make \
+#    && make install \
+#    && echo "extension=amqp.so" > /etc/php7/conf.d/amqp.ini
     # php info
 RUN php -v \
     && php -m \
