@@ -10,7 +10,7 @@ class Sms
     /**
      * 短信验证码用途渠道
      */
-    const SMS_USAGE = [
+    public const SMS_USAGE = [
         'user_register',     // 注册账号
         'forget_password',   // 找回密码验
         'change_mobile',     // 修改手机
@@ -32,7 +32,7 @@ class Sms
      *
      * @return string
      */
-    private function getKey(string $type, string $mobile)
+    private function getKey(string $type, string $mobile) : string
     {
         return "sms_code:{$type}:{$mobile}";
     }
@@ -46,11 +46,11 @@ class Sms
      *
      * @return bool
      */
-    public function check(string $type, string $mobile, string $code)
+    public function check(string $type, string $mobile, string $code) : bool
     {
         $smsCode = $this->redis()->get($this->getKey($type, $mobile));
 
-        return $smsCode == $code;
+        return $smsCode === $code;
     }
 
     /**
@@ -82,7 +82,7 @@ class Sms
         }
 
         if (!$smsCode = $this->getCode($key)) {
-            $smsCode = mt_rand(100000, 999999);
+            $smsCode = random_int(100000, 999999);
         }
 
         // 设置短信验证码
@@ -146,7 +146,7 @@ class Sms
      *
      * @return array
      */
-    public function filter(string $usage, string $mobile)
+    public function filter(string $usage, string $mobile) : array
     {
         return [
             true,
@@ -164,7 +164,7 @@ class Sms
      *
      * @return bool
      */
-    public function isUsages(string $usage)
+    public function isUsages(string $usage) : bool
     {
         return in_array($usage, self::SMS_USAGE);
     }

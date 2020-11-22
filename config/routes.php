@@ -43,7 +43,6 @@ Router::addGroup('/api/user/', function ()
     Router::post('handle-friend-apply', 'App\Controller\UserController@handleFriendApply');
     Router::post('delete-friend-apply', 'App\Controller\UserController@deleteFriendApply');
     Router::get('friend-apply-records', 'App\Controller\UserController@getFriendApplyRecords');
-    Router::get('friend-apply-num', 'App\Controller\UserController@getApplyUnreadNum');
     Router::post('change-password', 'App\Controller\UserController@editUserPassword');
     Router::post('change-mobile', 'App\Controller\UserController@editUserMobile');
     Router::post('change-email', 'App\Controller\UserController@editUserEmail');
@@ -61,7 +60,6 @@ Router::addGroup('/api/talk/', function ()
     Router::post('delete', 'App\Controller\TalkController@delete');
     Router::post('topping', 'App\Controller\TalkController@topping');
     Router::post('set-not-disturb', 'App\Controller\TalkController@setNotDisturb');
-    Router::post('topping', 'App\Controller\TalkController@topping');
     Router::post('update-unread-num', 'App\Controller\TalkController@updateUnreadNum');
 
     Router::post('revoke-records', 'App\Controller\TalkController@revokeChatRecords');
