@@ -67,10 +67,10 @@ class MessageParser
      *
      * @return array
      */
-    public static function formatTalkMsg(array $data)
+    public static function formatTalkMsg(array $data) : array
     {
         // 缓存优化
-        if (!isset($data['nickname']) || !isset($data['avatar']) || empty($data['nickname']) || empty($data['avatar'])) {
+        if (!isset($data['nickname'],$data['avatar']) || empty($data['nickname']) || empty($data['avatar'])) {
             if (isset($data['user_id']) && !empty($data['user_id'])) {
                 /**
                  * @var Users $info
