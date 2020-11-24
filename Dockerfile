@@ -5,7 +5,7 @@
 # @contact  group@hyperf.io
 # @license  https://github.com/hyperf-cloud/hyperf/blob/master/LICENSE
 
-FROM registry.cn-hangzhou.aliyuncs.com/aliyun_docker_images/hyperf-chat-docker:1.0.3
+FROM registry.cn-hangzhou.aliyuncs.com/aliyun_docker_images/hyperf-chat-docker:1.0.8
 LABEL maintainer="Hyperf Developers <group@hyperf.io>" version="1.0" license="MIT" app.name="Hyperf"
 
 ##
