@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 return [
     'default' => [
-        'host' => 'host.docker.internal',
+        'host' => 'localhost',
         'port' => 5672,
         'user' => 'guest',
         'password' => 'guest',
