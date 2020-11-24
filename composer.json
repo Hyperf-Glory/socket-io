@@ -49,7 +49,8 @@
     "hyperf/nsq": "^2.0",
     "ext-json": "*",
     "hyperf/view": "^2.0",
-    "hyperf/view-engine": "^2.0"
+    "hyperf/view-engine": "^2.0",
+    "ext-pdo": "*"
   },
   "require-dev": {
     "swoole/ide-helper": "^4.5",
