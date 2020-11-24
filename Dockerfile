@@ -51,6 +51,8 @@ WORKDIR /opt/www
 # RUN composer install --no-dev --no-scripts
 
 COPY . /opt/www
+COPY ./.env.example /opt/www/.env
+
 RUN composer install --no-dev -o && php bin/hyperf.php
 
 EXPOSE [9501,9502,9503,9504]
