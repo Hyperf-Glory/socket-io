@@ -12,7 +12,7 @@ declare(strict_types=1);
 return [
     'default' => [
         'driver' => 'pdo',
-        'host' => env('DB_HOST', 'chat_mysql'),
+        'host' => env('DB_HOST', 'localhost'),
         'port' => env('DB_PORT', 3306),
         'database' => env('DB_DATABASE', 'hyperf'),
         'username' => env('DB_USERNAME', 'root'),

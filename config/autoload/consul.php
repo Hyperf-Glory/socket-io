@@ -10,5 +10,5 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 return [
-    'uri' => 'http://127.0.0.1:8500',
+    'uri' => env('CONSUL_HOST','http://127.0.0.1:8500'),
 ];

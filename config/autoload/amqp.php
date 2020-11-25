@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 return [
     'default' => [
-        'host' => env('AMQP_HOST','chat_rabbitmq'),
+        'host' => env('AMQP_HOST','localhost'),
         'port' => 5672,
         'user' => 'guest',
         'password' => 'guest',

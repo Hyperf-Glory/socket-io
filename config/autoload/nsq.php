@@ -12,7 +12,7 @@ declare(strict_types=1);
 return [
     'default' => [
         'enable' => true,
-        'host' => env('NSQ_HOST','chat_nsq'),
+        'host' => env('NSQ_HOST','localhost'),
         'port' => 4150,
         'pool' => [
             'min_connections' => 1,
