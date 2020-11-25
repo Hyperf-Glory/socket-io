@@ -25,13 +25,10 @@ return [
         'nsqd'   => [
             'port'     => 4151,
             'options'  => [
-                'base_uri' => env('NSQ_HOST', 'localhost'),
             ],
         ],
     ],
     'nsqd'   => [
-        'host'   => env('NSQ_HOST', 'localhost'),
-        'port'     => 4151,
         'options'  => [
             'base_uri' => env('NSQ_HOST', 'localhost'),
         ],
