@@ -12,7 +12,7 @@ declare(strict_types=1);
 return [
     'default' => [
         'enable' => true,
-        'host' => '127.0.0.1',
+        'host' => env('NSQ_HOST','127.0.0.1'),
         'port' => 4150,
         'pool' => [
             'min_connections' => 1,
