@@ -30,7 +30,7 @@ return [
     ],
     'nsqd'   => [
         'options'  => [
-            'base_uri' => env('NSQ_HOST', 'localhost'),
+            'base_uri' => env('NSQD_HOST', 'localhost'),
         ],
     ],
 ];
