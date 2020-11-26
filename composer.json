@@ -46,7 +46,7 @@
     "hyperf/rate-limit": "^2.0",
     "phpmailer/phpmailer": "^6.1",
     "hyperf/socketio-server": "^2.0",
-    "hyperf/nsq": "^2.0",
+    "hyperf/nsq": "2.0.x-dev",
     "ext-json": "*",
     "hyperf/view": "^2.0",
     "hyperf/view-engine": "^2.0",

@@ -70,8 +70,7 @@ class IndexController extends AbstractController
      */
     public function index()
     {
-        dump($this->request);
-
+        return 'hello world';
         //                for ($i=0;$i<10000;$i++){
         //                    $message = new ChatProducer("$i");
         //                    var_dump($this->producer->produce($message));
