@@ -5,7 +5,6 @@ namespace App\Component;
 
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Redis\RedisProxy;
-use Hyperf\View\Engine\EngineInterface;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail
