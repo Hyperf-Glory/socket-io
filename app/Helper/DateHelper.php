@@ -25,9 +25,9 @@ class DateHelper
         $sec = time() - intval($time);
         $hour = floor($sec / 3600);
 
-        if ($hour == 0) {
+        if ($hour === 0) {
             $min = floor($sec / 60);
-            if ($min == 0) {
+            if ($min === 0) {
                 $res = '刚刚';
             } else {
                 $res = $min . '分钟前';

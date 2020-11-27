@@ -50,10 +50,8 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         try {
             $isValidToken = false;
             $token        = $request->get['token'] ?? '';
-            if (strlen($token) > 0) {
-                if (di(InterfaceUserService::class)->checkToken($token)) {
-                    $isValidToken = true;
-                }
+            if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
+                $isValidToken = true;
             }
             if (!$isValidToken) {
                 throw new TokenValidException('Token authentication does not pass', 401);
@@ -93,7 +91,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             foreach ($groups as $group) {
                 $this->getAdapter()->add(
                     $this->sidProvider->getSid($request->fd),
-                    'room' . (string)$group);
+                    'room' . $group);
             }
         }
         if (!$isOnline) {

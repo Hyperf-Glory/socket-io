@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Cache\ApplyNumCache;
 use App\Cache\FriendRemarkCache;
+use App\Component\Mail;
 use App\Component\Sms;
 use App\Helper\ValidateHelper;
 use App\Kernel\SocketIO;
@@ -14,6 +15,7 @@ use App\Model\UsersFriends;
 use App\Service\UserFriendService;
 use App\Service\UserService;
 use Hyperf\Redis\RedisFactory;
+use Psr\Http\Message\ResponseInterface;
 
 class UserController extends AbstractController
 {
@@ -372,9 +374,17 @@ class UserController extends AbstractController
     /**
      * //TODO 发送绑定邮箱的验证码
      */
-    public function sendChangeEmailCode()
+    public function sendChangeEmailCode() : ResponseInterface
     {
-
+        $email = $this->request->post('email');
+        if (empty($email)) {
+            return $this->response->parmasError('参数错误!');
+        }
+        $bool = di(Mail::class)->send(Mail::CHANGE_EMAIL, '绑定邮箱', $email);
+        if ($bool) {
+            return $this->response->success('验证码发送成功...');
+        }
+        return $this->response->error('验证码发送失败...');
     }
 
     /**
@@ -384,13 +394,27 @@ class UserController extends AbstractController
      */
     public function editUserEmail()
     {
-        $email = $this->request->post('email', '');
+        $email      = $this->request->post('email', '');
         $email_code = $this->request->post('email_code', '');
-        $password = $this->request->post('password', '');
+        $password   = $this->request->post('password', '');
         if (empty($email) || empty($email_code) || empty($password)) {
             return $this->response->parmasError();
         }
         //TODO 验证邮箱
+        $mail = di(Mail::class);
+        if (!$mail->check(Mail::CHANGE_EMAIL, $email, $email_code)) {
+            return $this->response->error('验证码填写错误...');
+        }
+        $user      = $this->request->getAttribute('user');
+        $upassword = Users::where('id', $user['id'] ?? 0)->value('password');
+        if (!$this->service->checkPassword($password, $upassword)) {
+            return $this->response->error('账号密码验证失败...');
+        }
+        $bool = Usesr::where('id', $user['id'] ?? 0)->update(['email' => $email]);
+        if ($bool) {
+            $mail->delCode(Mail::CHANGE_EMAIL, $email);
+        }
+        return $bool ? $this->response->success('邮箱设置成功...') : $this->response->error('邮箱设置失败...');
     }
 
 }
