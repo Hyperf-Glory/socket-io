@@ -67,13 +67,13 @@ class Mail
     public function send(string $type, string $title, string $email) : bool
     {
         $key = $this->getKey($type, $email);
-        if (!$sms_code = $this->getCode($key)) {
-            $sms_code = random_int(100000, 999999);
+        if (!$smsCode = $this->getCode($key)) {
+            $smsCode = random_int(100000, 999999);
         }
 
-        $this->setCode($key, $sms_code);
+        $this->setCode($key, (string)$smsCode);
         try {
-            $view = $this->view(config('view.engine'), 'emails.verify-code', ['service_name' => $title, 'sms_code' => $sms_code, 'domain' => config('config.domain.web_url')]);
+            $view = $this->view(config('view.engine'), 'emails.verify-code', ['service_name' => $title, 'sms_code' => $smsCode, 'domain' => config('config.domain.web_url')]);
             return $this->mail($email, $title, $view);
         } catch (\Exception $e) {
             return false;
@@ -122,17 +122,18 @@ class Mail
      */
     private function mail(string $address, string $subject, string $view) : bool
     {
+        $config = config('mail');
         $mail          = new PHPMailer(); //PHPMailer对象
         $mail->CharSet = 'UTF-8'; //设定邮件编码，默认ISO-8859-1，如果发中文此项必须设置，否则乱码
         $mail->IsSMTP(); // 设定使用SMTP服务
         $mail->SMTPDebug  = 0; // 关闭SMTP调试功能
         $mail->SMTPAuth   = true; // 启用 SMTP 验证功能
         $mail->SMTPSecure = 'ssl'; // 使用安全协议
-        $mail->Host       = 'smtp.163.com'; // SMTP 服务器
-        $mail->Port       = '994'; // SMTP服务器的端口号
-        $mail->Username   = ''; // SMTP服务器用户名
-        $mail->Password   = ''; // SMTP服务器密码
-        $mail->SetFrom('', ''); // 邮箱，昵称
+        $mail->Host       = $config['host']; // SMTP 服务器
+        $mail->Port       = $config['port'];; // SMTP服务器的端口号
+        $mail->Username   = $config['username']; // SMTP; // SMTP服务器用户名
+        $mail->Password   = $config['password']; // SMTP服务器密码
+        $mail->SetFrom($config['from'], $config['name']); // 邮箱，昵称
         $mail->Subject = $subject;
         $mail->MsgHTML($view);
         $mail->AddAddress($address); // 收件人

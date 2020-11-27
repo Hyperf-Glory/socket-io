@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Controller;
 
+use App\Component\Mail;
 use App\JsonRpc\Contract\InterfaceUserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Annotation\Controller;
@@ -58,5 +59,14 @@ class TestOneController extends AbstractController
         $ret = $user->get(1);
         return $ret;
 //        dump($ret);
+    }
+
+
+    /**
+     * @RequestMapping(path="mail")
+     */
+    public function mail(){
+        $mail = di(Mail::class);
+        dump($mail ->send(Mail::CHANGE_EMAIL, '绑定邮箱', '213213@qq.com'));
     }
 }
