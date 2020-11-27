@@ -230,7 +230,7 @@ class GroupService implements InterfaceGroupService
      */
     public function getInviteFriends(int $uid, int $groupId)
     {
-        if (empty($uid) || empty($groupId) || empty($visitCard)) {
+        if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
         }
         if (!ValidateHelper::isInteger($groupId) || !ValidateHelper::isInteger($uid)) {
@@ -240,7 +240,7 @@ class GroupService implements InterfaceGroupService
         if ($groupId > 0 && $friends) {
             if ($ids = UsersGroupMember::getGroupMemberIds($groupId)) {
                 foreach ($friends as $k => $item) {
-                    if (in_array($item['id'], $ids)) {
+                    if (in_array($item['id'], $ids, true)) {
                         unset($friends[$k]);
                     }
                 }

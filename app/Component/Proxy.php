@@ -22,7 +22,7 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function groupNotify(int $record)
+    public function groupNotify(int $record) : void
     {
         /**
          * @var ChatRecords $recordInfo
@@ -35,7 +35,7 @@ class Proxy
             'created_at'
         ]);
         if (!$recordInfo) {
-            throw new \Exception('fail');
+            throw new \RuntimeException('fail');
         }
         /**
          * @var ChatRecordsInvite $notifyInfo
@@ -48,7 +48,7 @@ class Proxy
         ]);
 
         if (!$notifyInfo) {
-            throw new \Exception('fail');
+            throw new \RuntimeException('fail');
         }
 
         /**
@@ -87,18 +87,18 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function revokeRecords(int $record)
+    public function revokeRecords(int $record) : void
     {
         /**
          * @var ChatRecords $records
          */
         $records = ChatRecords::where('id', $record)->first(['id', 'source', 'user_id', 'receive_id']);
         if (!$records) {
-            throw new \Exception('数据不存在...');
+            throw new \RuntimeException('数据不存在...');
         }
         $io = di(SocketIO::class);
         //TODO 好友或群聊推送
-        if ($records->source == 1) {
+        if ($records->source === 1) {
             //好友推送
             $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$records->receive_id);
@@ -120,7 +120,7 @@ class Proxy
      *
      * @param int $records
      */
-    public function forwardChatRecords(int $records)
+    public function forwardChatRecords(int $records) : void
     {
         $rows = ChatRecordsForward::leftJoin('users', 'users.id', '=', 'chat_records_forward.user_id')
                                   ->leftJoin('chat_records', 'chat_records.id', '=', 'chat_records_forward.record_id')
@@ -141,7 +141,7 @@ class Proxy
                                   ]);
         $io   = di(SocketIO::class);
         foreach ($rows as $records) {
-            if ($records->source == 1) {
+            if ($records->source === 1) {
                 //好友推送
                 $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
                 $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$records->receive_id);
@@ -178,7 +178,7 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function pushTalkMessage(int $record)
+    public function pushTalkMessage(int $record) : void
     {
         /**
          * @var ChatRecords| Users $info
@@ -196,24 +196,24 @@ class Proxy
             'users.avatar as avatar',
         ]);
         if (!$info) {
-            throw new \Exception('fail');
+            throw new \RuntimeException('fail');
         }
         $io        = di(SocketIO::class);
         $file      = [];
         $codeBlock = [];
-        if ($info->msg_type == 2) {
+        if ($info->msg_type === 2) {
             $file = ChatRecordsFile::where('record_id', $info->id)->first(['id', 'record_id', 'user_id', 'file_source', 'file_type', 'save_type', 'original_name', 'file_suffix', 'file_size', 'save_dir']);
             $file = $file ? $file->toArray() : [];
             if ($file) {
                 //TODO 处理静态资源(图片,视频)
                 $file['file_url'] = config('image_url') . $file['save_dir'];
             }
-        } elseif ($info->msg_type == 5) {
+        } elseif ($info->msg_type === 5) {
             $codeBlock = ChatRecordsCode::where('record_id', $info->id)->first(['record_id', 'code_lang', 'code']);
             $codeBlock = $codeBlock ? $codeBlock->toArray() : [];
         }
 
-        if ($info->source == 1) {
+        if ($info->source === 1) {
             //好友推送
             $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$info->receive_id);
