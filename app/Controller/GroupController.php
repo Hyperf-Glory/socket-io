@@ -5,12 +5,11 @@ namespace App\Controller;
 
 use App\Component\Proxy;
 use App\JsonRpc\Contract\InterfaceGroupService;
-use App\JsonRpc\Contract\InterfaceUserService;
 use App\Model\UsersChatList;
+use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Model\UsersGroupMember;
 use App\Model\UsersGroupNotice;
-use Hyperf\SocketIOServer\SocketIO;
 use Hyperf\Utils\Coroutine;
 use App\Helper\ValidateHelper;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
@@ -175,38 +174,127 @@ class GroupController extends AbstractController
         return $this->response->error('群聊解散失败...');
     }
 
-    public function secede()
+    public function secede() : PsrResponseInterface
     {
-
+        $groupId = $this->request->post('group_id');
+        if (!ValidateHelper::isInteger($groupId)) {
+            return $this->response->parmasError();
+        }
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $user     = $this->request->getAttribute('user');
+        $ret      = $rpcGroup->quit($user['id'] ?? 0, $groupId);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            Coroutine::create(function () use ($ret)
+            {
+                $proxy = $this->container->get(Proxy::class);
+                $proxy->groupNotify($ret['data']['record_id']);
+            });
+            return $this->response->success('已成功退出群聊...');
+        }
+        return $this->response->error('退出群聊失败...');
     }
 
-    public function setGroupCard()
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function setGroupCard() : PsrResponseInterface
     {
-
+        $groupId    = $this->request->post('group_id');
+        $visit_card = $this->request->post('visit_card');
+        if (empty($visit_card) || !ValidateHelper::isInteger($groupId)) {
+            return $this->response->parmasError();
+        }
+        $user     = $this->request->getAttribute('user');
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->setGroupCard($user['id'] ?? 0, $groupId, $visit_card);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('设置成功');
+        }
+        return $this->response->error('设置失败');
     }
 
-    public function getInviteFriends()
+    public function getInviteFriends() : PsrResponseInterface
     {
-
+        $group_id = $this->request->get('group_id', 0);
+        $user     = $this->request->getAttribute('user');
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->getInviteFriends($user['id'] ?? 0, $group_id);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('success', $ret['data']['friends']);
+        }
+        return $this->response->error('获取信息失败...');
     }
 
-    public function getGroupMembers()
+    public function getGroupMembers() : PsrResponseInterface
     {
-
+        $group_id = $this->request->get('group_id', 0);
+        $user     = $this->request->getAttribute('user');
+        // 判断用户是否是群成员
+        if (!UsersGroup::isMember($group_id, $user['id'] ?? 0)) {
+            return $this->response->fail(403, '非法操作');
+        }
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->getGroupMembers($group_id, $user['id'] ?? 0);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('success', $ret['data']['members']);
+        }
+        return $this->response->error('获取信息失败...');
     }
 
-    public function getGroupNotices()
+    public function getGroupNotices() : PsrResponseInterface
     {
-
+        $group_id = $this->request->get('group_id', 0);
+        $user     = $this->request->getAttribute('user');
+        // 判断用户是否是群成员
+        if (!UsersGroup::isMember($group_id, $user['id'] ?? 0)) {
+            return $this->response->fail(403, '非法操作');
+        }
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->getGroupMembers($group_id, $user['id'] ?? 0);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('success', $ret['data']['rows']);
+        }
+        return $this->response->error('获取信息失败...');
     }
 
-    public function editNotice()
+    public function editNotice() : PsrResponseInterface
     {
-
+        $data = $this->request->hasInput(['notice_id', 'group_id', 'title', 'content']);
+        if (count($data) !== 4 || !ValidateHelper::isInteger($data['notice_id'])) {
+            return $this->response->parmasError();
+        }
+        $user = $this->request->getAttribute('user');
+        // 判断用户是否是管理员
+        if (!UsersGroup::isManager($user['id'] ?? 0, $data['group_id'])) {
+            return $this->response->fail(305, '非管理员禁止操作...');
+        }
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->editNotice($user['id'] ?? 0, $data['notice_id'], $data['group_id'], $data['title'], $data['content']);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('修改群公告信息成功...');
+        }
+        return $this->response->error('修改群公告信息失败...');
     }
 
-    public function deleteNotice()
+    public function deleteNotice() : PsrResponseInterface
     {
+        $group_id  = $this->request->post('group_id');
+        $notice_id = $this->request->post('notice_id');
 
+        if (!ValidateHelper::isInteger($group_id) || !ValidateHelper::isInteger($notice_id)) {
+            return $this->response->parmasError();
+        }
+        $user = $this->request->getAttribute('user');
+        // 判断用户是否是管理员
+        if (!UserGroup::isManager($user['id'] ?? 0, $group_id)) {
+            return $this->response->fail(305, 'fail');
+        }
+        $rpcGroup = $this->container->get(InterfaceGroupService::class);
+        $ret      = $rpcGroup->deleteNotice($user['id'] ?? 0, $group_id, $notice_id);
+        if (isset($ret['code']) && $ret['code'] === 1) {
+            return $this->response->success('删除公告成功...');
+        }
+        return $this->response->error('删除公告失败...');
     }
+
 }

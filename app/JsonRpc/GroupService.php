@@ -421,7 +421,7 @@ class GroupService implements InterfaceGroupService
                 'group_profile'    => $groupInfo->group_profile,
                 'avatar'           => $groupInfo->avatar,
                 'created_at'       => $groupInfo->created_at,
-                'is_manager'       => $groupInfo->user_id == $uid,
+                'is_manager'       => $groupInfo->user_id === $uid,
                 'manager_nickname' => $groupInfo->nickname,
                 'visit_card'       => UserGroupMember::visitCard($uid, $groupId),
                 'not_disturb'      => UserChatList::where('uid', $uid)->where('group_id', $groupId)->where('type', 2)->value('not_disturb') ?? 0,
