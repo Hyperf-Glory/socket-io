@@ -75,12 +75,11 @@ class TalkService
             $data['online']      = 0;
             $data['not_disturb'] = $item['not_disturb'];
             $data['is_top']      = $item['is_top'];
-
-            if ($item['type'] == 1) {
+            $redis               = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            if ($item['type'] === 1) {
                 $data['name']       = $item['nickname'];
                 $data['avatar']     = $item['user_avatar'];
                 $data['unread_num'] = di(UnreadTalk::class)->get($uid, $item['friend_id']);
-                $redis              = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
                 $data['online']     = $redis->hGet(SocketIO::HASH_UID_TO_FD_PREFIX, (string)$item['friend_id']);
 
                 $remark = FriendRemarkCache::get($uid, $item['friend_id'], $redis);
@@ -104,7 +103,7 @@ class TalkService
                 $data['avatar'] = $item['group_avatar'];
             }
 
-            $records = LastMsgCache::get($item['type'] == 1 ? $item['friend_id'] : $item['group_id'], $item['type'] == 1 ? $uid : 0, $redis);
+            $records = LastMsgCache::get($item['type'] === 1 ? $item['friend_id'] : $item['group_id'], $item['type'] === 1 ? $uid : 0, $redis);
 
             if ($records) {
                 $data['msg_text']   = $records['text'];
@@ -123,7 +122,7 @@ class TalkService
      * @param int $uid
      * @param     $data
      */
-    public function updateUnreadTalkList(int $uid, $data)
+    public function updateUnreadTalkList(int $uid, $data) : void
     {
         foreach ($data as $friend_id => $num) {
             UsersChatList::updateOrCreate([
@@ -145,7 +144,7 @@ class TalkService
      *
      * @return array
      */
-    public function handleChatRecords(array $rows)
+    public function handleChatRecords(array $rows) : array
     {
         if (empty($rows)) {
             return [];
