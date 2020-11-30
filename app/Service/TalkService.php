@@ -31,7 +31,7 @@ class TalkService
      *
      * @return array
      */
-    public function talks(int $uid)
+    public function talks(int $uid) : array
     {
         $filed = [
             'list.id',
@@ -60,7 +60,7 @@ class TalkService
             return [];
         }
 
-        $rows = array_map(function ($item) use ($uid)
+        $rows = array_map(static function ($item) use ($uid)
         {
             $data['id']          = $item['id'];
             $data['type']        = $item['type'];
@@ -93,7 +93,7 @@ class TalkService
                                         ->where('user1', ($uid < $item['friend_id']) ? $uid : $item['friend_id'])
                                         ->where('user2', ($uid < $item['friend_id']) ? $item['friend_id'] : $uid)->first();
                     if ($info) {
-                        $data['remark_name'] = ($info->user1 == $item['friend_id']) ? $info->user2_remark : $info->user1_remark;
+                        $data['remark_name'] = ($info->user1 === $item['friend_id']) ? $info->user2_remark : $info->user1_remark;
 
                         FriendRemarkCache::set($uid, $item['friend_id'], $data['remark_name'], $redis);
                     }
@@ -322,6 +322,9 @@ class TalkService
      */
     public function getForwardRecords(int $uid, int $record_id)
     {
+        /**
+         * @var ChatRecords $result
+         */
         $result = ChatRecords::where('id', $record_id)->first([
             'id',
             'source',
@@ -334,10 +337,10 @@ class TalkService
         ]);
 
         //判断是否有权限查看
-        if ($result->source == 1 && ($result->user_id != $uid && $result->receive_id != $uid)) {
+        if ($result->source === 1 && ($result->user_id !== $uid && $result->receive_id !== $uid)) {
             return [];
         } else {
-            if ($result->source == 2 && !UserGroup::isMember($result->receive_id, $uid)) {
+            if ($result->source === 2 && !UserGroup::isMember($result->receive_id, $uid)) {
                 return [];
             }
         }
@@ -379,7 +382,7 @@ class TalkService
      */
     public function removeRecords(int $uid, int $source, int $receive_id, array $record_ids)
     {
-        if ($source == 1) {//私聊信息
+        if ($source === 1) {//私聊信息
             $ids = ChatRecords::whereIn('id', $record_ids)->where(function ($query) use ($uid, $receive_id)
             {
                 $query->where([['user_id', '=', $uid], ['receive_id', '=', $receive_id]])->orWhere([['user_id', '=', $receive_id], ['receive_id', '=', $uid]]);
@@ -389,16 +392,16 @@ class TalkService
         }
 
         // 判断要删除的消息在数据库中是否存在
-        if (count($ids) != count($record_ids)) {
+        if (count($ids) !== count($record_ids)) {
             return false;
         }
 
         // 判读是否属于群消息并且判断是否是群成员
-        if ($source == 2 && !UserGroup::isMember($receive_id, $uid)) {
+        if ($source === 2 && !UserGroup::isMember($receive_id, $uid)) {
             return false;
         }
 
-        $data = array_map(function ($record_id) use ($uid)
+        $data = array_map(static function ($record_id) use ($uid)
         {
             return [
                 'record_id'  => $record_id,
@@ -418,7 +421,7 @@ class TalkService
      *
      * @return array
      */
-    public function revokeRecord(int $uid, int $record_id)
+    public function revokeRecord(int $uid, int $record_id) : array
     {
         /**
          * @var ChatRecords $result
@@ -433,15 +436,13 @@ class TalkService
             return [false, '已超过有效的撤回时间', []];
         }
 
-        if ($result->source == 1) {
-            if ($result->user_id != $uid && $result->receive_id != $uid) {
+        if ($result->source === 1) {
+            if ($result->user_id !== $uid && $result->receive_id !== $uid) {
                 return [false, '非法操作', []];
             }
-        } else {
-            if ($result->source == 2) {
-                if (!UserGroup::isMember($result->receive_id, $uid)) {
-                    return [false, '非法操作', []];
-                }
+        } elseif ($result->source === 2) {
+            if (!UserGroup::isMember($result->receive_id, $uid)) {
+                return [false, '非法操作', []];
             }
         }
 

@@ -11,7 +11,7 @@ use Hyperf\Redis\RedisProxy;
  */
 class FriendRemarkCache
 {
-    const KEY = 'hash:user:friend:remark:cache';
+    public const KEY = 'hash:user:friend:remark:cache';
 
     /**
      * 设置好友备注缓存
@@ -39,7 +39,7 @@ class FriendRemarkCache
      *
      * @return string
      */
-    public static function get(int $uid, int $fid, ?RedisProxy $redis = null)
+    public static function get(int $uid, int $fid, ?RedisProxy $redis = null) : string
     {
         if (is_null($redis)) {
             $redis = self::redis();
@@ -52,7 +52,7 @@ class FriendRemarkCache
      *
      * @return RedisProxy
      */
-    private static function redis()
+    private static function redis() : RedisProxy
     {
         return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
     }

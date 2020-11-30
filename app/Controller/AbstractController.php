@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  * This file is part of Hyperf.
  *
@@ -35,4 +35,13 @@ abstract class AbstractController
      * @var Response
      */
     protected $response;
+
+    /**
+     * @return int|mixed
+     */
+    public function uid()
+    {
+        $user = $this->request->getAttribute('user');
+        return $user['id'] ?? 0;
+    }
 }

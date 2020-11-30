@@ -118,9 +118,9 @@ class Proxy
     /**
      * 推送聊天记录转发消息
      *
-     * @param int $records
+     * @param array $records
      */
-    public function forwardChatRecords(int $records) : void
+    public function forwardChatRecords(array $records) : void
     {
         $rows = ChatRecordsForward::leftJoin('users', 'users.id', '=', 'chat_records_forward.user_id')
                                   ->leftJoin('chat_records', 'chat_records.id', '=', 'chat_records_forward.record_id')
@@ -140,31 +140,34 @@ class Proxy
                                       'chat_records_forward.text',
                                   ]);
         $io   = di(SocketIO::class);
-        foreach ($rows as $records) {
+        /**
+         * @var ChatRecords|Users|ChatRecordsForward $record
+         */
+        foreach ($rows as $record) {
             if ($records->source === 1) {
                 //好友推送
                 $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-                $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$records->receive_id);
+                $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$record->receive_id);
             } else {
                 //群聊推送
-                $client = 'room' . (string)$records->receive_id;
+                $client = 'room' . $record->receive_id;
             }
             $io->to($client)->emit('revoke_records', [
-                'send_user'    => $records->user_id,
-                'receive_user' => $records->receive_id,
-                'source_type'  => $records->source,
+                'send_user'    => $record->user_id,
+                'receive_user' => $record->receive_id,
+                'source_type'  => $record->source,
                 'data'         => PushMessageHelper::formatTalkMsg([
-                    'id'         => $records->id,
-                    'msg_type'   => $records->msg_type,
-                    'source'     => $records->source,
-                    'avatar'     => $records->avatar,
-                    'nickname'   => $records->nickname,
-                    "user_id"    => $records->user_id,
-                    "receive_id" => $records->receive_id,
-                    "created_at" => $records->created_at,
+                    'id'         => $record->id,
+                    'msg_type'   => $record->msg_type,
+                    'source'     => $record->source,
+                    'avatar'     => $record->avatar,
+                    'nickname'   => $record->nickname,
+                    "user_id"    => $record->user_id,
+                    "receive_id" => $record->receive_id,
+                    "created_at" => $record->created_at,
                     "forward"    => [
-                        'num'  => substr_count($records->records_id, ',') + 1,
-                        'list' => MessageParser::decode($records->text) ?? []
+                        'num'  => substr_count($record->records_id, ',') + 1,
+                        'list' => MessageParser::decode($record->text) ?? []
                     ]
                 ])
             ]);

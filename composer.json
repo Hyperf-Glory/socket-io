@@ -46,11 +46,12 @@
     "hyperf/rate-limit": "^2.0",
     "phpmailer/phpmailer": "^6.1",
     "hyperf/socketio-server": "^2.0",
-    "hyperf/nsq": "2.0.x-dev",
+    "hyperf/nsq": "^2.0.0",
     "ext-json": "*",
     "hyperf/view": "^2.0",
     "hyperf/view-engine": "^2.0",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "hyperf/filesystem": "^2.0"
   },
   "require-dev": {
     "swoole/ide-helper": "^4.5",

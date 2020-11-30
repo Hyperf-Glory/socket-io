@@ -11,6 +11,7 @@ declare(strict_types = 1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
+use App\Helper\StringHelper;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
@@ -107,9 +108,47 @@ if (!function_exists('replace_url_link')) {
     function replace_url_link(string $str)
     {
         $re = '@((https|http)?://([-\w\.]+)+(:\d+)?(/([\w/_\-.#%]*(\?\S+)?)?)?)@';
-        return preg_replace_callback($re, function ($matches)
+        return preg_replace_callback($re, static function ($matches)
         {
             return sprintf('<a href="%s" target="_blank">%s</a>', trim($matches[0], '&quot;'), $matches[0]);
         }, $str);
     }
+}
+
+/**
+ * 随机生成图片名
+ *
+ * @param string $ext    图片后缀名
+ * @param int    $width  图片宽度
+ * @param int    $height 图片高度
+ *
+ * @return string
+ */
+function create_image_name(string $ext, int $width, int $height)
+{
+    return uniqid('', false) . StringHelper::randString(18) . uniqid('', false) . '_' . $width . 'x' . $height . '.' . $ext;
+}
+
+/**
+ * 从HTML文本中提取所有图片
+ *
+ * @param $content
+ *
+ * @return array
+ */
+function get_html_images($content)
+{
+    $pattern = "/<img.*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/";
+    preg_match_all($pattern, htmlspecialchars_decode($content), $match);
+    $data = [];
+    if (!empty($match[1])) {
+        foreach ($match[1] as $img) {
+            if (!empty($img)) {
+                $data[] = $img;
+            }
+        }
+        return $data;
+    }
+
+    return $data;
 }
