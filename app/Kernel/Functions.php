@@ -175,3 +175,14 @@ function create_short_code(string $string)
 
     return $show;
 }
+
+/**
+ * 获取媒体文件url
+ *
+ * @param string $path 文件相对路径
+ * @return string
+ */
+function get_media_url(string $path)
+{
+    return config('config.img_url', '') . '/' . $path;
+}
