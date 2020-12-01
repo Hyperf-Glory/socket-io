@@ -20,6 +20,7 @@ use Hyperf\Utils\Coroutine;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use App\Helper\ValidateHelper;
+use RuntimeException;
 
 class TalkController extends AbstractController
 {
@@ -414,7 +415,7 @@ class TalkController extends AbstractController
             $params['date'] = $date;
         }
 
-        return $this->ajaxSuccess('success', []);
+        return $this->response->success('success', []);
     }
 
     /**
@@ -483,7 +484,7 @@ class TalkController extends AbstractController
             ]);
 
             if (!$insert) {
-                throw new \RuntimeException('插入聊天记录失败...');
+                throw new RuntimeException('插入聊天记录失败...');
             }
 
             $result = ChatRecordsFile::create([
@@ -497,7 +498,7 @@ class TalkController extends AbstractController
                 'created_at'    => date('Y-m-d H:i:s')
             ]);
             if (!$result) {
-                throw new \RuntimeException('插入聊天记录(文件消息)失败...');
+                throw new RuntimeException('插入聊天记录(文件消息)失败...');
             }
 
             Db::commit();
@@ -599,7 +600,7 @@ class TalkController extends AbstractController
         $source     = $this->request->post('source', 0);
 
         if (empty($hash_name) || !ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true)) {
-            return $this->ajaxParamError();
+            return $this->response->parmasError();
         }
 
         $user_id = $this->uid();

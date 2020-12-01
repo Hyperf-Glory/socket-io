@@ -152,3 +152,26 @@ function get_html_images($content)
 
     return $data;
 }
+
+/**
+ * 生成6位字符的短码字符串
+ * @param string $string
+ * @return string
+ */
+function create_short_code(string $string)
+{
+    $result = sprintf("%u", crc32($string));
+    $show = '';
+    while ($result > 0) {
+        $s = $result % 62;
+        if ($s > 35) {
+            $s = chr($s + 61);
+        } elseif ($s > 9 && $s <= 35) {
+            $s = chr($s + 55);
+        }
+        $show .= $s;
+        $result = floor($result / 62);
+    }
+
+    return $show;
+}
