@@ -227,7 +227,7 @@ class TalkController extends AbstractController
         $user_id   = $this->uid();
         $record_id = $this->request->get('record_id', 0);
         if (!ValidateHelper::isInteger($record_id)) {
-            return $this->ajaxParamError();
+            return $this->response->parmasError();
         }
 
         [$isTrue, $message, $data] = $this->service->revokeRecord($user_id, $record_id);
@@ -240,7 +240,7 @@ class TalkController extends AbstractController
             });
         }
 
-        return $isTrue ? $this->ajaxSuccess($message) : $this->ajaxError($message);
+        return $isTrue ? $this->response->success($message) : $this->response->error($message);
     }
 
     /**
