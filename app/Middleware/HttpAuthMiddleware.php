@@ -24,48 +24,19 @@ use Psr\Http\Server\RequestHandlerInterface;
 class HttpAuthMiddleware implements MiddlewareInterface
 {
 
-    private $response;
-
-    protected $prefix = 'Bearer';
-
-    public function __construct(Response $response)
-    {
-        $this->response = $response;
-    }
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         $isValidToken = false;
-        $token        = $request->getHeader('Authorization')[0] ?? '';
-        if (empty($token)) {
-            $token = $this->prefix . ' ' . ($request->getQueryParams()['token'] ?? '');
-        }
-        if (strlen($token) > 0) {
-            $token = ucfirst($token);
-            $arr   = explode($this->prefix . ' ', $token);
-            $token = $arr[1] ?? '';
-            try {
-                if (strlen($token) > 0 && di(InterfaceUserService::class)->checkToken($token)) {
-                    $isValidToken = true;
-                }
-            } catch (Throwable $e) {
-                throw new \Exception(ErrorCode::AUTH_ERROR);
+        try {
+            $token = $request->get['token'] ?? '';
+            if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
+                return $handler->handle($request);
             }
-        }
-
-        if ($isValidToken) {
-            $jwtData = di(InterfaceUserService::class)->decodeToken($token);
-            $user    = di(InterfaceUserService::class)->get($jwtData['cloud_uid']);
-
-            if (empty($user)) {
-                throw new \Exception(ErrorCode::AUTH_ERROR);
+            if (!$isValidToken) {
+                throw new TokenValidException('Token authentication does not pass', 401);
             }
-            $request = Context::get(ServerRequestInterface::class);
-            $request = $request->withAttribute('user', $user);
-            Context::set(ServerRequestInterface::class, $request);
-
-            return $handler->handle($request);
-            // 根据具体业务判断逻辑走向，这里假设用户携带的token有效
+        } catch (\Throwable $throwable) {
+            $this->stdoutLogger->error(sprintf('[%s] [%s]', $throwable->getMessage(), $throwable->getCode()));
         }
         throw new TokenValidException('Token authentication does not pass', 401);
     }
