@@ -209,7 +209,7 @@ SQL;
      *
      * @return array
      */
-    public function findApplyRecords(int $user_id, $page = 1, $page_size = 30)
+    public function findApplyRecords(int $user_id, int $page = 1, int $page_size = 30)
     {
         $rowsSqlObj = UsersFriendsApply::select([
             'users_friends_apply.id',

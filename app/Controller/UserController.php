@@ -37,8 +37,8 @@ class UserController extends AbstractController
      */
     public function getUserSetting() : ResponseInterface
     {
-        $user = $this->request->getAttribute('user');
-        $info = $this->service->findById($user['id'], ['id', 'nickname', 'avatar', 'motto', 'gender']);
+
+        $info = $this->service->findById($this->uid(), ['id', 'nickname', 'avatar', 'motto', 'gender']);
         return $this->response->success('success', [
             'user_info' => [
                 'uid'      => $info->id,
@@ -64,9 +64,9 @@ class UserController extends AbstractController
      */
     public function getApplyUnreadNum() : ResponseInterface
     {
-        $user = $this->request->getAttribute('user');
+
         return $this->response->success('success', [
-            'unread_num' => ApplyNumCache::get($user['id'])
+            'unread_num' => ApplyNumCache::get($this->uid())
         ]);
     }
 
@@ -77,8 +77,7 @@ class UserController extends AbstractController
      */
     public function getUserDetail() : ResponseInterface
     {
-        $user     = $this->request->getAttribute('user');
-        $userInfo = $this->service->findById($user['id'], ['mobile', 'nickname', 'avatar', 'motto', 'email', 'gender']);
+        $userInfo = $this->service->findById($this->uid(), ['mobile', 'nickname', 'avatar', 'motto', 'email', 'gender']);
         return $this->response->success('success', [
             'mobile'   => $userInfo->mobile,
             'nickname' => $userInfo->nickname,
@@ -96,8 +95,7 @@ class UserController extends AbstractController
      */
     public function getUserFriends() : ResponseInterface
     {
-        $user  = $this->request->getAttribute('user');
-        $rows  = UsersFriends::getUserFriends($user['id']);
+        $rows  = UsersFriends::getUserFriends($this->uid());
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $cache = array_keys($redis->hGetAll(SocketIO::HASH_UID_TO_FD_PREFIX));
 
@@ -114,14 +112,13 @@ class UserController extends AbstractController
      */
     public function editUserDetail() : ResponseInterface
     {
-        $user   = $this->request->getAttribute('user');
         $params = ['nickname', 'avatar', 'motto', 'gender'];
         if (!$this->request->has($params) || ValidateHelper::isInteger($this->request->post('gender'))) {
             return $this->response->parmasError('参数错误!');
         }
         //TODO 编辑个人资料
         //待驾照拿到之后继续更新
-        $bool = Users::where('id', $user['id'])->update($this->request->inputs($params));
+        $bool = Users::where('id', $this->uid())->update($this->request->inputs($params));
         return $bool ? $this->response->success('个人信息修改成功') : $this->response->parmasError('个人信息修改失败');
     }
 
@@ -133,14 +130,14 @@ class UserController extends AbstractController
 
     public function editUserPassword() : ResponseInterface
     {
-        $user = $this->request->getAttribute('user');
+
         if (!$this->request->has(['old_password', 'new_password'])) {
             return $this->response->parmasError('参数错误!');
         }
         if (!ValidateHelper::checkPassword($this->request->input('new_password'))) {
             return $this->response->error('新密码格式错误(8~16位字母加数字)');
         }
-        $info = $this->service->findById($user['id'], ['id', 'password', 'mobile']);
+        $info = $this->service->findById($this->uid(), ['id', 'password', 'mobile']);
         if (!$this->service->checkPassword($info->password, $this->request->input('password'))) {
             return $this->response->error('旧密码验证失败!');
         }
@@ -157,9 +154,8 @@ class UserController extends AbstractController
     {
         $page     = $this->request->input('page', 1);
         $pageSize = $this->request->input('page_size', 10);
-        $user     = $this->request->getAttribute('user');
-        $data     = $this->friendService->findApplyRecords($user['id'], $page, $pageSize);
-        ApplyNumCache::del($user['id']);
+        $data     = $this->friendService->findApplyRecords($this->uid(), (int)$page, (int)$pageSize);
+        ApplyNumCache::del($this->uid());
         return $this->response->success('success', $data);
     }
 
@@ -172,12 +168,11 @@ class UserController extends AbstractController
     {
         $friendId = $this->request->post('friend_id');
         $remarks  = $this->request->post('remarks', '');
-        $user     = $this->request->getAttribute('user');
         if (!ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
         }
 
-        $bool = $this->friendService->addFriendApply($user['id'], $friendId, $remarks);
+        $bool = $this->friendService->addFriendApply($this->uid(), $friendId, $remarks);
         if (!$bool) {
             return $this->response->error('发送好友申请失败...');
         }
@@ -201,11 +196,10 @@ class UserController extends AbstractController
     {
         $applyId = $this->request->post('apply_id');
         $remarks = $this->request->post('remarks', '');
-        $user    = $this->request->getAttribute('user');
         if (!ValidateHelper::isInteger($applyId)) {
             return $this->response->parmasError('参数错误!');
         }
-        $bool = $this->friendService->handleFriendApply($user['id'], $applyId, $remarks);
+        $bool = $this->friendService->handleFriendApply($this->uid(), $applyId, $remarks);
         //判断是否是同意添加好友
         if ($bool) {
             //... 推送处理消息
@@ -221,11 +215,10 @@ class UserController extends AbstractController
     public function deleteFriendApply() : ResponseInterface
     {
         $applyId = $this->request->post('apply_id');
-        $user    = $this->request->getAttribute('user');
         if (!ValidateHelper::isInteger($applyId)) {
             return $this->response->parmasError('参数错误!');
         }
-        $bool = $this->friendService->delFriendApply($user['id'], $applyId);
+        $bool = $this->friendService->delFriendApply($this->uid(), $applyId);
         return $bool ? $this->response->success('删除成功...') : $this->response->parmasError('删除失败...');
     }
 
@@ -236,15 +229,14 @@ class UserController extends AbstractController
      */
     public function editFriendRemark() : ResponseInterface
     {
-        $user     = $this->request->getAttribute('user');
         $friendId = $this->request->post('friend_id');
         $remarks  = $this->request->post('remarks', '');
         if (empty($remarks) || !ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
         }
-        $bool = $this->friendService->editFriendRemark($user['id'], $friendId, $remarks);
+        $bool = $this->friendService->editFriendRemark($this->uid(), $friendId, $remarks);
         if ($bool) {
-            FriendRemarkCache::set($user['id'], $friendId, $remarks);
+            FriendRemarkCache::set($this->uid(), $friendId, $remarks);
         }
         return $bool ? $this->response->success('备注修改成功...') : $this->response->error('备注修改失败，请稍后再试...');
     }
@@ -256,7 +248,6 @@ class UserController extends AbstractController
      */
     public function searchUserInfo() : ResponseInterface
     {
-        $user   = $this->request->getAttribute('user');
         $uid    = $this->request->post('user_id', 0);
         $mobile = $this->request->post('mobile', '');
         $where  = [];
@@ -267,7 +258,7 @@ class UserController extends AbstractController
         } else {
             return $this->response->parmasError('参数错误!');
         }
-        if ($data = $this->userService->searchUserInfo($where, $user['id'])) {
+        if ($data = $this->userService->searchUserInfo($where, $this->uid())) {
             return $this->response->success('success', $data);
         }
         return $this->response->fail(303, 'success');
@@ -280,8 +271,7 @@ class UserController extends AbstractController
      */
     public function getUserGroups() : ResponseInterface
     {
-        $user = $this->request->getAttribute('user');
-        $rows = $this->service->getUserChatGroups($user['id']);
+        $rows = $this->service->getUserChatGroups($this->uid());
         return $this->response->success('success', $rows);
     }
 
@@ -303,11 +293,10 @@ class UserController extends AbstractController
         if (!di(Sms::class)->check('change_mobile', $mobile, $sms_code)) {
             return $this->response->error('验证码填写错误...');
         }
-        $user = $this->request->getAttribute('user');
-        if (!$this->service->checkPassword($password, Users::where('id', $user['id'])->value('password'))) {
+        if (!$this->service->checkPassword($password, Users::where('id', $this->uid())->value('password'))) {
             return $this->response->error('账号密码验证失败');
         }
-        [$bool, $message] = $this->service->changeMobile($user['id'], $mobile);
+        [$bool, $message] = $this->service->changeMobile($this->uid(), $mobile);
         if ($bool) {
             di(Sms::class)->delCode('change_mobile', $mobile);
         }
@@ -321,8 +310,7 @@ class UserController extends AbstractController
      */
     public function sendMobileCode() : ResponseInterface
     {
-        $user = $this->request->getAttribute('user');
-        if (in_array($user['id'], [2054, 2055], true)) {
+        if (in_array($this->uid(), [2054, 2055], true)) {
             return $this->response->parmasError('测试账号不支持修改手机号');
         }
 
@@ -353,18 +341,17 @@ class UserController extends AbstractController
     public function removeFriend() : ResponseInterface
     {
         $friendId = $this->request->post('friend_id');
-        $user     = $this->request->getAttribute('user');
-        if (!ValidateHelper::isInteger($user['id'])) {
+        if (!ValidateHelper::isInteger($this->uid())) {
             return $this->response->parmasError('参数错误!');
         }
 
-        if (!$this->friendService->removeFriend($user['id'], $friendId)) {
+        if (!$this->friendService->removeFriend($this->uid(), $friendId)) {
             return $this->response->error('解除好友失败...');
         }
 
         //删除好友会话列表
-        UsersChatList::delItem($user['id'], $friendId, 2);
-        UsersChatList::delItem($friendId, $user['id'], 2);
+        UsersChatList::delItem($this->uid(), $friendId, 2);
+        UsersChatList::delItem($friendId, $this->uid(), 2);
 
         return $this->response->success('success');
     }
@@ -403,12 +390,11 @@ class UserController extends AbstractController
         if (!$mail->check(Mail::CHANGE_EMAIL, $email, $email_code)) {
             return $this->response->error('验证码填写错误...');
         }
-        $user      = $this->request->getAttribute('user');
-        $upassword = Users::where('id', $user['id'] ?? 0)->value('password');
+        $upassword = Users::where('id', $this->uid())->value('password');
         if (!$this->service->checkPassword($password, $upassword)) {
             return $this->response->error('账号密码验证失败...');
         }
-        $bool = Usesr::where('id', $user['id'] ?? 0)->update(['email' => $email]);
+        $bool = Usesr::where('id', $this->uid())->update(['email' => $email]);
         if ($bool) {
             $mail->delCode(Mail::CHANGE_EMAIL, $email);
         }
