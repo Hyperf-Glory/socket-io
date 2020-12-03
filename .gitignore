@@ -11,3 +11,5 @@ vendor/
 .DS_Store
 *.lock
 .phpunit*
+app/Controller/TestOneController.php
+app/Controller/IndexController.php

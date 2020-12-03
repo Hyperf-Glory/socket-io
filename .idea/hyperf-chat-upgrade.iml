@@ -177,6 +177,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/elasticsearch" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/event" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/exception-handler" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/filesystem" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/framework" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/guzzle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/http-message" />
@@ -203,6 +204,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/testing" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/tracer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/utils" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/view" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/view-engine" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/websocket-client" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/hyperf/websocket-server" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/jcchavezs/zipkin-opentracing" />
@@ -212,6 +215,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/laminas/laminas-stdlib" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laminas/laminas-zendframework-bridge" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/flysystem" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/league/mime-type-detection" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/malkusch/lock" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/markrogoyski/math-php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mix/redis-subscribe" />
