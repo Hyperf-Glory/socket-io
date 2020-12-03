@@ -19,6 +19,7 @@ use App\Model\Users as UserModel;
 use App\Service\UserService as UserSer;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
+use Phper666\JWTAuth\JWT;
 use Psr\Container\ContainerInterface;
 use Throwable;
 
@@ -49,7 +50,7 @@ class UserService implements InterfaceUserService
      */
     protected $jwt;
 
-    public function __construct(ContainerInterface $container, UserSer $userService, \Phper666\JWTAuth\JWT $jwt)
+    public function __construct(ContainerInterface $container, UserSer $userService, JWT $jwt)
     {
         $this->container   = $container;
         $this->logger      = $container->get(LoggerFactory::class)->get();
@@ -65,7 +66,7 @@ class UserService implements InterfaceUserService
      *
      * @return array
      */
-    public function register(string $mobile, string $password, string $smsCode, string $nickname)
+    public function register(string $mobile, string $password, string $smsCode, string $nickname) : array
     {
         if (!ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '手机号格式不正确...'];
@@ -88,7 +89,7 @@ class UserService implements InterfaceUserService
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function login(string $mobile, string $password)
+    public function login(string $mobile, string $password) : array
     {
         /**
          * @var UserModel $user
@@ -124,7 +125,7 @@ class UserService implements InterfaceUserService
      *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function logout(string $token)
+    public function logout(string $token) : void
     {
         $this->jwt->logout($token);
     }
@@ -135,7 +136,7 @@ class UserService implements InterfaceUserService
      *
      * @return array
      */
-    public function sendVerifyCode(string $mobile, string $type = User::REGISTER)
+    public function sendVerifyCode(string $mobile, string $type = User::REGISTER) : array
     {
         if (!di(Sms::class)->isUsages($type)) {
             return ['code' => 0, 'msg' => '验证码发送失败...'];
@@ -143,15 +144,13 @@ class UserService implements InterfaceUserService
         if (!ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '手机号格式不正确...'];
         }
-        if ($type == 'forget_password') {
+        if ($type === 'forget_password') {
             if (!UserModel::query()->where('mobile', $mobile)->value('id')) {
                 return ['code' => 0, 'msg' => '手机号未被注册使用...'];
             }
-        } else {
-            if ($type == 'change_mobile' || $type == 'user_register') {
-                if (UserModel::query()->where('mobile', $mobile)->value('id')) {
-                    return ['code' => 0, 'msg' => '手机号已被他(她)人注册...'];
-                }
+        } elseif ($type === 'change_mobile' || $type === 'user_register') {
+            if (UserModel::query()->where('mobile', $mobile)->value('id')) {
+                return ['code' => 0, 'msg' => '手机号已被他(她)人注册...'];
             }
         }
         $data['code'] = 1;
@@ -172,9 +171,9 @@ class UserService implements InterfaceUserService
      *
      * @return array
      */
-    public function forgetPassword(string $mobile, string $smsCode, string $password)
+    public function forgetPassword(string $mobile, string $smsCode, string $password) : array
     {
-        if (!ValidateHelper::isPhone($mobile) || empty($code) || empty($password)) {
+        if (empty($smsCode) || empty($password) || !ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '参数错误...'];
         }
         if (!ValidateHelper::checkPassword($password)) {
@@ -220,7 +219,7 @@ class UserService implements InterfaceUserService
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Throwable
      */
-    public function checkToken(string $token)
+    public function checkToken(string $token) : bool
     {
         return $this->jwt->checkToken($token);
     }
@@ -230,11 +229,9 @@ class UserService implements InterfaceUserService
      *
      * @return array
      */
-    public function decodeToken(string $token)
+    public function decodeToken(string $token) : array
     {
         return $this->jwt->getParserData($token);
     }
-
-
 
 }

@@ -2,6 +2,8 @@
 
 declare(strict_types = 1);
 
+use App\Controller\WebSocketController;
+
 /**
  * This file is part of Hyperf.
  *
@@ -135,7 +137,7 @@ Router::addGroup('/api/download/', function ()
 /** ----------------------  结束   ------------------------------------ */
 Router::addServer('ws', function ()
 {
-    Router::get('/', 'App\Controller\WebSocketController', [
+    Router::get('/', WebSocketController::class, [
         'middleware' => [AuthMiddleware::class],
     ]);
 });

@@ -12,10 +12,8 @@ declare(strict_types = 1);
 namespace App\Milddleware;
 
 use App\JsonRpc\Contract\InterfaceUserService;
-use App\Kernel\Http\Response;
+use Hyperf\Contract\StdoutLoggerInterface;
 use Phper666\JWTAuth\Exception\TokenValidException;
-use Phper666\JWTAuth\JWT;
-use Phper666\JWTAuth\Util\JWTUtil;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -23,6 +21,15 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class AuthMiddleware implements MiddlewareInterface
 {
+
+    private $stdoutLogger;
+
+    protected $prefix = 'Bearer';
+
+    public function __construct(StdoutLoggerInterface $logger)
+    {
+        $this->stdoutLogger = $logger;
+    }
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -35,8 +42,19 @@ class AuthMiddleware implements MiddlewareInterface
     {
         $isValidToken = false;
         try {
-            $token = $request->get['token'] ?? '';
+            $token = $request->getHeader('Authorization')[0] ?? '';
+            if (empty($token)) {
+                $token = $this->prefix . ' ' . ($request->getQueryParams()['token'] ?? '');
+            }
+            $token = ucfirst($token);
+            $arr   = explode($this->prefix . ' ', $token);
+            $token = $arr[1] ?? '';
             if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
+                $userData = di(InterfaceUserService::class)->decodeToken($token);
+                $uid      = $userData['cloud_uid'] ?? 0;
+                $rpcUser  = di(InterfaceUserService::class);
+                $user     = $rpcUser->get($uid);
+                $request->withAttribute('user', $user);
                 return $handler->handle($request);
             }
             if (!$isValidToken) {
