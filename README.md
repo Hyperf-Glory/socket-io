@@ -1,36 +1,144 @@
-# Introduction
+## Hyperf-Chat-Upgrade
+再次升级，此版本采用hyperf2.x+Vue+Element搭建的分布式Socket-io系统,利用rpc作为注册，鉴权服务,rpc发布到注册中心.准备采用dao-cloud+docker部署目前已初步搭建完成，待完成系统业务会继续优化，写份教程供大家学习.
+此次系统的业务逻辑借鉴[lumen-im](https://github.com/gzydong/LumenIM) 的逻辑用hyperf重写，第一版本求稳定运行上线.第二版本会重新整理业务架构，代码更加优化。更加符合PHP规范化.
+# [Hyperf-Chat服务聊天系统](https://github.com/codingheping/hyperf-chat-upgrade)
+<p align="center">
+    <a href="https://github.com/codingheping/hyperf-chat-upgrade" target="_blank">
+        <img src="https://static.jayjay.cn/1496800949298.jpg"/>
+    </a>
+</p>
 
-This is a skeleton application using the Hyperf framework. This application is meant to be used as a starting place for those looking to get their feet wet with Hyperf Framework.
+[![Php Version](https://img.shields.io/badge/php-%3E=7.2-brightgreen.svg?maxAge=2592000)](https://secure.php.net/)
+[![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.5-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
+[![sl-im License](https://img.shields.io/github/license/hyperf/hyperf.svg?maxAge=2592000)](https://github.com/komorebi-php/hyperf-chat/blob/master/LICENSE)
 
-# Requirements
 
-Hyperf has some requirements for the system environment, it can only run under Linux and Mac environment, but due to the development of Docker virtualization technology, Docker for Windows can also be used as the running environment under Windows.
+## 简介
+ 
+[hyperf-chat-upgrade](https://im.jayjay.cn) 是基于 [Hyperf](https://hyperf.io) 微服务协程框架(Swoole)和 Vue + ElementUI 网页聊天系统 所开发出来的聊天室。
 
-The various versions of Dockerfile have been prepared for you in the [hyperf\hyperf-docker](https://github.com/hyperf/hyperf-docker) project, or directly based on the already built [hyperf\hyperf](https://hub.docker.com/r/hyperf/hyperf) Image to run.
+## 体验地址
 
-When you don't want to use Docker as the basis for your running environment, you need to make sure that your operating environment meets the following requirements:  
+暂未开放
 
- - PHP >= 7.2
- - Swoole PHP extension >= 4.4，and Disabled `Short Name`
- - OpenSSL PHP extension
- - JSON PHP extension
- - PDO PHP extension （If you need to use MySQL Client）
- - Redis PHP extension （If you need to use Redis Client）
- - Protobuf PHP extension （If you need to use gRPC Server of Client）
+## 功能
+1.0
+- 基于Swoole Socket-io服务做消息即时推送
+- 支持私聊及群聊
+- 支持聊天消息类型有文本、代码块、图片及其它类型文件，并支持文件下载
+- 支持聊天消息撤回、删除或批量删除、转发消息（逐条转发、合并转发）
+- 支持docker部署(后续写搭建教程)
+- Rpc服务注册登录鉴权
+- Nsq分布式消息中间件
+- Mysql提供数据存储功能
+- Redis存储聊天关系映射
 
-# Installation using Composer
+2.0
+- 重新架构
+- 代码更符合PHP标准化
 
-The easiest way to create a new Hyperf project is to use Composer. If you don't have it already installed, then please install as per the documentation.
+## Requirement
 
-To create your new Hyperf project:
+- [PHP 7.2+](https://github.com/php/php-src/releases)
+- [Swoole 4.5+](https://github.com/swoole/swoole-src/releases)
+- [Composer](https://getcomposer.org/)
+- [Hyperf >= 2.x](https://github.com/hyperf/hyperf/releases)
 
-$ composer create-project hyperf/hyperf-skeleton path/to/install
 
-Once installed, you can run the server immediately using the command below.
 
-$ cd path/to/install
-$ php bin/hyperf.php start
+## 单机部署方式
 
-This will start the cli-server on port `9501`, and bind it to all network interfaces. You can then visit the site at `http://localhost:9501/`
+### Composer
 
-which will bring up Hyperf default home page.
+```bash
+composer update
+```
+
+### env配置
+
+`vim .env`
+
+```bash
+WS_URL=wss://im.jayjay.cn/im
+STORAGE_IMG_URL=$host/storage/upload/
+STORAGE_FILE_URL=$host/file/upload/
+APP_URL=https://im.jayjay.cn
+WEB_RTC_URL=wss://im.jayjay.cn/video
+```
+### nginx配置
+
+```bash
+server{
+    listen 80;
+    server_name im.jayjay.cn;
+    return 301 https://$server_name$request_uri;
+}
+
+server{
+    listen 443 ssl;
+    root /data/wwwroot/;
+    add_header Strict-Transport-Security "max-age=31536000";
+    server_name xxx;
+    access_log /data/wwwlog/xxx.access.log;
+    error_log /data/wwwlog/xxx.error.log;
+    client_max_body_size 100m;
+    ssl_certificate /etc/nginx/ssl/full_chain.pem;
+    ssl_certificate_key /etc/nginx/ssl/private.key;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
+    location / {
+        proxy_pass http://127.0.0.1:9500;
+        proxy_set_header Host $host:$server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Real-PORT $remote_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+   
+    ## 此处可配置负载，详情百度
+    location /socket-io/ {
+        proxy_pass http://127.0.0.1:9502;
+        proxy_http_version 1.1;
+        proxy_read_timeout   3600s;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+     
+    location ~ .*\.(js|ico|css|ttf|woff|woff2|png|jpg|jpeg|svg|gif|htm)$ {
+        root xxx;
+    }
+}
+```
+
+### Start
+
+- 挂起
+
+```bash
+composer dump-autoload -o
+php bin/hyperf.php start
+```
+
+
+## 打赏(你的支持是我最大的动力)
+
+
+<p align="center">
+    <a href="https://github.com/codingheping/hyperf-chat" target="_blank">
+        <img src="https://static.jayjay.cn/pay.jpeg"/>
+    </a>
+</p>
+
+
+## 联系方式
+
+- WeChat：naicha_1994
+- QQ：847050412
+- QQ群:658446650
+
+## hyperf-chat欢迎star
+[hyperf-chat](https://github.com/codingheping/hyperf-chat)
+
+## License
+
+[LICENSE](LICENSE)
