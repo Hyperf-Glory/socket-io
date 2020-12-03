@@ -651,7 +651,7 @@ class TalkController extends AbstractController
             ]);
 
             if (!$result) {
-                throw new \untimeException('插入聊天记录(代码消息)失败...');
+                throw new RuntimeException('插入聊天记录(代码消息)失败...');
             }
 
             Db::commit();

@@ -11,9 +11,11 @@ declare(strict_types=1);
  */
 namespace App\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+
 class HealthController extends AbstractController
 {
-    public function health()
+    public function health():ResponseInterface
     {
         return $this->response->success('ok');
     }

@@ -12,6 +12,7 @@ use App\Model\ChatRecordsInvite;
 use App\Model\Users;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\SocketIO;
+use RuntimeException;
 
 class Proxy
 {
@@ -35,7 +36,7 @@ class Proxy
             'created_at'
         ]);
         if (!$recordInfo) {
-            throw new \RuntimeException('fail');
+            throw new RuntimeException('fail');
         }
         /**
          * @var ChatRecordsInvite $notifyInfo
@@ -48,7 +49,7 @@ class Proxy
         ]);
 
         if (!$notifyInfo) {
-            throw new \RuntimeException('fail');
+            throw new RuntimeException('fail');
         }
 
         /**
@@ -60,7 +61,7 @@ class Proxy
 
         $io = di(SocketIO::class);
         //推送群聊消息
-        $io->to('room' . (string)$recordInfo->receive_id)->emit('chat_message', [
+        $io->to('room' . $recordInfo->receive_id)->emit('chat_message', [
             'send_user'    => 0,
             'receive_user' => $recordInfo->receive_id,
             'source_type'  => 2,
@@ -94,7 +95,7 @@ class Proxy
          */
         $records = ChatRecords::where('id', $record)->first(['id', 'source', 'user_id', 'receive_id']);
         if (!$records) {
-            throw new \RuntimeException('数据不存在...');
+            throw new RuntimeException('数据不存在...');
         }
         $io = di(SocketIO::class);
         //TODO 好友或群聊推送
@@ -103,7 +104,7 @@ class Proxy
             $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$records->receive_id);
         } else {
-            $client = 'room' . (string)$records->receive_id;
+            $client = 'room' . $records->receive_id;
             //群聊推送
 
         }
@@ -199,7 +200,7 @@ class Proxy
             'users.avatar as avatar',
         ]);
         if (!$info) {
-            throw new \RuntimeException('fail');
+            throw new RuntimeException('fail');
         }
         $io        = di(SocketIO::class);
         $file      = [];
@@ -221,7 +222,7 @@ class Proxy
             $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $$redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string)$info->receive_id);
         } else {
-            $client = 'room' . (string)$info->receive_id;
+            $client = 'room' . $info->receive_id;
         }
         $io->to($client)->emit('chat_message', [
             'send_user'    => $info->user_id,

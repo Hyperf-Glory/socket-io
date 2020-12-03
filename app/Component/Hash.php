@@ -13,7 +13,6 @@ class Hash
      * @param string $plain
      *
      * @return string
-     * @throws \Crypto\HashException;
      */
     public static function make(string $plain) : string
     {

@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Component\Sms;
 use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceUserService;
+use Psr\Http\Message\ResponseInterface;
 
 class AuthController extends AbstractController
 {
@@ -14,7 +15,7 @@ class AuthController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function register()
+    public function register():ResponseInterface
     {
         $params = $this->request->all();
         if (!ValidateHelper::isPhone($params['mobile'])) {
@@ -27,7 +28,7 @@ class AuthController extends AbstractController
             $params['sms_code'],
             strip_tags($params['nickname'])
         );
-        if (isset($ret['code']) && $ret['code'] == 1) {
+        if (isset($ret['code']) && $ret['code'] === 1) {
             return $this->response->success('账号注册成功!');
         }
         return $this->response->error($ret['msg']);
@@ -37,7 +38,7 @@ class AuthController extends AbstractController
      * 登录
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function login()
+    public function login():ResponseInterface
     {
         $params = $this->request->all();
         if (!ValidateHelper::isPhone($params['mobile'])) {
@@ -46,7 +47,7 @@ class AuthController extends AbstractController
         $rpcUser = $this->container->get(InterfaceUserService::class);
         $ret     = $rpcUser->login($params['mobile'], $params['password']);
 
-        if (isset($ret['code']) && $ret['code'] == 1) {
+        if (isset($ret['code']) && $ret['code'] === 1) {
             return $this->response->success('登录成功!', [
                 'authorize' => $ret['authorize'],
                 'userInfo'  => $ret['user_info']
@@ -60,7 +61,7 @@ class AuthController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function logout()
+    public function logout():ResponseInterface
     {
         $token   = $this->request->getHeaderLine('Authorization') ?? '';
         $rpcUser = $this->container->get(InterfaceUserService::class);
@@ -73,7 +74,7 @@ class AuthController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function sendVerifyCode()
+    public function sendVerifyCode():ResponseInterface
     {
         $mobile = $this->request->post('mobile', '');
         $type   = $this->request->post('type', '');
@@ -87,7 +88,7 @@ class AuthController extends AbstractController
         $rpcUser = $this->container->get(InterfaceUserService::class);
         $data    = $rpcUser->sendVerifyCode($mobile, $type);
         $data    = array_merge(['is_debug' => true], $data);
-        if (isset($data['code']) && $data['code'] == 1) {
+        if (isset($data['code']) && $data['code'] === 1) {
             return $this->response->success('验证码发送成功!', $data);
         }
         return $this->response->error($data['msg']);
@@ -98,14 +99,14 @@ class AuthController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function forgetPassword()
+    public function forgetPassword():ResponseInterface
     {
         $mobile   = $this->request->post('mobile', '');
         $code     = $this->request->post('sms_code', '');
         $password = $this->request->post('password', '');
         $rpcUser  = $this->container->get(InterfaceUserService::class);
         $data     = $rpcUser->forgetPassword($mobile, $code, $password);
-        if (isset($data['code']) && $data['code'] == 1) {
+        if (isset($data['code']) && $data['code'] === 1) {
             return $this->response->success($data['msg']);
         }
         return $this->response->error('重置密码失败...');

@@ -24,7 +24,7 @@ class UnreadTalk
      *
      * @return bool
      */
-    public function setInc(int $uid, int $fid, ?RedisProxy $redis = null)
+    public function setInc(int $uid, int $fid, ?RedisProxy $redis = null) : bool
     {
         if (is_null($redis)) {
             $redis = $this->redis();
@@ -44,7 +44,7 @@ class UnreadTalk
      *
      * @return int
      */
-    public function get(int $uid, int $fid, ?RedisProxy $redis = null)
+    public function get(int $uid, int $fid, ?RedisProxy $redis = null) : int
     {
         if (is_null($redis)) {
             $redis = $this->redis();
@@ -81,7 +81,7 @@ class UnreadTalk
      *
      * @return bool
      */
-    public function del(int $uid, int $fid, ?RedisProxy $redis = null)
+    public function del(int $uid, int $fid, ?RedisProxy $redis = null) : bool
     {
         if (is_null($redis)) {
             $redis = $this->redis();
@@ -98,7 +98,7 @@ class UnreadTalk
      *
      * @return bool
      */
-    public function delAll(int $uid, ?RedisProxy $redis = null)
+    public function delAll(int $uid, ?RedisProxy $redis = null) : bool
     {
         if (is_null($redis)) {
             $redis = $this->redis();
@@ -116,7 +116,7 @@ class UnreadTalk
      *
      * @return string
      */
-    private function _key(int $uid, ?RedisProxy $redis = null)
+    private function _key(int $uid, ?RedisProxy $redis = null) : string
     {
         return self::KEY . ":{$uid}";
     }
@@ -126,7 +126,7 @@ class UnreadTalk
      *
      * @return RedisProxy
      */
-    private function redis()
+    private function redis() : RedisProxy
     {
         return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
     }

@@ -35,7 +35,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getUserSetting()
+    public function getUserSetting() : ResponseInterface
     {
         $user = $this->request->getAttribute('user');
         $info = $this->service->findById($user['id'], ['id', 'nickname', 'avatar', 'motto', 'gender']);
@@ -62,7 +62,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getApplyUnreadNum()
+    public function getApplyUnreadNum() : ResponseInterface
     {
         $user = $this->request->getAttribute('user');
         return $this->response->success('success', [
@@ -75,7 +75,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getUserDetail()
+    public function getUserDetail() : ResponseInterface
     {
         $user     = $this->request->getAttribute('user');
         $userInfo = $this->service->findById($user['id'], ['mobile', 'nickname', 'avatar', 'motto', 'email', 'gender']);
@@ -94,7 +94,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getUserFriends()
+    public function getUserFriends() : ResponseInterface
     {
         $user  = $this->request->getAttribute('user');
         $rows  = UsersFriends::getUserFriends($user['id']);
@@ -102,7 +102,7 @@ class UserController extends AbstractController
         $cache = array_keys($redis->hGetAll(SocketIO::HASH_UID_TO_FD_PREFIX));
 
         foreach ($rows as $k => $row) {
-            $rows[$k]['online'] = in_array($row['id'], $cache) ? true : false;
+            $rows[$k]['online'] = in_array($row['id'], $cache, true) ? true : false;
         }
         return $this->response->success('success', $rows);
     }
@@ -112,7 +112,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function editUserDetail()
+    public function editUserDetail() : ResponseInterface
     {
         $user   = $this->request->getAttribute('user');
         $params = ['nickname', 'avatar', 'motto', 'gender'];
@@ -131,7 +131,7 @@ class UserController extends AbstractController
      * @return \Psr\Http\Message\ResponseInterface
      */
 
-    public function editUserPassword()
+    public function editUserPassword() : ResponseInterface
     {
         $user = $this->request->getAttribute('user');
         if (!$this->request->has(['old_password', 'new_password'])) {
@@ -153,7 +153,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getFriendApplyRecords()
+    public function getFriendApplyRecords() : ResponseInterface
     {
         $page     = $this->request->input('page', 1);
         $pageSize = $this->request->input('page_size', 10);
@@ -168,7 +168,7 @@ class UserController extends AbstractController
      * 发送添加好友申请
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function sendFriendApply()
+    public function sendFriendApply() : ResponseInterface
     {
         $friendId = $this->request->post('friend_id');
         $remarks  = $this->request->post('remarks', '');
@@ -197,7 +197,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function handleFriendApply()
+    public function handleFriendApply() : ResponseInterface
     {
         $applyId = $this->request->post('apply_id');
         $remarks = $this->request->post('remarks', '');
@@ -218,7 +218,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function deleteFriendApply()
+    public function deleteFriendApply() : ResponseInterface
     {
         $applyId = $this->request->post('apply_id');
         $user    = $this->request->getAttribute('user');
@@ -234,12 +234,12 @@ class UserController extends AbstractController
      * 编辑好友备注信息
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function editFriendRemark()
+    public function editFriendRemark() : ResponseInterface
     {
         $user     = $this->request->getAttribute('user');
         $friendId = $this->request->post('friend_id');
         $remarks  = $this->request->post('remarks', '');
-        if (!ValidateHelper::isInteger($friendId) || empty($remarks)) {
+        if (empty($remarks) || !ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
         }
         $bool = $this->friendService->editFriendRemark($user['id'], $friendId, $remarks);
@@ -254,7 +254,7 @@ class UserController extends AbstractController
      * 获取指定用户信息
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function searchUserInfo()
+    public function searchUserInfo() : ResponseInterface
     {
         $user   = $this->request->getAttribute('user');
         $uid    = $this->request->post('user_id', 0);
@@ -262,12 +262,10 @@ class UserController extends AbstractController
         $where  = [];
         if (ValidateHelper::isInteger($uid)) {
             $where['uid'] = $uid;
+        } elseif (ValidateHelper::isPhone($mobile)) {
+            $where['mobile'] = $mobile;
         } else {
-            if (ValidateHelper::isPhone($mobile)) {
-                $where['mobile'] = $mobile;
-            } else {
-                return $this->response->parmasError('参数错误!');
-            }
+            return $this->response->parmasError('参数错误!');
         }
         if ($data = $this->userService->searchUserInfo($where, $user['id'])) {
             return $this->response->success('success', $data);
@@ -280,7 +278,7 @@ class UserController extends AbstractController
      * 获取用户群聊列表
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function getUserGroups()
+    public function getUserGroups() : ResponseInterface
     {
         $user = $this->request->getAttribute('user');
         $rows = $this->service->getUserChatGroups($user['id']);
@@ -291,7 +289,7 @@ class UserController extends AbstractController
      * 更换用户手机号
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function editUserMobile()
+    public function editUserMobile() : ResponseInterface
     {
         $sms_code = $this->request->post('sms_code', '');
         $mobile   = $this->request->post('mobile', '');
@@ -321,10 +319,10 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function sendMobileCode()
+    public function sendMobileCode() : ResponseInterface
     {
         $user = $this->request->getAttribute('user');
-        if (in_array($user['id'], [2054, 2055])) {
+        if (in_array($user['id'], [2054, 2055], true)) {
             return $this->response->parmasError('测试账号不支持修改手机号');
         }
 
@@ -352,7 +350,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function removeFriend()
+    public function removeFriend() : ResponseInterface
     {
         $friendId = $this->request->post('friend_id');
         $user     = $this->request->getAttribute('user');
@@ -392,7 +390,7 @@ class UserController extends AbstractController
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function editUserEmail()
+    public function editUserEmail() : ResponseInterface
     {
         $email      = $this->request->post('email', '');
         $email_code = $this->request->post('email_code', '');
