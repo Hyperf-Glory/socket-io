@@ -1,11 +1,20 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Controller;
 
 use App\Component\Proxy;
 use App\Helper\ArrayHelper;
 use App\Helper\StringHelper;
+use App\Helper\ValidateHelper;
 use App\Model\ChatRecords;
 use App\Model\ChatRecordsFile;
 use App\Model\EmoticonDetail;
@@ -20,7 +29,6 @@ use Hyperf\DbConnection\Db;
 use Hyperf\Utils\Coroutine;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use App\Helper\ValidateHelper;
 use RuntimeException;
 
 class TalkController extends AbstractController
@@ -34,13 +42,10 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 获取用户对话列表
-     *
-     * @return  PsrResponseInterface
+     * 获取用户对话列表.
      */
-    public function list() : PsrResponseInterface
+    public function list(): PsrResponseInterface
     {
-
         $result = di(UnreadTalk::class)->getAll($this->uid());
         if ($result) {
             $this->service->updateUnreadTalkList($this->uid(), $result);
@@ -54,75 +59,72 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 新增对话列表
-     * @return \Psr\Http\Message\ResponseInterface
+     * 新增对话列表.
      */
-    public function create() : PsrResponseInterface
+    public function create(): PsrResponseInterface
     {
-        $type       = $this->request->post('type', 1);//创建的类型
-        $receive_id = $this->request->post('receive_id', 0);//接收者ID
-        if (!in_array($type, [1, 2], true) || !ValidateHelper::isInteger($receive_id)) {
+        $type = $this->request->post('type', 1); //创建的类型
+        $receive_id = $this->request->post('receive_id', 0); //接收者ID
+        if (! in_array($type, [1, 2], true) || ! ValidateHelper::isInteger($receive_id)) {
             return $this->response->parmasError();
         }
 
         if ($type === 1) {
-            if (!UsersFriends::isFriend($this->uid(), $receive_id)) {
+            if (! UsersFriends::isFriend($this->uid(), $receive_id)) {
                 return $this->response->fail(305, '暂不属于好友关系，无法进行聊天...');
             }
-        } elseif (!UsersGroup::isMember($receive_id, $this->uid())) {
+        } elseif (! UsersGroup::isMember($receive_id, $this->uid())) {
             return $this->response->fail(305, '暂不属于群成员，无法进行群聊 ...');
         }
 
         $result = UsersChatList::addItem($this->uid(), $receive_id, $type);
-        if (!$result) {
+        if (! $result) {
             return $this->response->error('创建失败...');
         }
 
         $data = [
-            'id'          => $result['id'],
-            'type'        => $result['type'],
-            'group_id'    => $result['group_id'],
-            'friend_id'   => $result['friend_id'],
-            'is_top'      => 0,
-            'msg_text'    => '',
+            'id' => $result['id'],
+            'type' => $result['type'],
+            'group_id' => $result['group_id'],
+            'friend_id' => $result['friend_id'],
+            'is_top' => 0,
+            'msg_text' => '',
             'not_disturb' => 0,
-            'online'      => 1,
-            'name'        => '',
+            'online' => 1,
+            'name' => '',
             'remark_name' => '',
-            'avatar'      => '',
-            'unread_num'  => 0,
-            'updated_at'  => date('Y-m-d H:i:s')
+            'avatar' => '',
+            'unread_num' => 0,
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
 
         if ($result['type'] === 1) {
             $data['unread_num'] = di(UnreadTalk::class)->get($this->uid(), $result['friend_id']);
 
-            $userInfo       = User::where('id', $this->uid())->first(['nickname', 'avatar']);
-            $data['name']   = $userInfo->nickname;
+            $userInfo = User::where('id', $this->uid())->first(['nickname', 'avatar']);
+            $data['name'] = $userInfo->nickname;
             $data['avatar'] = $userInfo->avatar;
         } elseif ($result['type'] === 2) {
-            $groupInfo      = UserGroup::where('id', $result['group_id'])->first(['group_name', 'avatar']);
-            $data['name']   = $groupInfo->group_name;
+            $groupInfo = UserGroup::where('id', $result['group_id'])->first(['group_name', 'avatar']);
+            $data['name'] = $groupInfo->group_name;
             $data['avatar'] = $groupInfo->avatar;
         }
 
         $records = LastMsgCache::get($result['type'] === 1 ? $result['friend_id'] : $result['group_id'], $result['type'] === 1 ? $this->uid() : 0);
         if ($records) {
-            $data['msg_text']   = $records['text'];
+            $data['msg_text'] = $records['text'];
             $data['updated_at'] = $records['created_at'];
         }
         return $this->response->success('创建成功...', ['talkItem' => $data]);
     }
 
     /**
-     *  删除对话列表
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     *  删除对话列表.
      */
-    public function delete() : PsrResponseInterface
+    public function delete(): PsrResponseInterface
     {
         $list_id = $this->request->post('list_id', 0);
-        if (!ValidateHelper::isInteger($list_id)) {
+        if (! ValidateHelper::isInteger($list_id)) {
             return $this->response->parmasError();
         }
 
@@ -131,15 +133,13 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 对话列表置顶
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 对话列表置顶.
      */
-    public function topping() : PsrResponseInterface
+    public function topping(): PsrResponseInterface
     {
         $list_id = $this->request->post('list_id', 0);
-        $type    = $this->request->post('type', 0);
-        if (!ValidateHelper::isInteger($list_id) || !in_array($type, [1, 2], true)) {
+        $type = $this->request->post('type', 0);
+        if (! ValidateHelper::isInteger($list_id) || ! in_array($type, [1, 2], true)) {
             return $this->response->parmasError();
         }
         $bool = UsersChatList::topItem($this->uid(), $list_id, $type === 1);
@@ -148,15 +148,14 @@ class TalkController extends AbstractController
 
     /**
      * 设置消息免打扰状态
-     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function setNotDisturb() : PsrResponseInterface
+    public function setNotDisturb(): PsrResponseInterface
     {
-        $type        = $this->request->post('type', 0);
-        $receive_id  = $this->request->post('receive_id', 0);
+        $type = $this->request->post('type', 0);
+        $receive_id = $this->request->post('receive_id', 0);
         $not_disturb = $this->request->post('not_disturb', 0);
 
-        if (!ValidateHelper::isInteger($receive_id) || !in_array($type, [1, 2], true) || !in_array($not_disturb, [0, 1], true)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! in_array($type, [1, 2], true) || ! in_array($not_disturb, [0, 1], true)) {
             return $this->response->parmasError();
         }
 
@@ -166,16 +165,15 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 更新对话列表未读数
-     * @return \Psr\Http\Message\ResponseInterface
+     * 更新对话列表未读数.
      */
-    public function updateUnreadNum() : PsrResponseInterface
+    public function updateUnreadNum(): PsrResponseInterface
     {
-        $type        = $this->request->post('type', 0);
-        $receive_id  = $this->request->post('receive_id', 0);
+        $type = $this->request->post('type', 0);
+        $receive_id = $this->request->post('receive_id', 0);
         $not_disturb = $this->request->post('not_disturb', 0);
 
-        if (!ValidateHelper::isInteger($receive_id) || !in_array($type, [1, 2], true) || !in_array($not_disturb, [0, 1], true)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! in_array($type, [1, 2], true) || ! in_array($not_disturb, [0, 1], true)) {
             return $this->response->parmasError();
         }
 
@@ -185,58 +183,53 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 获取对话面板中的聊天记录
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 获取对话面板中的聊天记录.
      */
-    public function getChatRecords() : PsrResponseInterface
+    public function getChatRecords(): PsrResponseInterface
     {
-        $user_id    = $this->uid();
+        $user_id = $this->uid();
         $receive_id = $this->request->get('receive_id', 0);
-        $source     = $this->request->get('source', 0);
-        $record_id  = $this->request->get('record_id', 0);
-        $limit      = 30;
+        $source = $this->request->get('source', 0);
+        $record_id = $this->request->get('record_id', 0);
+        $limit = 30;
 
-        if (!ValidateHelper::isInteger($receive_id) || !ValidateHelper::isInteger($source) || !ValidateHelper::isInteger($record_id)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! ValidateHelper::isInteger($source) || ! ValidateHelper::isInteger($record_id)) {
             return $this->response->parmasError();
         }
 
         //判断是否属于群成员
         if ($source === 2 && UsersGroup::isMember($receive_id, $user_id) === false) {
             return $this->response->success('非群聊成员不能查看群聊信息', [
-                'rows'      => [],
+                'rows' => [],
                 'record_id' => 0,
-                'limit'     => $limit
+                'limit' => $limit,
             ]);
         }
 
         $result = $this->service->getChatRecords($user_id, $receive_id, $source, $record_id, $limit);
 
         return $this->response->success('success', [
-            'rows'      => $result,
+            'rows' => $result,
             'record_id' => $result ? $result[count($result) - 1]['id'] : 0,
-            'limit'     => $limit
+            'limit' => $limit,
         ]);
     }
 
     /**
-     * 撤回聊天对话消息
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 撤回聊天对话消息.
      */
-    public function revokeChatRecords() : PsrResponseInterface
+    public function revokeChatRecords(): PsrResponseInterface
     {
-        $user_id   = $this->uid();
+        $user_id = $this->uid();
         $record_id = $this->request->get('record_id', 0);
-        if (!ValidateHelper::isInteger($record_id)) {
+        if (! ValidateHelper::isInteger($record_id)) {
             return $this->response->parmasError();
         }
 
         [$isTrue, $message, $data] = $this->service->revokeRecord($user_id, $record_id);
         if ($isTrue) {
             //这里需要调用WebSocket推送接口
-            Coroutine::create(function () use ($data)
-            {
+            Coroutine::create(function () use ($data) {
                 $proxy = $this->container->get(Proxy::class);
                 $proxy->revokeRecords($data['id']);
             });
@@ -246,11 +239,9 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 删除聊天记录
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 删除聊天记录.
      */
-    public function removeChatRecords() : PsrResponseInterface
+    public function removeChatRecords(): PsrResponseInterface
     {
         $user_id = $this->uid();
 
@@ -262,7 +253,7 @@ class TalkController extends AbstractController
 
         //消息ID
         $record_ids = explode(',', $this->request->input('record_id', ''));
-        if (empty($record_ids) || !in_array($source, [1, 2], true) || !ValidateHelper::isInteger($receive_id)) {
+        if (empty($record_ids) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($receive_id)) {
             return $this->response->parmasError();
         }
 
@@ -271,12 +262,11 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 转发聊天记录(待优化)
+     * 转发聊天记录(待优化).
      *
-     * @return \Psr\Http\Message\ResponseInterface
      * @throws \Exception
      */
-    public function forwardChatRecords() : PsrResponseInterface
+    public function forwardChatRecords(): PsrResponseInterface
     {
         $user_id = $this->uid();
         //转发方方式
@@ -292,17 +282,15 @@ class TalkController extends AbstractController
         //转发的群聊ID
         $receive_group_ids = $this->request->post('receive_group_ids', []);
 
-        if (empty($records_ids) || empty($receive_user_ids) || empty($receive_group_ids) || !in_array($forward_mode, [1, 2], true) || !in_array($source, [1, 2], true) || !ValidateHelper::isInteger($receive_id)) {
+        if (empty($records_ids) || empty($receive_user_ids) || empty($receive_group_ids) || ! in_array($forward_mode, [1, 2], true) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($receive_id)) {
             return $this->response->parmasError();
         }
 
         $items = array_merge(
-            array_map(static function ($friend_id)
-            {
+            array_map(static function ($friend_id) {
                 return ['source' => 1, 'id' => $friend_id];
             }, $receive_user_ids),
-            array_map(static function ($group_id)
-            {
+            array_map(static function ($group_id) {
                 return ['source' => 2, 'id' => $group_id];
             }, $receive_group_ids)
         );
@@ -313,7 +301,7 @@ class TalkController extends AbstractController
             $ids = $this->service->mergeForwardRecords($user_id, $receive_id, $source, $records_ids, $items);
         }
 
-        if (!$ids) {
+        if (! $ids) {
             return $this->response->error('转发失败...');
         }
 
@@ -324,8 +312,7 @@ class TalkController extends AbstractController
         }
 
         //这里需要调用WebSocket推送接口
-        Coroutine::create(function () use ($ids)
-        {
+        Coroutine::create(function () use ($ids) {
             $proxy = $this->container->get(Proxy::class);
             $proxy->forwardChatRecords($ids);
         });
@@ -334,14 +321,12 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 获取转发记录详情
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 获取转发记录详情.
      */
-    public function getForwardRecords() : PsrResponseInterface
+    public function getForwardRecords(): PsrResponseInterface
     {
         $records_id = $this->request->post('records_id', 0);
-        if (!ValidateHelper::isInteger($records_id)) {
+        if (! ValidateHelper::isInteger($records_id)) {
             return $this->response->parmasError();
         }
 
@@ -350,29 +335,27 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 查询聊天记录
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 查询聊天记录.
      */
-    public function findChatRecords() : PsrResponseInterface
+    public function findChatRecords(): PsrResponseInterface
     {
-        $user_id    = $this->uid();
+        $user_id = $this->uid();
         $receive_id = $this->request->input('receive_id', 0);
-        $source     = $this->request->input('source', 0);
-        $record_id  = $this->request->input('record_id', 0);
-        $msg_type   = $this->request->input('msg_type', 0);
-        $limit      = 30;
+        $source = $this->request->input('source', 0);
+        $record_id = $this->request->input('record_id', 0);
+        $msg_type = $this->request->input('msg_type', 0);
+        $limit = 30;
 
-        if (!ValidateHelper::isInteger($receive_id) || !ValidateHelper::isInteger($source) || !ValidateHelper::isInteger($record_id, true)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! ValidateHelper::isInteger($source) || ! ValidateHelper::isInteger($record_id, true)) {
             return $this->response->parmasError();
         }
 
         //判断是否属于群成员
         if ($source === 2 && UsersGroup::isMember($receive_id, $user_id) === false) {
             return $this->response->success('非群聊成员不能查看群聊信息', [
-                'rows'      => [],
+                'rows' => [],
                 'record_id' => 0,
-                'limit'     => $limit
+                'limit' => $limit,
             ]);
         }
 
@@ -384,36 +367,33 @@ class TalkController extends AbstractController
 
         $result = $this->service->getChatRecords($user_id, $receive_id, $source, $record_id, $limit, $msg_type);
         return $this->response->success('success', [
-            'rows'      => $result,
+            'rows' => $result,
             'record_id' => $result ? $result[count($result) - 1]['id'] : 0,
-            'limit'     => $limit
+            'limit' => $limit,
         ]);
     }
 
     /**
-     * 搜索聊天记录（待优化）
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 搜索聊天记录（待优化）.
      */
-    public function searchChatRecords() : PsrResponseInterface
+    public function searchChatRecords(): PsrResponseInterface
     {
-
         $receive_id = $this->request->input('receive_id', 0);
-        $source     = $this->request->input('source', 0);
-        $keywords   = $this->request->input('keywords', '');
-        $date       = $this->request->input('date', '');
-        $page       = $this->request->input('page', 1);
+        $source = $this->request->input('source', 0);
+        $keywords = $this->request->input('keywords', '');
+        $date = $this->request->input('date', '');
+        $page = $this->request->input('page', 1);
 
-        if (!ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true) || !ValidateHelper::isInteger($page)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($page)) {
             return $this->response->parmasError();
         }
 
         $params = [];
-        if (!empty($keywords)) {
+        if (! empty($keywords)) {
             $params['keywords'] = addslashes($keywords);
         }
 
-        if (!empty($date)) {
+        if (! empty($date)) {
             $params['date'] = $date;
         }
 
@@ -421,18 +401,16 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 获取聊天记录上下文数据（待优化）
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 获取聊天记录上下文数据（待优化）.
      */
-    public function getRecordsContext() : PsrResponseInterface
+    public function getRecordsContext(): PsrResponseInterface
     {
         $receive_id = $this->request->get('receive_id', 0);
-        $source     = $this->request->get('source', 0);
-        $record_id  = $this->request->post('record_id', 0);
-        $find_mode  = $this->request->post('find_mode', 1);
+        $source = $this->request->get('source', 0);
+        $record_id = $this->request->post('record_id', 0);
+        $find_mode = $this->request->post('find_mode', 1);
 
-        if (!ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true) || !ValidateHelper::isInteger($record_id) || !in_array($find_mode, [1, 2], true)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($record_id) || ! in_array($find_mode, [1, 2], true)) {
             return $this->response->parmasError();
         }
 
@@ -440,66 +418,62 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 上传聊天对话图片（待优化）
-     *
-     * @param \League\Flysystem\Filesystem $fileSystem
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 上传聊天对话图片（待优化）.
      */
-    public function sendImage(Filesystem $fileSystem) : PsrResponseInterface
+    public function sendImage(Filesystem $fileSystem): PsrResponseInterface
     {
-        $file       = $this->request->file('img');
+        $file = $this->request->file('img');
         $receive_id = $this->request->post('receive_id', 0);
-        $source     = $this->request->post('source', 0);
+        $source = $this->request->post('source', 0);
 
-        if (!ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true)) {
+        if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
         }
 
         $user_id = $this->uid();
-        if (!$file->isValid()) {
+        if (! $file->isValid()) {
             return $this->response->parmasError('请求参数错误');
         }
 
         $ext = $file->getExtension();
-        if (!in_array($ext, ['jpg', 'png', 'jpeg', 'gif', 'webp'])) {
+        if (! in_array($ext, ['jpg', 'png', 'jpeg', 'gif', 'webp'])) {
             return $this->response->error('图片格式错误，目前仅支持jpg、png、jpeg、gif和webp');
         }
 
-        $imgInfo  = getimagesize($file->getRealPath());
+        $imgInfo = getimagesize($file->getRealPath());
         $filename = create_image_name($ext, $imgInfo[0], $imgInfo[1]);
-        $stream   = fopen($file->getRealPath(), 'rb+');
+        $stream = fopen($file->getRealPath(), 'rb+');
 
         //保存图片
-        if (!$save_path = $fileSystem->put('media/images/talks/' . date('Ymd') . $filename, $stream)) {
+        if (! $save_path = $fileSystem->put('media/images/talks/' . date('Ymd') . $filename, $stream)) {
             return $this->response->error('图片上传失败');
         }
 
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
-                'source'     => $source,
-                'msg_type'   => 2,
-                'user_id'    => $user_id,
+                'source' => $source,
+                'msg_type' => 2,
+                'user_id' => $user_id,
                 'receive_id' => $receive_id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$insert) {
+            if (! $insert) {
                 throw new RuntimeException('插入聊天记录失败...');
             }
 
             $result = ChatRecordsFile::create([
-                'record_id'     => $insert->id,
-                'user_id'       => $this->uid(),
-                'file_type'     => 1,
-                'file_suffix'   => $file->getBasename(),
-                'file_size'     => $file->getSize(),
-                'save_dir'      => $save_path,
+                'record_id' => $insert->id,
+                'user_id' => $this->uid(),
+                'file_type' => 1,
+                'file_suffix' => $file->getBasename(),
+                'file_size' => $file->getSize(),
+                'save_dir' => $save_path,
                 'original_name' => $file->getClientFilename(),
-                'created_at'    => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
-            if (!$result) {
+            if (! $result) {
                 throw new RuntimeException('插入聊天记录(文件消息)失败...');
             }
 
@@ -515,8 +489,7 @@ class TalkController extends AbstractController
         }
 
         //这里需要调用WebSocket推送接口
-        Coroutine::create(function () use ($insert)
-        {
+        Coroutine::create(function () use ($insert) {
             $proxy = $this->container->get(Proxy::class);
             $proxy->pushTalkMessage($insert->id);
         });
@@ -525,18 +498,16 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 发送代码块消息
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 发送代码块消息.
      */
-    public function sendCodeBlock() : PsrResponseInterface
+    public function sendCodeBlock(): PsrResponseInterface
     {
-        $code       = $this->request->post('code', '');
-        $lang       = $this->request->post('lang', '');
+        $code = $this->request->post('code', '');
+        $lang = $this->request->post('lang', '');
         $receive_id = $this->request->post('receive_id', 0);
-        $source     = $this->request->post('source', 0);
+        $source = $this->request->post('source', 0);
 
-        if (empty($code) || empty($lang) || !ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true)) {
+        if (empty($code) || empty($lang) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
         }
 
@@ -544,26 +515,26 @@ class TalkController extends AbstractController
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
-                'source'     => $source,
-                'msg_type'   => 5,
-                'user_id'    => $user_id,
+                'source' => $source,
+                'msg_type' => 5,
+                'user_id' => $user_id,
                 'receive_id' => $receive_id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$insert) {
+            if (! $insert) {
                 throw new RuntimeException('插入聊天记录失败...');
             }
 
             $result = ChatRecordsCode::create([
-                'record_id'  => $insert->id,
-                'user_id'    => $user_id,
-                'code_lang'  => $lang,
-                'code'       => $code,
-                'created_at' => date('Y-m-d H:i:s')
+                'record_id' => $insert->id,
+                'user_id' => $user_id,
+                'code_lang' => $lang,
+                'code' => $code,
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$result) {
+            if (! $result) {
                 throw new RuntimeException('插入聊天记录(代码消息)失败...');
             }
 
@@ -579,8 +550,7 @@ class TalkController extends AbstractController
         }
 
         //这里需要调用WebSocket推送接口
-        Coroutine::create(function () use ($insert)
-        {
+        Coroutine::create(function () use ($insert) {
             $proxy = $this->container->get(Proxy::class);
             $proxy->pushTalkMessage($insert->id);
         });
@@ -589,21 +559,18 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 发送文件消息
+     * 发送文件消息.
      *
-     * @param \League\Flysystem\Filesystem $fileSystem
-     *
-     * @return \Psr\Http\Message\ResponseInterface
      * @throws \League\Flysystem\FileExistsException
      * @throws \League\Flysystem\FileNotFoundException
      */
-    public function sendFile(Filesystem $fileSystem) : PsrResponseInterface
+    public function sendFile(Filesystem $fileSystem): PsrResponseInterface
     {
-        $hash_name  = $this->request->post('hash_name', '');
+        $hash_name = $this->request->post('hash_name', '');
         $receive_id = $this->request->post('receive_id', 0);
-        $source     = $this->request->post('source', 0);
+        $source = $this->request->post('source', 0);
 
-        if (empty($hash_name) || !ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true)) {
+        if (empty($hash_name) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
         }
 
@@ -612,45 +579,45 @@ class TalkController extends AbstractController
          * @var FileSplitUpload $file
          */
         $file = FileSplitUpload::where('user_id', $user_id)->where('hash_name', $hash_name)->where('file_type', 1)->first();
-        if (!$file || empty($file->save_dir)) {
+        if (! $file || empty($file->save_dir)) {
             return $this->response->fail(302, '文件不存在...');
         }
 
         $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
-        $save_dir       = "files/talks/" . date('Ymd') . '/' . $file_hash_name;
+        $save_dir = 'files/talks/' . date('Ymd') . '/' . $file_hash_name;
 
         $stream = fopen($file->file_ext, 'rb+');
-        if (!$fileSystem->copy($file->save_dir, $save_dir)) {
+        if (! $fileSystem->copy($file->save_dir, $save_dir)) {
             return $this->response->fail(303, '文件上传失败...');
         }
         fclose($stream);
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
-                'source'     => $source,
-                'msg_type'   => 2,
-                'user_id'    => $user_id,
+                'source' => $source,
+                'msg_type' => 2,
+                'user_id' => $user_id,
                 'receive_id' => $receive_id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$insert) {
+            if (! $insert) {
                 throw new RuntimeException('插入聊天记录失败...');
             }
 
             $result = ChatRecordsFile::create([
-                'record_id'     => $insert->id,
-                'user_id'       => $user_id,
-                'file_source'   => 1,
-                'file_type'     => 4,
+                'record_id' => $insert->id,
+                'user_id' => $user_id,
+                'file_source' => 1,
+                'file_type' => 4,
                 'original_name' => $file->original_name,
-                'file_suffix'   => $file->file_ext,
-                'file_size'     => $file->file_size,
-                'save_dir'      => $save_dir,
-                'created_at'    => date('Y-m-d H:i:s')
+                'file_suffix' => $file->file_ext,
+                'file_size' => $file->file_size,
+                'save_dir' => $save_dir,
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$result) {
+            if (! $result) {
                 throw new RuntimeException('插入聊天记录(代码消息)失败...');
             }
 
@@ -667,8 +634,7 @@ class TalkController extends AbstractController
         }
 
         //这里需要调用WebSocket推送接口
-        Coroutine::create(function () use ($insert)
-        {
+        Coroutine::create(function () use ($insert) {
             $proxy = $this->container->get(Proxy::class);
             $proxy->pushTalkMessage($insert->id);
         });
@@ -677,59 +643,58 @@ class TalkController extends AbstractController
     }
 
     /**
-     * 发送表情包
-     * @return \Psr\Http\Message\ResponseInterface
+     * 发送表情包.
      */
-    public function sendEmoticon() : PsrResponseInterface
+    public function sendEmoticon(): PsrResponseInterface
     {
         $emoticon_id = $this->request->post('emoticon_id', 0);
-        $receive_id  = $this->request->post('receive_id', 0);
-        $source      = $this->request->post('source', 0);
+        $receive_id = $this->request->post('receive_id', 0);
+        $source = $this->request->post('source', 0);
 
-        if (!ValidateHelper::isInteger($emoticon_id) || !ValidateHelper::isInteger($receive_id) || !in_array($source, [1, 2], true)) {
+        if (! ValidateHelper::isInteger($emoticon_id) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->ajaxParamError();
         }
 
-        $user_id  = $this->uid();
+        $user_id = $this->uid();
         /**
          * @var EmoticonDetail $emoticon
          */
         $emoticon = EmoticonDetail::where('id', $emoticon_id)->where('user_id', $user_id)->first([
             'url',
             'file_suffix',
-            'file_size'
+            'file_size',
         ]);
 
-        if (!$emoticon) {
+        if (! $emoticon) {
             return $this->response->error('发送失败...');
         }
 
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
-                'source'     => $source,
-                'msg_type'   => 2,
-                'user_id'    => $user_id,
+                'source' => $source,
+                'msg_type' => 2,
+                'user_id' => $user_id,
                 'receive_id' => $receive_id,
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$insert) {
+            if (! $insert) {
                 throw new RuntimeException('插入聊天记录失败...');
             }
 
             $result = ChatRecordsFile::create([
-                'record_id'     => $insert->id,
-                'user_id'       => $this->uid(),
-                'file_type'     => 1,
-                'file_suffix'   => $emoticon->file_suffix,
-                'file_size'     => $emoticon->file_size,
-                'save_dir'      => $emoticon->url,
+                'record_id' => $insert->id,
+                'user_id' => $this->uid(),
+                'file_type' => 1,
+                'file_suffix' => $emoticon->file_suffix,
+                'file_size' => $emoticon->file_size,
+                'save_dir' => $emoticon->url,
                 'original_name' => '表情',
-                'created_at'    => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
             ]);
 
-            if (!$result) {
+            if (! $result) {
                 throw new RuntimeException('插入聊天记录(文件消息)失败...');
             }
 
@@ -745,8 +710,7 @@ class TalkController extends AbstractController
         }
 
         //这里需要调用WebSocket推送接口
-        Coroutine::create(function () use ($insert)
-        {
+        Coroutine::create(function () use ($insert) {
             $proxy = $this->container->get(Proxy::class);
             $proxy->pushTalkMessage($insert->id);
         });

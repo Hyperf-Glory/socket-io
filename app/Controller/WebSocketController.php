@@ -1,7 +1,14 @@
 <?php
 
-declare(strict_types = 1);
-
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Controller;
 
 use Hyperf\SocketIOServer\Annotation\Event;
@@ -18,27 +25,24 @@ class WebSocketController extends BaseNamespace
 {
     /**
      * @Event("event_keyboard")
-     * @param \Hyperf\SocketIOServer\Socket $socket
+     * @param mixed $data
      *
      * @return string
      */
-    public function onEventKeyboard(\Hyperf\SocketIOServer\Socket $socket, $data)
+    public function onEventKeyboard(Socket $socket, $data)
     {
-        $socket->emit('chat_message', $socket->getSid() . " say: {}");
+        $socket->emit('chat_message', $socket->getSid() . ' say: {}');
         // 应答
         return 'Event Received: string';
     }
 
-
     /**
      * @Event("event_talk")
-     * @param \Hyperf\SocketIOServer\Socket $socket
-     * @param string                        $data
+     * @param string $data
      */
     public function onEventTalk(Socket $socket, $data)
     {
         $data = Json::decode($data);
         $socket->to($data['room'])->emit('event', $socket->getSid() . " say: {$data['message']}");
     }
-
 }

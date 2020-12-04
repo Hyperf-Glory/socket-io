@@ -44,9 +44,7 @@ class UsersGroupMember extends Model
     protected $casts = ['id' => 'integer', 'group_id' => 'integer', 'user_id' => 'integer', 'group_owner' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
 
     /**
-     * 获取聊天群成员ID
-     *
-     * @param int $groupId
+     * 获取聊天群成员ID.
      *
      * @return mixed
      */
@@ -54,8 +52,9 @@ class UsersGroupMember extends Model
     {
         return self::where('group_id', $groupId)->where('status', 0)->pluck('user_id')->toArray();
     }
+
     /**
-     * 获取用户的群名片
+     * 获取用户的群名片.
      *
      * @param int $user_id 用户ID
      * @param int $group_id 群ID

@@ -461,6 +461,31 @@ class ArrayHelper
     }
 
     /**
+     * 对(多维)数组进行正常排序,将会改变原数组.
+     * @param bool $recursive 是否递归
+     */
+    public static function regularSort(array &$arr, bool $recursive = false): bool
+    {
+        $res = false;
+
+        if ($recursive) {
+            foreach ($arr as $key => &$item) {
+                if (is_array($item)) {
+                    self::regularSort($item, true);
+                }
+            }
+        }
+
+        if (ValidateHelper::isIndexArray($arr)) {
+            $res = sort($arr);
+        } elseif (ValidateHelper::isAssocArray($arr)) {
+            $res = ksort($arr);
+        }
+
+        return $res;
+    }
+
+    /**
      * 数组元素组合(按元素值组合).
      *
      * @param array $arr 数组
@@ -510,32 +535,6 @@ class ArrayHelper
                 }
             }
         }
-        return $res;
-    }
-
-    /**
-     * 对(多维)数组进行正常排序,将会改变原数组.
-     * @param array $arr
-     * @param bool $recursive 是否递归
-     * @return bool
-     */
-    public static function regularSort(array &$arr, bool $recursive = false): bool {
-        $res = false;
-
-        if ($recursive) {
-            foreach ($arr as $key => &$item) {
-                if (is_array($item)) {
-                    self::regularSort($item, true);
-                }
-            }
-        }
-
-        if (ValidateHelper::isIndexArray($arr)) {
-            $res = sort($arr);
-        } elseif (ValidateHelper::isAssocArray($arr)) {
-            $res = ksort($arr);
-        }
-
         return $res;
     }
 }

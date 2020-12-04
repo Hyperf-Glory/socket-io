@@ -1,15 +1,21 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\JsonRpc\Contract;
 
 interface InterfaceGroupService
 {
     /**
-     * 创建群组
+     * 创建群组.
      *
-     * @param int   $uid
-     * @param array $groupInfo
      * @param array $friendIds
      *
      * @return mixed
@@ -17,20 +23,15 @@ interface InterfaceGroupService
     public function create(int $uid, array $groupInfo, $friendIds = []);
 
     /**
-     * 解散群组
-     *
-     * @param int $groupId
-     * @param int $uid
+     * 解散群组.
      *
      * @return mixed
      */
-    public function dismiss(int $groupId,int $uid);
+    public function dismiss(int $groupId, int $uid);
 
     /**
-     * 邀请加入群组
+     * 邀请加入群组.
      *
-     * @param int   $uid
-     * @param int   $groupId
      * @param array $friendIds
      *
      * @return mixed
@@ -38,98 +39,65 @@ interface InterfaceGroupService
     public function invite(int $uid, int $groupId, $friendIds = []);
 
     /**
-     * 退出群组
-     * @param int $uid
-     * @param int $groupId
+     * 退出群组.
      *
      * @return mixed
      */
     public function quit(int $uid, int $groupId);
 
     /**
-     *踢出群组(管理员特殊权限)
-     *
-     * @param int   $groupId
-     * @param int   $uid
-     * @param array $memberIds
+     *踢出群组(管理员特殊权限).
      *
      * @return mixed
      */
     public function removeMember(int $groupId, int $uid, array $memberIds);
 
     /**
-     * 设置用户群名片
-     *
-     * @param int    $uid
-     * @param int    $groupId
-     * @param string $visitCard
+     * 设置用户群名片.
      *
      * @return mixed
      */
-    public function setGroupCard(int $uid,int $groupId,string $visitCard);
+    public function setGroupCard(int $uid, int $groupId, string $visitCard);
 
     /**
-     * 获取用户可邀请加入群组的好友列表
-     *
-     * @param int $uid
-     * @param int $groupId
+     * 获取用户可邀请加入群组的好友列表.
      *
      * @return mixed
      */
-    public function getInviteFriends(int $uid,int $groupId);
+    public function getInviteFriends(int $uid, int $groupId);
 
     /**
-     * 获取群组成员列表
-     *
-     * @param int $groupId
-     *
-     * @param int $uid
+     * 获取群组成员列表.
      *
      * @return mixed
      */
-    public function getGroupMembers(int $groupId,int $uid);
+    public function getGroupMembers(int $groupId, int $uid);
 
     /**
-     * 获取群组公告列表
-     *
-     * @param int $uid
-     * @param int $groupId
+     * 获取群组公告列表.
      *
      * @return mixed
      */
-    public function getGroupNotices(int $uid,int $groupId);
+    public function getGroupNotices(int $uid, int $groupId);
 
     /**
-     * 创建/编辑群公告
-     *
-     * @param int    $uid
-     * @param int    $noticeid
-     * @param int    $groupId
-     * @param string $title
-     * @param string $content
+     * 创建/编辑群公告.
      *
      * @return mixed
      */
-    public function editNotice(int $uid,int $noticeid,int $groupId,string $title,string $content);
+    public function editNotice(int $uid, int $noticeid, int $groupId, string $title, string $content);
 
     /**
-     * 删除群公告(软删除)
-     *
-     * @param int $uid
-     * @param int $groupId
-     * @param int $noticeId
+     * 删除群公告(软删除).
      *
      * @return mixed
      */
-    public function deleteNotice(int $uid,int $groupId,int $noticeId);
+    public function deleteNotice(int $uid, int $groupId, int $noticeId);
 
     /**
-     * 获取群信息接口
-     *
-     * @param int $uid
-     * @param int $groupId
+     * 获取群信息接口.
      *
      * @return mixed
      */
-    public function detail(int $uid,int $groupId);
+    public function detail(int $uid, int $groupId);
 }

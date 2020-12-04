@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Component;
 
 use Hyperf\Redis\RedisFactory;
@@ -8,7 +16,7 @@ use Hyperf\Redis\RedisFactory;
 class Sms
 {
     /**
-     * 短信验证码用途渠道
+     * 短信验证码用途渠道.
      */
     public const SMS_USAGE = [
         'user_register',     // 注册账号
@@ -17,36 +25,13 @@ class Sms
     ];
 
     /**
-     * @return \Hyperf\Redis\RedisProxy|mixed|\Redis
-     */
-    private function redis()
-    {
-        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-    }
-
-    /**
-     * 获取缓存key
+     * 检测验证码是否正确.
      *
-     * @param string $type   短信用途
+     * @param string $type 发送类型
      * @param string $mobile 手机号
-     *
-     * @return string
+     * @param string $code 验证码
      */
-    private function getKey(string $type, string $mobile) : string
-    {
-        return "sms_code:{$type}:{$mobile}";
-    }
-
-    /**
-     * 检测验证码是否正确
-     *
-     * @param string $type   发送类型
-     * @param string $mobile 手机号
-     * @param string $code   验证码
-     *
-     * @return bool
-     */
-    public function check(string $type, string $mobile, string $code) : bool
+    public function check(string $type, string $mobile, string $code): bool
     {
         $smsCode = $this->redis()->get($this->getKey($type, $mobile));
 
@@ -56,20 +41,20 @@ class Sms
     /**
      * 发送验证码
      *
-     * @param string $usage  验证码用途
+     * @param string $usage 验证码用途
      * @param string $mobile 手机号
      *
      * @return array|bool
      */
     public function send(string $usage, string $mobile)
     {
-        if (!$this->isUsages($usage)) {
+        if (! $this->isUsages($usage)) {
             return [
                 false,
                 [
-                    'msg'  => "[{$usage}]：此类短信验证码不支持发送",
-                    'data' => []
-                ]
+                    'msg' => "[{$usage}]：此类短信验证码不支持发送",
+                    'data' => [],
+                ],
             ];
         }
 
@@ -77,32 +62,30 @@ class Sms
 
         // 为防止刷短信行为，此处可进行过滤处理
         [$isTrue, $data] = $this->filter($usage, $mobile);
-        if (!$isTrue) {
+        if (! $isTrue) {
             return [false, $data];
         }
 
-        if (!$smsCode = $this->getCode($key)) {
+        if (! $smsCode = $this->getCode($key)) {
             $smsCode = random_int(100000, 999999);
         }
 
         // 设置短信验证码
-        $this->setCode($key, (string)$smsCode);
+        $this->setCode($key, (string) $smsCode);
 
         // ... 调取短信接口，建议异步任务执行 (暂无短信接口，省略处理)
 
         return [
             true,
             [
-                'msg'  => 'success',
-                'data' => ['type' => $usage, 'code' => $smsCode]
-            ]
+                'msg' => 'success',
+                'data' => ['type' => $usage, 'code' => $smsCode],
+            ],
         ];
     }
 
     /**
      * 获取缓存的验证码
-     *
-     * @param string $key
      *
      * @return mixed
      */
@@ -112,11 +95,11 @@ class Sms
     }
 
     /**
-     * 设置验证码缓存
+     * 设置验证码缓存.
      *
-     * @param string    $key      缓存key
-     * @param string    $sms_code 验证码
-     * @param float|int $exp      过期时间（默认15分钟）
+     * @param string $key 缓存key
+     * @param string $sms_code 验证码
+     * @param float|int $exp 过期时间（默认15分钟）
      *
      * @return mixed
      */
@@ -126,9 +109,9 @@ class Sms
     }
 
     /**
-     * 删除验证码缓存
+     * 删除验证码缓存.
      *
-     * @param string $usage  验证码用途
+     * @param string $usage 验证码用途
      * @param string $mobile 手机号
      *
      * @return mixed
@@ -141,31 +124,44 @@ class Sms
     /**
      * 短信发送过滤验证
      *
-     * @param string $usage  验证码用途
+     * @param string $usage 验证码用途
      * @param string $mobile 手机号
-     *
-     * @return array
      */
-    public function filter(string $usage, string $mobile) : array
+    public function filter(string $usage, string $mobile): array
     {
         return [
             true,
             [
-                'msg'  => 'ok',
-                'data' => []
-            ]
+                'msg' => 'ok',
+                'data' => [],
+            ],
         ];
     }
 
     /**
-     * 判断验证码用途渠道是否注册
-     *
-     * @param string $usage
-     *
-     * @return bool
+     * 判断验证码用途渠道是否注册.
      */
-    public function isUsages(string $usage) : bool
+    public function isUsages(string $usage): bool
     {
         return in_array($usage, self::SMS_USAGE);
+    }
+
+    /**
+     * @return \Hyperf\Redis\RedisProxy|mixed|\Redis
+     */
+    private function redis()
+    {
+        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+    }
+
+    /**
+     * 获取缓存key.
+     *
+     * @param string $type 短信用途
+     * @param string $mobile 手机号
+     */
+    private function getKey(string $type, string $mobile): string
+    {
+        return "sms_code:{$type}:{$mobile}";
     }
 }

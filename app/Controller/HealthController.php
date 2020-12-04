@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class HealthController extends AbstractController
 {
-    public function health():ResponseInterface
+    public function health(): ResponseInterface
     {
         return $this->response->success('ok');
     }

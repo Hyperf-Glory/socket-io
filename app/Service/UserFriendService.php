@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Service;
 
 use App\Model\Users;
@@ -11,23 +19,24 @@ use Hyperf\DbConnection\Db;
 
 class UserFriendService
 {
+    use PagingTrait;
 
     use PagingTrait;
 
     /**
-     * 获取指定用户的所有朋友的用户ID
+     * 获取指定用户的所有朋友的用户ID.
      *
      * @param int $uid 指定用户ID
      *
-     * @return mixed
      * @throws \Throwable
+     * @return mixed
      */
     public function getFriends(int $uid)
     {
         try {
             $prefix = config('databases.default.prefix');
-            $table  = $prefix . '_users_friends';
-            $sql    = <<<SQL
+            $table = $prefix . '_users_friends';
+            $sql = <<<'SQL'
 SELECT user2 as uid
 from im_users_friends
 where user1 = ?
@@ -40,21 +49,19 @@ where user2 = ?
 SQL;
             return Db::select($sql, [
                 $uid,
-                $uid
+                $uid,
             ]);
         } catch (\Throwable $throwable) {
-            throw new $throwable;
+            throw new $throwable();
         }
     }
 
-    use PagingTrait;
-
     /**
-     * 创建好友的申请
+     * 创建好友的申请.
      *
-     * @param int    $user_id   用户ID
-     * @param int    $friend_id 好友ID
-     * @param string $remarks   好友申请备注
+     * @param int $user_id 用户ID
+     * @param int $friend_id 好友ID
+     * @param string $remarks 好友申请备注
      *
      * @return bool
      */
@@ -69,48 +76,45 @@ SQL;
          * @var UsersFriendsApply $result
          */
         $result = UsersFriendsApply::where('user_id', $user_id)->where('friend_id', $friend_id)->orderBy('id', 'desc')->first();
-        if (!$result) {
+        if (! $result) {
             $result = UserFriendsApply::create([
-                'user_id'    => $user_id,
-                'friend_id'  => $friend_id,
-                'status'     => 0,
-                'remarks'    => $remarks,
+                'user_id' => $user_id,
+                'friend_id' => $friend_id,
+                'status' => 0,
+                'remarks' => $remarks,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
             return $result ? true : false;
-        } else {
-            if ($result->status == 0) {
-                $result->remarks    = $remarks;
-                $result->updated_at = date('Y-m-d H:i:s');
-                $result->save();
+        }
+        if ($result->status == 0) {
+            $result->remarks = $remarks;
+            $result->updated_at = date('Y-m-d H:i:s');
+            $result->save();
 
-                return true;
-            }
+            return true;
         }
 
         return false;
     }
 
     /**
-     * 删除好友申请记录
+     * 删除好友申请记录.
      *
-     * @param int $uid     用户ID
+     * @param int $uid 用户ID
      * @param int $applyId 好友申请ID
      *
      * @return mixed
      */
     public function delFriendApply(int $uid, int $applyId)
     {
-        return (bool)UsersFriendsApply::where('id', $applyId)->where('friend_id', $uid)->delete();
+        return (bool) UsersFriendsApply::where('id', $applyId)->where('friend_id', $uid)->delete();
     }
 
     /**
-     * 处理好友的申请
+     * 处理好友的申请.
      *
-     * @param int    $uid
-     * @param int    $applyId
      * @param string $remarks 备注信息
      *
      * @return bool
@@ -121,14 +125,14 @@ SQL;
          * @var UsersFriendsApply $info
          */
         $info = UsersFriendsApply::where('id', $applyId)->where('friend_id', $uid)->where('status', 0)->orderBy('id', 'desc')->first(['user_id', 'friend_id']);
-        if (!$info) {
+        if (! $info) {
             return false;
         }
 
         DB::beginTransaction();
         try {
             $res = UsersFriendsApply::where('id', $applyId)->update(['status' => 1, 'updated_at' => date('Y-m-d H:i:s')]);
-            if (!$res) {
+            if (! $res) {
                 throw new \Exception('更新好友申请表信息失败');
             }
 
@@ -145,24 +149,24 @@ SQL;
             $friendResult = UsersFriends::select(['id', 'user1', 'user2', 'active', 'status'])->where('user1', '=', $user1)->where('user2', '=', $user2)->first();
             if ($friendResult) {
                 $active = ($friendResult->user1 == $info->user_id && $friendResult->user2 == $info->friend_id) ? 1 : 2;
-                if (!UserFriends::where('id', $friendResult->id)->update(['active' => $active, 'status' => 1])) {
+                if (! UserFriends::where('id', $friendResult->id)->update(['active' => $active, 'status' => 1])) {
                     throw new \Exception('更新好友关系信息失败');
                 }
             } else {
                 //好友昵称
                 $friend_nickname = Users::where('id', $info->friend_id)->value('nickname');
-                $insRes          = UsersFriends::create([
-                    'user1'        => $user1,
-                    'user2'        => $user2,
+                $insRes = UsersFriends::create([
+                    'user1' => $user1,
+                    'user2' => $user2,
                     'user1_remark' => $user1 == $uid ? $remarks : $friend_nickname,
                     'user2_remark' => $user2 == $uid ? $remarks : $friend_nickname,
-                    'active'       => $user1 == $uid ? 2 : 1,
-                    'status'       => 1,
-                    'agree_time'   => date('Y-m-d H:i:s'),
-                    'created_at'   => date('Y-m-d H:i:s')
+                    'active' => $user1 == $uid ? 2 : 1,
+                    'status' => 1,
+                    'agree_time' => date('Y-m-d H:i:s'),
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
 
-                if (!$insRes) {
+                if (! $insRes) {
                     throw new \Exception('创建好友关系失败');
                 }
             }
@@ -177,16 +181,13 @@ SQL;
     }
 
     /**
-     * 解除好友关系
-     *
-     * @param int $uid
-     * @param int $friendId
+     * 解除好友关系.
      *
      * @return bool
      */
     public function removeFriend(int $uid, int $friendId)
     {
-        if (!UsersFriends::isFriend($uid, $friendId)) {
+        if (! UsersFriends::isFriend($uid, $friendId)) {
             return false;
         }
 
@@ -197,14 +198,14 @@ SQL;
             [$uid, $friendId] = [$friendId, $uid];
         }
 
-        return (bool)UserFriends::where('user1', $uid)->where('user2', $friendId)->update($data);
+        return (bool) UserFriends::where('user1', $uid)->where('user2', $friendId)->update($data);
     }
 
     /**
-     * 获取用户好友申请记录
+     * 获取用户好友申请记录.
      *
-     * @param int $user_id   用户ID
-     * @param int $page      分页数
+     * @param int $user_id 用户ID
+     * @param int $page 分页数
      * @param int $page_size 分页大小
      *
      * @return array
@@ -220,14 +221,14 @@ SQL;
             'users.mobile',
             'users_friends_apply.user_id',
             'users_friends_apply.friend_id',
-            'users_friends_apply.created_at'
+            'users_friends_apply.created_at',
         ]);
 
         $rowsSqlObj->leftJoin('users', 'users.id', '=', 'users_friends_apply.user_id');
         $rowsSqlObj->where('users_friends_apply.friend_id', $user_id);
 
         $count = $rowsSqlObj->count();
-        $rows  = [];
+        $rows = [];
         if ($count > 0) {
             $rows = $rowsSqlObj->orderBy('users_friends_apply.id', 'desc')->forPage($page, $page_size)->get()->toArray();
         }
@@ -236,10 +237,8 @@ SQL;
     }
 
     /**
-     * 编辑好友备注信息
+     * 编辑好友备注信息.
      *
-     * @param int    $uid
-     * @param int    $friendId
      * @param string $remarks 好友备注名称
      *
      * @return bool
@@ -254,7 +253,6 @@ SQL;
             $data['user1_remark'] = $remarks;
         }
 
-        return (bool)UsersFriends::where('user1', $uid)->where('user2', $friendId)->update($data);
+        return (bool) UsersFriends::where('user1', $uid)->where('user2', $friendId)->update($data);
     }
-
 }

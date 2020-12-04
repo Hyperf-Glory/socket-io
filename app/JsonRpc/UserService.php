@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -35,6 +35,11 @@ class UserService implements InterfaceUserService
     protected $container;
 
     /**
+     * @var \Phper666\JWTAuth\JWT
+     */
+    protected $jwt;
+
+    /**
      * @var \Psr\Log\LoggerInterface
      */
     private $logger;
@@ -44,34 +49,20 @@ class UserService implements InterfaceUserService
      */
     private $userService;
 
-    /**
-     *
-     * @var \Phper666\JWTAuth\JWT
-     */
-    protected $jwt;
-
     public function __construct(ContainerInterface $container, UserSer $userService, JWT $jwt)
     {
-        $this->container   = $container;
-        $this->logger      = $container->get(LoggerFactory::class)->get();
+        $this->container = $container;
+        $this->logger = $container->get(LoggerFactory::class)->get();
         $this->userService = $userService;
-        $this->jwt         = $jwt;
+        $this->jwt = $jwt;
     }
 
-    /**
-     * @param string $mobile
-     * @param string $password
-     * @param string $smsCode
-     * @param string $nickname
-     *
-     * @return array
-     */
-    public function register(string $mobile, string $password, string $smsCode, string $nickname) : array
+    public function register(string $mobile, string $password, string $smsCode, string $nickname): array
     {
-        if (!ValidateHelper::isPhone($mobile)) {
+        if (! ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '手机号格式不正确...'];
         }
-        if (!di(Sms::class)->check('user_register', $mobile, $smsCode)) {
+        if (! di(Sms::class)->check('user_register', $mobile, $smsCode)) {
             return ['code' => 0, 'msg' => '验证码填写错误...'];
         }
         $bool = $this->userService->register($mobile, $password, $nickname);
@@ -83,69 +74,57 @@ class UserService implements InterfaceUserService
     }
 
     /**
-     * @param string $mobile
-     * @param string $password
-     *
-     * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function login(string $mobile, string $password) : array
+    public function login(string $mobile, string $password): array
     {
         /**
          * @var UserModel $user
          */
-        if (!($user = UserModel::query()->where('mobile', $mobile)->first())) {
+        if (! ($user = UserModel::query()->where('mobile', $mobile)->first())) {
             return ['code' => 0, 'msg' => '登录账号不存在...'];
         }
-        if (!$this->userService->checkPassword($password, $user->password)) {
+        if (! $this->userService->checkPassword($password, $user->password)) {
             return ['code' => 0, 'msg' => '登录密码错误...'];
         }
         $token = $this->jwt->setScene('cloud')->getToken([
             'cloud_uid' => $user->id,
-            'nickname'  => $user->nickname
+            'nickname' => $user->nickname,
         ]);
         return [
-            'code'      => 1,
+            'code' => 1,
             'authorize' => [
                 'access_token' => $token,
-                'expires_in'   => $this->jwt->getTTL(),
+                'expires_in' => $this->jwt->getTTL(),
             ],
             'user_info' => [
-                'uid'      => $user->id,
+                'uid' => $user->id,
                 'nickname' => $user->nickname,
-                'avatar'   => $user->avatar,
-                'motto'    => $user->motto,
-                'gender'   => $user->gender,
-            ]
+                'avatar' => $user->avatar,
+                'motto' => $user->motto,
+                'gender' => $user->gender,
+            ],
         ];
     }
 
     /**
-     * @param string $token
-     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function logout(string $token) : void
+    public function logout(string $token): void
     {
         $this->jwt->logout($token);
     }
 
-    /**
-     * @param string $mobile
-     * @param string $type
-     *
-     * @return array
-     */
-    public function sendVerifyCode(string $mobile, string $type = User::REGISTER) : array
+    public function sendVerifyCode(string $mobile, string $type = User::REGISTER): array
     {
-        if (!di(Sms::class)->isUsages($type)) {
+        if (! di(Sms::class)->isUsages($type)) {
             return ['code' => 0, 'msg' => '验证码发送失败...'];
         }
-        if (!ValidateHelper::isPhone($mobile)) {
+        if (! ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '手机号格式不正确...'];
         }
         if ($type === 'forget_password') {
-            if (!UserModel::query()->where('mobile', $mobile)->value('id')) {
+            if (! UserModel::query()->where('mobile', $mobile)->value('id')) {
                 return ['code' => 0, 'msg' => '手机号未被注册使用...'];
             }
         } elseif ($type === 'change_mobile' || $type === 'user_register') {
@@ -164,22 +143,15 @@ class UserService implements InterfaceUserService
         return $data;
     }
 
-    /**
-     * @param string $mobile
-     * @param string $smsCode
-     * @param string $password
-     *
-     * @return array
-     */
-    public function forgetPassword(string $mobile, string $smsCode, string $password) : array
+    public function forgetPassword(string $mobile, string $smsCode, string $password): array
     {
-        if (empty($smsCode) || empty($password) || !ValidateHelper::isPhone($mobile)) {
+        if (empty($smsCode) || empty($password) || ! ValidateHelper::isPhone($mobile)) {
             return ['code' => 0, 'msg' => '参数错误...'];
         }
-        if (!ValidateHelper::checkPassword($password)) {
+        if (! ValidateHelper::checkPassword($password)) {
             return ['code' => 0, 'msg' => '密码格式不正确...'];
         }
-        if (!di(Sms::class)->check('forget_password', $mobile, $smsCode)) {
+        if (! di(Sms::class)->check('forget_password', $mobile, $smsCode)) {
             return ['code' => 0, 'msg' => '验证码填写错误...'];
         }
         $bool = $this->userService->resetPassword($mobile, $password);
@@ -189,20 +161,15 @@ class UserService implements InterfaceUserService
         return $bool ? ['code' => 1, 'msg' => '重置密码成功...'] : ['code' => 0, 'msg' => '重置密码失败...'];
     }
 
-    /**
-     * @param int $uid
-     *
-     * @return null|array
-     */
-    public function get(int $uid) : ?array
+    public function get(int $uid): ?array
     {
         try {
             $user = $this->userService->get($uid);
             if ($user) {
                 return [
-                    'id'       => $user->id,
+                    'id' => $user->id,
                     'nickname' => $user->nickname,
-                    'avatar'   => $user->avatar
+                    'avatar' => $user->avatar,
                 ];
             }
             return null;
@@ -213,25 +180,16 @@ class UserService implements InterfaceUserService
     }
 
     /**
-     * @param string $token
-     *
-     * @return bool
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Throwable
      */
-    public function checkToken(string $token) : bool
+    public function checkToken(string $token): bool
     {
         return $this->jwt->checkToken($token);
     }
 
-    /**
-     * @param string $token
-     *
-     * @return array
-     */
-    public function decodeToken(string $token) : array
+    public function decodeToken(string $token): array
     {
         return $this->jwt->getParserData($token);
     }
-
 }

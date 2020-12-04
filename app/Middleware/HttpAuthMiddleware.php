@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -25,19 +25,19 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class HttpAuthMiddleware implements MiddlewareInterface
 {
-    private $stdoutLogger;
-
     protected $prefix = 'Bearer';
+
+    private $stdoutLogger;
 
     private $response;
 
     public function __construct(StdoutLoggerInterface $logger, Response $response)
     {
         $this->stdoutLogger = $logger;
-        $this->response     = $response;
+        $this->response = $response;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $isValidToken = false;
         try {
@@ -46,14 +46,14 @@ class HttpAuthMiddleware implements MiddlewareInterface
                 $token = $this->prefix . ' ' . ($request->getQueryParams()['token'] ?? '');
             }
             $token = ucfirst($token);
-            $arr   = explode($this->prefix . ' ', $token);
+            $arr = explode($this->prefix . ' ', $token);
             $token = $arr[1] ?? '';
 
             if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
                 $request = $this->setRequestContext($token);
                 return $handler->handle($request);
             }
-            if (!$isValidToken) {
+            if (! $isValidToken) {
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
         } catch (\Throwable $throwable) {
@@ -67,24 +67,19 @@ class HttpAuthMiddleware implements MiddlewareInterface
         return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
     }
 
-    protected function isAuth(ServerRequestInterface $request) : bool
+    protected function isAuth(ServerRequestInterface $request): bool
     {
         return true;
     }
 
-    /**
-     * @param string $token
-     *
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
-    private function setRequestContext(string $token) : ServerRequestInterface
+    private function setRequestContext(string $token): ServerRequestInterface
     {
         $userData = di(InterfaceUserService::class)->decodeToken($token);
-        $uid      = $userData['cloud_uid'] ?? 0;
-        $rpcUser  = di(InterfaceUserService::class);
-        $user     = $rpcUser->get($uid);
-        $request  = Context::get(ServerRequestInterface::class);
-        $request  = $request->withAttribute('user', $user);
+        $uid = $userData['cloud_uid'] ?? 0;
+        $rpcUser = di(InterfaceUserService::class);
+        $user = $rpcUser->get($uid);
+        $request = Context::get(ServerRequestInterface::class);
+        $request = $request->withAttribute('user', $user);
         Context::set(ServerRequestInterface::class, $request);
         return $request;
     }

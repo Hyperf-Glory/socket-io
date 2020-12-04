@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Component;
 
 use App\Helper\ArrayHelper;
@@ -8,7 +16,6 @@ use Hyperf\Redis\RedisProxy;
 
 class ClientManager
 {
-
     public const HASH_UID_TO_FD_PREFIX = 'hash.socket_user_fd';
 
     public const HASH_FD_TO_UID_PREFIX = 'hash.socket_fd_user';
@@ -16,11 +23,7 @@ class ClientManager
     public const ZSET_IP_TO_UID = 'zset.ip_to_uid_bind';
 
     /**
-     *存储fd,ip,uid
-     *
-     * @param RedisProxy  $redis
-     * @param string      $uid
-     * @param int         $fd
+     *存储fd,ip,uid.
      */
     public static function put(RedisProxy $redis, string $uid, int $fd)
     {
@@ -30,11 +33,7 @@ class ClientManager
     }
 
     /**
-     * 删除对应关系
-     *
-     * @param RedisProxy  $redis
-     * @param string      $uid
-     * @param null|int    $fd
+     * 删除对应关系.
      */
     public static function del(RedisProxy $redis, string $uid, int $fd = null)
     {
@@ -53,20 +52,14 @@ class ClientManager
     }
 
     /**
-     * @param \Redis $redis
-     * @param string $uid
-     *
      * @return null|int
      */
     public static function fd(\Redis $redis, string $uid)
     {
-        return (int)$redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? null;
+        return (int) $redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? null;
     }
 
     /**
-     * @param RedisProxy $redis
-     * @param array      $uids
-     *
      * @return array
      */
     public static function fds(RedisProxy $redis, array $uids = [])
@@ -78,9 +71,6 @@ class ClientManager
     }
 
     /**
-     * @param RedisProxy $redis
-     * @param int        $fd
-     *
      * @return null|string
      */
     public static function key(RedisProxy $redis, int $fd)
@@ -89,9 +79,6 @@ class ClientManager
     }
 
     /**
-     * @param RedisProxy  $redis
-     * @param null|string $ip
-     *
      * @return array|void
      */
     public static function getIpUid(RedisProxy $redis, string $ip = null)
@@ -103,16 +90,10 @@ class ClientManager
     }
 
     /**
-     * @param \Hyperf\Redis\RedisProxy $redis
-     * @param int                      $uid
-     *
      * @return false|string
      */
     public static function isOnline(RedisProxy $redis, int $uid)
     {
         return $redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? false;
     }
-
 }
-
-

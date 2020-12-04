@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types = 1);
-
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -10,7 +9,6 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 use App\Helper\StringHelper;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\JobInterface;
@@ -19,7 +17,7 @@ use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ServerRequestInterface;
 
-if (!function_exists('di')) {
+if (! function_exists('di')) {
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
@@ -38,35 +36,35 @@ if (!function_exists('di')) {
     }
 }
 
-if (!function_exists('format_throwable')) {
+if (! function_exists('format_throwable')) {
     /**
      * Format a throwable to string.
      *
      * @param \Throwable $throwable
      */
-    function format_throwable(Throwable $throwable) : string
+    function format_throwable(Throwable $throwable): string
     {
         return di()->get(FormatterInterface::class)->format($throwable);
     }
 }
 
-if (!function_exists('queue_push')) {
+if (! function_exists('queue_push')) {
     /**
      * Push a job to async queue.
      */
-    function queue_push(JobInterface $job, int $delay = 0, string $key = 'default') : bool
+    function queue_push(JobInterface $job, int $delay = 0, string $key = 'default'): bool
     {
         $driver = di()->get(DriverFactory::class)->get($key);
         return $driver->push($job, $delay);
     }
 }
-if (!function_exists('verifyIp')) {
+if (! function_exists('verifyIp')) {
     function verifyIp($realip)
     {
         return filter_var($realip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
     }
 }
-if (!function_exists('getClientIp')) {
+if (! function_exists('getClientIp')) {
     function getClientIp()
     {
         try {
@@ -97,30 +95,29 @@ if (!function_exists('getClientIp')) {
     }
 }
 
-/**
+/*
  * 替换文本中的url 为 a标签
  *
  * @param string $str
  *
  * @return null|string|string[]
  */
-if (!function_exists('replace_url_link')) {
+if (! function_exists('replace_url_link')) {
     function replace_url_link(string $str)
     {
         $re = '@((https|http)?://([-\w\.]+)+(:\d+)?(/([\w/_\-.#%]*(\?\S+)?)?)?)@';
-        return preg_replace_callback($re, static function ($matches)
-        {
+        return preg_replace_callback($re, static function ($matches) {
             return sprintf('<a href="%s" target="_blank">%s</a>', trim($matches[0], '&quot;'), $matches[0]);
         }, $str);
     }
 }
 
 /**
- * 随机生成图片名
+ * 随机生成图片名.
  *
- * @param string $ext    图片后缀名
- * @param int    $width  图片宽度
- * @param int    $height 图片高度
+ * @param string $ext 图片后缀名
+ * @param int $width 图片宽度
+ * @param int $height 图片高度
  *
  * @return string
  */
@@ -130,7 +127,7 @@ function create_image_name(string $ext, int $width, int $height)
 }
 
 /**
- * 从HTML文本中提取所有图片
+ * 从HTML文本中提取所有图片.
  *
  * @param $content
  *
@@ -138,12 +135,12 @@ function create_image_name(string $ext, int $width, int $height)
  */
 function get_html_images($content)
 {
-    $pattern = "/<img.*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/";
+    $pattern = "/<img.*?src=[\\'|\"](.*?)[\\'|\"].*?[\\/]?>/";
     preg_match_all($pattern, htmlspecialchars_decode($content), $match);
     $data = [];
-    if (!empty($match[1])) {
+    if (! empty($match[1])) {
         foreach ($match[1] as $img) {
-            if (!empty($img)) {
+            if (! empty($img)) {
                 $data[] = $img;
             }
         }
@@ -154,13 +151,12 @@ function get_html_images($content)
 }
 
 /**
- * 生成6位字符的短码字符串
- * @param string $string
+ * 生成6位字符的短码字符串.
  * @return string
  */
 function create_short_code(string $string)
 {
-    $result = sprintf("%u", crc32($string));
+    $result = sprintf('%u', crc32($string));
     $show = '';
     while ($result > 0) {
         $s = $result % 62;
@@ -177,7 +173,7 @@ function create_short_code(string $string)
 }
 
 /**
- * 获取媒体文件url
+ * 获取媒体文件url.
  *
  * @param string $path 文件相对路径
  * @return string

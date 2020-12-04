@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -44,9 +44,9 @@ class UsersGroup extends Model
     protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
 
     /**
-     * 判断用户是否是管理员
+     * 判断用户是否是管理员.
      *
-     * @param int $uid     用户ID
+     * @param int $uid 用户ID
      * @param int $groupId 群ID
      *
      * @return mixed
@@ -57,10 +57,10 @@ class UsersGroup extends Model
     }
 
     /**
-     * 判断用户是否是群成员
+     * 判断用户是否是群成员.
      *
      * @param int $groupId 群ID
-     * @param int $uid     用户ID
+     * @param int $uid 用户ID
      *
      * @return bool
      */

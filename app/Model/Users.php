@@ -45,5 +45,5 @@ class Users extends Model
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'gender' => 'integer', 'created_at' => 'datetime','updated_at' => 'datetime'];
+    protected $casts = ['id' => 'integer', 'gender' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

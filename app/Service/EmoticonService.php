@@ -1,5 +1,14 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Services;
 
 use App\Model\ChatRecords;
@@ -12,14 +21,13 @@ use App\Model\UsersGroup;
  * 表情服务层
  *
  * Class EmoticonService
- * @package App\Service
  */
 class EmoticonService
 {
     /**
-     * 安装系统表情包
+     * 安装系统表情包.
      *
-     * @param int $uid         用户ID
+     * @param int $uid 用户ID
      * @param int $emoticon_id 表情包ID
      *
      * @return mixed
@@ -30,7 +38,7 @@ class EmoticonService
          * @var UsersEmoticon $info
          */
         $info = UsersEmoticon::select(['id', 'user_id', 'emoticon_ids'])->where('user_id', $uid)->first();
-        if (!$info) {
+        if (! $info) {
             return UserEmoticon::create(['user_id' => $uid, 'emoticon_ids' => $emoticon_id]) ? true : false;
         }
 
@@ -39,25 +47,23 @@ class EmoticonService
             return true;
         }
 
-        $emoticon_ids = (array)$emoticon_id;
+        $emoticon_ids = (array) $emoticon_id;
         return UserEmoticon::where('user_id', $uid)->update(['emoticon_ids' => implode(',', $emoticon_ids)]) ? true : false;
     }
 
     /**
-     * 移除已安装的系统表情包
+     * 移除已安装的系统表情包.
      *
-     * @param int $uid         用户ID
+     * @param int $uid 用户ID
      * @param int $emoticon_id 表情包ID
-     *
-     * @return bool
      */
-    public function removeSysEmoticon(int $uid, int $emoticon_id) : bool
+    public function removeSysEmoticon(int $uid, int $emoticon_id): bool
     {
         /**
          * @var UsersEmoticon $info
          */
         $info = UsersEmoticon::select(['id', 'user_id', 'emoticon_ids'])->where('user_id', $uid)->first();
-        if (!$info || !in_array($emoticon_id, $info->emoticon_ids, true)) {
+        if (! $info || ! in_array($emoticon_id, $info->emoticon_ids, true)) {
             return false;
         }
 
@@ -76,26 +82,22 @@ class EmoticonService
     }
 
     /**
-     * 获取用户安装的表情ID
+     * 获取用户安装的表情ID.
      *
      * @param int $uid 用户ID
-     *
-     * @return array
      */
-    public function getInstallIds(int $uid) : array
+    public function getInstallIds(int $uid): array
     {
         return UsersEmoticon::where('user_id', $uid)->value('emoticon_ids') ?? [];
     }
 
     /**
-     * 收藏聊天图片
+     * 收藏聊天图片.
      *
-     * @param int $uid       用户ID
+     * @param int $uid 用户ID
      * @param int $record_id 聊天消息ID
-     *
-     * @return array
      */
-    public function collect(int $uid, int $record_id) : array
+    public function collect(int $uid, int $record_id): array
     {
         /**
          * @var ChatRecords $result
@@ -106,7 +108,7 @@ class EmoticonService
             ['is_revoke', '=', 0],
         ])->first(['id', 'source', 'msg_type', 'user_id', 'receive_id', 'is_revoke']);
 
-        if (!$result) {
+        if (! $result) {
             return [false, []];
         }
 
@@ -115,7 +117,7 @@ class EmoticonService
                 return [false, []];
             }
         } else {
-            if (!UsersGroup::isMember($result->receive_id, $uid)) {
+            if (! UsersGroup::isMember($result->receive_id, $uid)) {
                 return [false, []];
             }
         }
@@ -126,10 +128,10 @@ class EmoticonService
         $fileInfo = ChatRecordsFile::where('record_id', $result->id)->where('file_type', 1)->first([
             'file_suffix',
             'file_size',
-            'save_dir'
+            'save_dir',
         ]);
 
-        if (!$fileInfo) {
+        if (! $fileInfo) {
             return [false, []];
         }
 
@@ -139,33 +141,29 @@ class EmoticonService
         }
 
         $res = EmoticonDetail::create([
-            'user_id'     => $uid,
-            'url'         => $fileInfo->save_dir,
+            'user_id' => $uid,
+            'url' => $fileInfo->save_dir,
             'file_suffix' => $fileInfo->file_suffix,
-            'file_size'   => $fileInfo->file_size,
-            'created_at'  => time()
+            'file_size' => $fileInfo->file_size,
+            'created_at' => time(),
         ]);
 
         return $res ? [true, ['media_id' => $res->id, 'src' => get_media_url($res->url)]] : [false, []];
     }
 
     /**
-     * 移除收藏的表情包
+     * 移除收藏的表情包.
      *
-     * @param int   $uid 用户ID
+     * @param int $uid 用户ID
      * @param array $ids 表情包详情ID
-     *
-     * @return int
      */
-    public function deleteCollect(int $uid, array $ids) : int
+    public function deleteCollect(int $uid, array $ids): int
     {
         return EmoticonDetail::whereIn('id', $ids)->where('user_id', $uid)->delete();
     }
 
     /**
-     * 获取表情包列表
-     *
-     * @param array $where
+     * 获取表情包列表.
      *
      * @return mixed
      */

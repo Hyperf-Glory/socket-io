@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -48,7 +48,7 @@ class UsersFriends extends Model
     protected $casts = ['id' => 'integer', 'user1' => 'integer', 'user2' => 'integer', 'active' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
 
     /**
-     * 获取用户所有好友
+     * 获取用户所有好友.
      *
      * @param int $uid 用户ID
      *
@@ -56,7 +56,6 @@ class UsersFriends extends Model
      */
     public static function getUserFriends(int $uid)
     {
-
         $sql = <<<SQL
             SELECT users.id,users.nickname,users.avatar,users.motto,users.gender,tmp_table.friend_remark from im_users users
             INNER join
@@ -69,19 +68,15 @@ SQL;
 
         $rows = Db::select($sql);
 
-        array_walk($rows, function (&$item)
-        {
-            $item = (array)$item;
+        array_walk($rows, function (&$item) {
+            $item = (array) $item;
         });
 
         return $rows;
     }
 
     /**
-     * 判断用户之间是否存在好友关系
-     *
-     * @param int $uid1
-     * @param int $uid2
+     * 判断用户之间是否存在好友关系.
      *
      * @return bool
      */
@@ -96,7 +91,7 @@ SQL;
     }
 
     /**
-     * 获取指定用户的所有朋友的用户ID
+     * 获取指定用户的所有朋友的用户ID.
      *
      * @param int $user_id 指定用户ID
      * @return array
@@ -108,5 +103,4 @@ SQL;
             return $item->uid;
         }, Db::select($sql));
     }
-
 }

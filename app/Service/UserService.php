@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Service;
 
 use App\Component\Hash;
@@ -9,45 +17,38 @@ use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
-use Hyperf\Di\Annotation\Inject;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class UserService
 {
-
     /**
-     * 账号注册
-     *
-     * @param string $mobile
-     * @param string $password
-     * @param string $nickname
+     * 账号注册.
      *
      * @return bool
      */
     public function register(string $mobile, string $password, string $nickname)
     {
-
         try {
             Db::beginTransaction();
-            $user             = new Users();
-            $user->nickname   = $nickname;
-            $user->mobile     = $mobile;
-            $user->password   = Hash::make($password);
+            $user = new Users();
+            $user->nickname = $nickname;
+            $user->mobile = $mobile;
+            $user->password = Hash::make($password);
             $user->created_at = date('Y-m-d H:i:s');
-            $result           = $user->save();
+            $result = $user->save();
 
             //创建用户的默认笔记分类
             ArticleClass::query()->insert([
-                'user_id'    => $user->id,
+                'user_id' => $user->id,
                 'class_name' => '我的笔记',
                 'is_default' => 1,
-                'sort'       => 1,
-                'created_at' => time()
+                'sort' => 1,
+                'created_at' => time(),
             ]);
             Db::commit();
         } catch (\Exception $e) {
             $result = false;
-            Db::rollBack();;
+            Db::rollBack();
         }
         return $result ? true : false;
     }
@@ -55,23 +56,17 @@ class UserService
     /**
      * 重制密码
      *
-     * @param string $mobile
-     * @param string $password
-     *
      * @return int
      */
     public function resetPassword(string $mobile, string $password)
     {
         return Users::query()->where('mobile', $mobile)->update([
-            'password' => Hash::make($password)
+            'password' => Hash::make($password),
         ]);
     }
 
     /**
-     * 修改绑定的手机号
-     *
-     * @param int    $uid
-     * @param string $mobile
+     * 修改绑定的手机号.
      *
      * @return array
      */
@@ -83,23 +78,21 @@ class UserService
         }
 
         $bool = Users::query()->where('uid', $uid)->update([
-            'mobile' => $mobile
+            'mobile' => $mobile,
         ]);
-        return [(bool)$bool, null];
+        return [(bool) $bool, null];
     }
 
     public function sendEmailCode(string $email)
     {
-        $key      = "email_code:{$email}";
+        $key = "email_code:{$email}";
         $sms_code = mt_rand(100000, 999999);
-        $mail     = make(PHPMailer::class);
+        $mail = make(PHPMailer::class);
         //TODO 发送邮件
     }
 
     /**
-     * 获取用户所有的群聊ID
-     *
-     * @param int $uid
+     * 获取用户所有的群聊ID.
      *
      * @return array
      */
@@ -109,8 +102,6 @@ class UserService
     }
 
     /**
-     * @param int $uid
-     *
      * @return null|\Hyperf\Database\Model\Builder|\Hyperf\Database\Model\Model|object|Users
      */
     public function get(int $uid)
@@ -119,9 +110,9 @@ class UserService
     }
 
     /**
-     * 验证用户密码是否正确
+     * 验证用户密码是否正确.
      *
-     * @param string $input    用户输入密码
+     * @param string $input 用户输入密码
      * @param string $password 账户密码
      *
      * @return bool
@@ -132,9 +123,8 @@ class UserService
     }
 
     /**
-     * 获取用户信息
+     * 获取用户信息.
      *
-     * @param int   $uid
      * @param array $field 查询字段
      *
      * @return mixed|Users
@@ -145,7 +135,7 @@ class UserService
     }
 
     /**
-     * 获取用户所在的群聊
+     * 获取用户所在的群聊.
      *
      * @param int $uid 用户ID
      * @return mixed
@@ -153,12 +143,12 @@ class UserService
     public function getUserChatGroups(int $uid)
     {
         $items = UsersGroupMember::select(['users_group.id', 'users_group.group_name', 'users_group.avatar', 'users_group.group_profile', 'users_group.user_id as group_user_id'])
-                                ->join('users_group', 'users_group.id', '=', 'users_group_member.group_id')
-                                ->where([
-                                    ['users_group_member.user_id', '=', $uid],
-                                    ['users_group_member.status', '=', 0]
-                                ])
-                                ->orderBy('id', 'desc')->get()->toarray();
+            ->join('users_group', 'users_group.id', '=', 'users_group_member.group_id')
+            ->where([
+                ['users_group_member.user_id', '=', $uid],
+                ['users_group_member.status', '=', 0],
+            ])
+            ->orderBy('id', 'desc')->get()->toarray();
 
         foreach ($items as $key => $item) {
             // 判断当前用户是否是群主
@@ -171,11 +161,10 @@ class UserService
             $items[$key]['not_disturb'] = UsersChatList::where([
                 ['uid', '=', $uid],
                 ['type', '=', 2],
-                ['group_id', '=', $item['id']]
+                ['group_id', '=', $item['id']],
             ])->value('not_disturb');
         }
 
         return $items;
     }
-
 }

@@ -354,8 +354,6 @@ class DateHelper
     }
 
     /**
-     * @param null|string $key
-     *
      * @return null|string
      */
     public static function getChineseWeek(string $key = null)

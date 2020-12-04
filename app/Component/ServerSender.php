@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -20,7 +20,7 @@ class ServerSender
     /**
      * @param $data
      */
-    public function sendToAll($data, array $fds = []) : void
+    public function sendToAll($data, array $fds = []): void
     {
         foreach ($fds as $fd) {
             $this->push($fd, $data);
@@ -47,11 +47,10 @@ class ServerSender
         return di(Sender::class)->disconnect($fd, $code, $reason);
     }
 
-    public function close(int $fd) : void
+    public function close(int $fd): void
     {
         if (Coroutine::inCoroutine()) {
-            Coroutine::create(function () use ($fd)
-            {
+            Coroutine::create(function () use ($fd) {
                 self::disconnect($fd);
             });
         }
@@ -59,14 +58,12 @@ class ServerSender
     }
 
     /**
-     * @param int $fd
-     *
      * @return bool
      */
     public function isWsClient(int $fd)
     {
         $swooleServer = di(\Hyperf\Server\Server::class)->getServer();
-        $client       = $swooleServer->getClientInfo($fd);
+        $client = $swooleServer->getClientInfo($fd);
         if (isset($client['websocket_status']) && $client['websocket_status'] === WEBSOCKET_STATUS_FRAME) {
             return true;
         }

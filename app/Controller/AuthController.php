@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Controller;
 
 use App\Component\Sms;
@@ -11,18 +19,16 @@ use Psr\Http\Message\ResponseInterface;
 class AuthController extends AbstractController
 {
     /**
-     * 注册接口
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 注册接口.
      */
-    public function register():ResponseInterface
+    public function register(): ResponseInterface
     {
         $params = $this->request->all();
-        if (!ValidateHelper::isPhone($params['mobile'])) {
+        if (! ValidateHelper::isPhone($params['mobile'])) {
             return $this->response->parmasError('手机号格式不正确...');
         }
         $rpcUser = $this->container->get(InterfaceUserService::class);
-        $ret     = $rpcUser->register(
+        $ret = $rpcUser->register(
             $params['mobile'],
             $params['password'],
             $params['sms_code'],
@@ -35,35 +41,32 @@ class AuthController extends AbstractController
     }
 
     /**
-     * 登录
-     * @return \Psr\Http\Message\ResponseInterface
+     * 登录.
      */
-    public function login():ResponseInterface
+    public function login(): ResponseInterface
     {
         $params = $this->request->all();
-        if (!ValidateHelper::isPhone($params['mobile'])) {
+        if (! ValidateHelper::isPhone($params['mobile'])) {
             return $this->response->parmasError('手机号格式不正确...');
         }
         $rpcUser = $this->container->get(InterfaceUserService::class);
-        $ret     = $rpcUser->login($params['mobile'], $params['password']);
+        $ret = $rpcUser->login($params['mobile'], $params['password']);
 
         if (isset($ret['code']) && $ret['code'] === 1) {
             return $this->response->success('登录成功!', [
                 'authorize' => $ret['authorize'],
-                'userInfo'  => $ret['user_info']
+                'userInfo' => $ret['user_info'],
             ]);
         }
         return $this->response->error($ret['msg'] ?? '登录失败...');
     }
 
     /**
-     * 退出登录
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * 退出登录.
      */
-    public function logout():ResponseInterface
+    public function logout(): ResponseInterface
     {
-        $token   = $this->request->getHeaderLine('Authorization') ?? '';
+        $token = $this->request->getHeaderLine('Authorization') ?? '';
         $rpcUser = $this->container->get(InterfaceUserService::class);
         $rpcUser->logout($token);
         return $this->response->success('退出成功!');
@@ -71,23 +74,21 @@ class AuthController extends AbstractController
 
     /**
      * 发送验证码
-     *
-     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function sendVerifyCode():ResponseInterface
+    public function sendVerifyCode(): ResponseInterface
     {
         $mobile = $this->request->post('mobile', '');
-        $type   = $this->request->post('type', '');
-        if (!di(Sms::class)->isUsages($type)) {
+        $type = $this->request->post('type', '');
+        if (! di(Sms::class)->isUsages($type)) {
             return $this->response->error('验证码发送失败...');
         }
-        if (!ValidateHelper::isPhone($mobile)) {
+        if (! ValidateHelper::isPhone($mobile)) {
             return $this->response->error('手机号格式不正确...');
         }
 
         $rpcUser = $this->container->get(InterfaceUserService::class);
-        $data    = $rpcUser->sendVerifyCode($mobile, $type);
-        $data    = array_merge(['is_debug' => true], $data);
+        $data = $rpcUser->sendVerifyCode($mobile, $type);
+        $data = array_merge(['is_debug' => true], $data);
         if (isset($data['code']) && $data['code'] === 1) {
             return $this->response->success('验证码发送成功!', $data);
         }
@@ -96,16 +97,14 @@ class AuthController extends AbstractController
 
     /**
      * 忘记密码
-     *
-     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function forgetPassword():ResponseInterface
+    public function forgetPassword(): ResponseInterface
     {
-        $mobile   = $this->request->post('mobile', '');
-        $code     = $this->request->post('sms_code', '');
+        $mobile = $this->request->post('mobile', '');
+        $code = $this->request->post('sms_code', '');
         $password = $this->request->post('password', '');
-        $rpcUser  = $this->container->get(InterfaceUserService::class);
-        $data     = $rpcUser->forgetPassword($mobile, $code, $password);
+        $rpcUser = $this->container->get(InterfaceUserService::class);
+        $data = $rpcUser->forgetPassword($mobile, $code, $password);
         if (isset($data['code']) && $data['code'] === 1) {
             return $this->response->success($data['msg']);
         }

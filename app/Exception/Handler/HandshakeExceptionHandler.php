@@ -1,6 +1,14 @@
 <?php
-declare(strict_types = 1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Exception\Handler;
 
 use App\Exception\HandshakeException;
@@ -12,7 +20,6 @@ use Throwable;
 
 class HandshakeExceptionHandler extends ExceptionHandler
 {
-
     private $logger;
 
     public function __construct(StdoutLoggerInterface $logger)
@@ -29,10 +36,8 @@ class HandshakeExceptionHandler extends ExceptionHandler
         }
     }
 
-    public function isValid(Throwable $throwable) : bool
+    public function isValid(Throwable $throwable): bool
     {
         return true;
     }
 }
-
-

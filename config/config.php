@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types = 1);
-
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -10,20 +9,18 @@ declare(strict_types = 1);
  * @contact  group@hyperf.io
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
-
 use Hyperf\Contract\StdoutLoggerInterface;
-use Psr\Log\LogLevel;
 use Hyperf\Utils\Codec\Json;
+use Psr\Log\LogLevel;
 
 return [
-    'app_name'                   => env('APP_NAME', 'skeleton'),
-    'app_env'                    => env('APP_ENV', 'dev'),
-    'websocket_server_ips'       => value(function ()
-    {
+    'app_name' => env('APP_NAME', 'skeleton'),
+    'app_env' => env('APP_ENV', 'dev'),
+    'websocket_server_ips' => value(function () {
         return Json::decode(env('WEBSOCKET_SERVER_IPS'), true) ?? [];
     }),
-    'image_url'                  => 'https://image.com',
-    'scan_cacheable'             => env('SCAN_CACHEABLE', true),
+    'image_url' => 'https://image.com',
+    'scan_cacheable' => env('SCAN_CACHEABLE', true),
     StdoutLoggerInterface::class => [
         'log_level' => [
             LogLevel::ALERT,

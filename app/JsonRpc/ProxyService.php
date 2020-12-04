@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -19,9 +19,9 @@ use Hyperf\Utils\Coroutine;
 use Psr\Container\ContainerInterface;
 
 /**
- * 该类暂时废弃
+ * 该类暂时废弃.
  * @deprecated
- * Class Cloud.
+ * Class Cloud
  * @RpcService(name="ProxyService", protocol="jsonrpc-tcp-length-check", server="jsonrpc", publishTo="consul")
  */
 class ProxyService implements InterfaceProxyService
@@ -39,7 +39,7 @@ class ProxyService implements InterfaceProxyService
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->logger    = $container->get(LoggerFactory::class)->get();
+        $this->logger = $container->get(LoggerFactory::class)->get();
     }
 
     /**
@@ -48,8 +48,7 @@ class ProxyService implements InterfaceProxyService
      * Message:
      *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"}}
      *
-     * @param int    $uid 用户的唯一ID
-     * @param string $message
+     * @param int $uid 用户的唯一ID
      *
      * @return mixed|void
      */
@@ -60,13 +59,12 @@ class ProxyService implements InterfaceProxyService
             $this->logger->error('cloud json-rpc pushmsg keys message is empty raw data');
             return;
         }
-        di(CloudTask::class)->push((string)$uid, $message);
+        di(CloudTask::class)->push((string) $uid, $message);
     }
 
     /**
-     * 广播
+     * 广播.
      * @deprecated
-     * @param string $message
      */
     public function broadcast(string $message)
     {
@@ -75,8 +73,7 @@ class ProxyService implements InterfaceProxyService
             return;
         }
         $this->logger->debug(sprintf('cloud json-rpc broadcast message:%s', $message));
-        Coroutine::create(function () use ($message)
-        {
+        Coroutine::create(function () use ($message) {
             di(CloudTask::class)->broadcast($message);
         });
     }
@@ -87,8 +84,7 @@ class ProxyService implements InterfaceProxyService
      * Message:
      * {"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"}}
      *
-     * @param int    $groupId 群聊ID
-     * @param string $message
+     * @param int $groupId 群聊ID
      */
     public function group(int $groupId, string $message)
     {
@@ -97,16 +93,13 @@ class ProxyService implements InterfaceProxyService
             return;
         }
         $this->logger->debug(sprintf('cloud json-rpc broadcast message:%s', $message));
-        Coroutine::create(function () use ($groupId, $message)
-        {
+        Coroutine::create(function () use ($groupId, $message) {
             di(CloudTask::class)->group($groupId, $message);
         });
     }
 
     /**
      * @deprecated
-     * @param string $channel
-     * @param string $message
      */
     public function publish(string $channel, string $message)
     {
@@ -118,6 +111,5 @@ class ProxyService implements InterfaceProxyService
             $this->logger->error('cloud json-rpc publish  channel is empty raw data');
             return;
         }
-
     }
 }

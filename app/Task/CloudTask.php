@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -12,15 +12,11 @@ declare(strict_types = 1);
 namespace App\Task;
 
 use App\Component\ClientManager;
-use App\Component\ServerSender;
 use App\Kernel\WebSocket\ClientFactory;
 use App\Service\GroupService;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\Redis\RedisFactory;
-use Hyperf\Server\Server;
-use Hyperf\Server\Server as SwooleServer;
 use Hyperf\Task\Annotation\Task;
-use Hyperf\Utils\Coroutine;
 use Hyperf\Utils\Exception\ParallelExecutionException;
 use Hyperf\Utils\Parallel;
 use Psr\Container\ContainerInterface;
@@ -43,7 +39,7 @@ class CloudTask
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->logger    = $container->get(LoggerFactory::class)->get();
+        $this->logger = $container->get(LoggerFactory::class)->get();
     }
 
     /**
@@ -51,15 +47,12 @@ class CloudTask
      * 根据用户uid查询对应的服务器IP,建立对应服务器的websocket客户端,然后发送消息到对应服务器，服务器自动发送.
      * @Task
      *{"event":"event_talk","data":{"send_user":4166,"receive_user":"4167","source_type":"1","text_message":"1"},"type":"push"}
-     *
-     * @param string $uid
-     * @param string $message
      */
     public function push(string $uid, string $message)
     {
         $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $this->logger->info(sprintf('Cloud push:%s  data:%s', $uid, $message));
-        if (!($fd = ClientManager::fd($redis, $uid))) {
+        if (! ($fd = ClientManager::fd($redis, $uid))) {
             return;
         }
     }
@@ -69,8 +62,6 @@ class CloudTask
      * 获取所有的websocket服务器IP,然后进行推送
      * @Task
      *
-     * @param string $message
-     *
      * @return array
      */
     public function broadcast(string $message)
@@ -79,13 +70,12 @@ class CloudTask
         /**
          * @var array $ips
          */
-        $serverIps   = (config('websocket_server_ips'));
-        $ips         = array_values($serverIps);
+        $serverIps = (config('websocket_server_ips'));
+        $ips = array_values($serverIps);
         $parallelCnt = count($ips);
-        $parallel    = new Parallel($parallelCnt);
+        $parallel = new Parallel($parallelCnt);
         foreach ($serverIps as $server => $ip) {
-            $parallel->add(function () use ($ip, $server, $message)
-            {
+            $parallel->add(function () use ($ip, $server, $message) {
                 $client = $this->container->get(ClientFactory::class)->get($server);
                 return $client->push($message);
             });
@@ -109,10 +99,7 @@ class CloudTask
     /**
      * 群聊
      * 根据群聊group_id,获取所有的uid,根据uid获取对应的服务器ip，然后进行推送
-     *{"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"},"type":"group"}
-     *
-     * @param int    $groupId
-     * @param string $message
+     *{"event":"event_talk","data":{"send_user":4166,"receive_user":"117","source_type":"2","text_message":"2"},"type":"group"}.
      *
      * @return null|array
      */
@@ -137,8 +124,7 @@ class CloudTask
         $parallel = new Parallel($parallelCnt);
 
         foreach ($serverIps as $server => $ip) {
-            $parallel->add(function () use ($ip, $server, $groupUids, $message, $groupId)
-            {
+            $parallel->add(function () use ($ip, $server, $groupUids, $message, $groupId) {
                 $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
 
                 $ipuids = ClientManager::getIpUid($redis, $ip);
@@ -174,7 +160,5 @@ class CloudTask
 
     public function publish(string $channel, string $message)
     {
-
     }
-
 }

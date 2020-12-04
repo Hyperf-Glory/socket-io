@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  * This file is part of Hyperf.
  *
@@ -14,9 +14,7 @@ namespace App\Controller;
 use App\Kernel\Http\Response;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Utils\Context;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractController
 {

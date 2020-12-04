@@ -1,16 +1,23 @@
 <?php
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace App\Service\Traits;
 
 /**
- * Trait PagingTrait 分页处理
- *
- * @package App\Traits
+ * Trait PagingTrait 分页处理.
  */
 trait PagingTrait
 {
     /**
-     * 计算分页总数
+     * 计算分页总数.
      *
      * @param int $total 总记录数
      * @param int $page_size 分页大小
@@ -19,11 +26,11 @@ trait PagingTrait
      */
     protected function getPagingTotal(int $total, int $page_size)
     {
-        return ($total === 0) ? 0 : (int)ceil((int)$total / (int)$page_size);
+        return ($total === 0) ? 0 : (int) ceil((int) $total / (int) $page_size);
     }
 
     /**
-     * 获取分页数据
+     * 获取分页数据.
      *
      * @param array $rows 列表数据
      * @param int $total 数据总记录数
