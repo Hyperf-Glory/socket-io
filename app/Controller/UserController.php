@@ -227,8 +227,9 @@ class UserController extends AbstractController
      */
     public function searchUserInfo(): ResponseInterface
     {
-        $uid = $this->request->post('user_id', 0);
+        $uid = $this->request->post('user_id', '');
         $mobile = $this->request->post('mobile', '');
+
         $where = [];
         if (ValidateHelper::isInteger($uid)) {
             $where['uid'] = $uid;
@@ -237,7 +238,8 @@ class UserController extends AbstractController
         } else {
             return $this->response->parmasError('参数错误!');
         }
-        if ($data = $this->userService->searchUserInfo($where, $this->uid())) {
+
+        if ($data = $this->service->searchUserInfo($where, $this->uid())) {
             return $this->response->success('success', $data);
         }
         return $this->response->fail(303, 'success');

@@ -58,18 +58,13 @@ class HttpAuthMiddleware implements MiddlewareInterface
             }
         } catch (\Throwable $throwable) {
             $this->stdoutLogger->error(sprintf('[%s] [%s] [%s] [%s]', $throwable->getMessage(), $throwable->getCode(), $throwable->getLine(), $throwable->getFile()));
-
             if ($throwable instanceof TokenValidException || $throwable instanceof JWTException) {
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
+
         }
 
         return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
-    }
-
-    protected function isAuth(ServerRequestInterface $request): bool
-    {
-        return true;
     }
 
     private function setRequestContext(string $token): ServerRequestInterface

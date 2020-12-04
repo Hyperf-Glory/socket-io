@@ -32,7 +32,7 @@ class ValidateHelper
             return false;
         }
 
-        return preg_match(RegularHelper::$patternInteger, strval($val));
+        return (bool) preg_match(RegularHelper::$patternInteger, strval($val));
     }
 
     /**
@@ -81,15 +81,15 @@ class ValidateHelper
     public static function isJson(string $val): bool
     {
         $len = strlen($val);
-        if ($len == 0) {
+        if ($len === 0) {
             return false;
         }
-        if (($val[0] != '{' || $val[$len - 1] != '}') && ($val[0] != '[' || $val[$len - 1] != ']')) {
+        if (($val[0] !== '{' || $val[$len - 1] !== '}') && ($val[0] !== '[' || $val[$len - 1] !== ']')) {
             return false;
         }
 
         MessageParser::decode($val);
-        return json_last_error() == JSON_ERROR_NONE;
+        return json_last_error() === JSON_ERROR_NONE;
     }
 
     /**

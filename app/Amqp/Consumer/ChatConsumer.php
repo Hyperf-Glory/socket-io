@@ -18,7 +18,7 @@ use Hyperf\Utils\Coroutine;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * @Consumer(exchange="hyperf", routingKey="hyperf", queue="hyperf", name="ChatConsumer", nums=1)
+ * @Consumer(exchange=hyperf, routingKey=hyperf, queue=hyperf, name=ChatConsumer, nums=1)
  */
 class ChatConsumer extends ConsumerMessage
 {

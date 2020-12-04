@@ -66,11 +66,6 @@ class AuthMiddleware implements MiddlewareInterface
         return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
     }
 
-    protected function isAuth(ServerRequestInterface $request): bool
-    {
-        return true;
-    }
-
     private function setRequestContext(string $token): ServerRequestInterface
     {
         $userData = di(InterfaceUserService::class)->decodeToken($token);

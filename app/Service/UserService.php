@@ -15,6 +15,8 @@ use App\Component\Hash;
 use App\Model\ArticleClass;
 use App\Model\Users;
 use App\Model\UsersChatList;
+use App\Model\UsersFriends;
+use App\Model\UsersFriendsApply;
 use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -72,8 +74,8 @@ class UserService
      */
     public function changeMobile(int $uid, string $mobile)
     {
-        $uid = Users::query()->where('mobile', $mobile)->value('id');
-        if ($uid) {
+        $user_id = Users::query()->where('mobile', $mobile)->value('id');
+        if ($user_id) {
             return [false, '手机号已被他人绑定'];
         }
 
@@ -166,5 +168,54 @@ class UserService
         }
 
         return $items;
+    }
+
+    /**
+     * 通过手机号查找用户.
+     *
+     * @param array $where 查询条件
+     * @param int $user_id 当前登录用户的ID
+     */
+    public function searchUserInfo(array $where, int $user_id): array
+    {
+        $info = Users::select(['id', 'mobile', 'nickname', 'avatar', 'gender', 'motto']);
+        if (isset($where['uid'])) {
+            $info->where(['id' => $where['uid']]);
+        }
+
+        if (isset($where['mobile'])) {
+            $info->where(['mobile' => $where['mobile']]);
+        }
+        $info = $info->first();
+        $info = $info ? $info->toArray() : [];
+
+        if ($info) {
+            $info['friend_status'] = 0; //朋友关系状态  0:本人  1:陌生人 2:朋友
+            $info['nickname_remark'] = '';
+            $info['friend_apply'] = 0;
+
+            // 判断查询信息是否是自己
+            if ($info['id'] !== $user_id) {
+                $friend_id = $info['id'];
+                /**
+                 * @var UsersFriends $friendInfo
+                 */
+                $friendInfo = UsersFriends::select(['id', 'user1', 'user2', 'active', 'user1_remark', 'user2_remark'])->where(function ($query) use ($friend_id, $user_id) {
+                    $query->where('user1', '=', $user_id)->where('user2', '=', $friend_id)->where('status', 1);
+                })->orWhere(function ($query) use ($friend_id, $user_id) {
+                    $query->where('user1', '=', $friend_id)->where('user2', '=', $user_id)->where('status', 1);
+                })->first();
+
+                $info['friend_status'] = $friendInfo ? 2 : 1;
+                if ($friendInfo) {
+                    $info['nickname_remark'] = ($friendInfo->user1 === $friend_id) ? $friendInfo->user2_remark : $friendInfo->user1_remark;
+                } else {
+                    $res = UsersFriendsApply::where('user_id', $user_id)->where('friend_id', $info['id'])->where('status', 0)->orderBy('id', 'desc')->exists();
+                    $info['friend_apply'] = $res ? 1 : 0;
+                }
+            }
+        }
+
+        return $info;
     }
 }
