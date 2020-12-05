@@ -18,14 +18,14 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int            $id
- * @property int            $type
- * @property int            $uid
- * @property int            $friend_id
- * @property int            $group_id
- * @property int            $status
- * @property int            $is_top
- * @property int            $not_disturb
+ * @property int $id
+ * @property int $type
+ * @property int $uid
+ * @property int $friend_id
+ * @property int $group_id
+ * @property int $status
+ * @property int $is_top
+ * @property int $not_disturb
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -43,13 +43,7 @@ class UsersChatList extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'type',
-        'uid',
-        'status',
-        'friend_id',
-        'group_id',
-    ];
+    protected $fillable = ['id', 'type', 'uid', 'friend_id', 'group_id', 'status', 'is_top', 'not_disturb', 'created_at', 'updated_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -70,11 +64,9 @@ class UsersChatList extends Model
         if ($type === 1) {
             return (bool) self::where('id', $id)->where('uid', $uid)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
         }
-
         if ($type === 2) {
             return (bool) self::where('uid', $uid)->where('friend_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
         }
-
         return (bool) self::where('uid', $uid)->where('group_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
     }
 
@@ -95,33 +87,12 @@ class UsersChatList extends Model
             $result->status = 1;
             $result->updated_at = date('Y-m-d H:i:s');
             $result->save();
-
-            return [
-                'id' => $result->id,
-                'type' => $result->type,
-                'friend_id' => $result->friend_id,
-                'group_id' => $result->group_id,
-            ];
+            return ['id' => $result->id, 'type' => $result->type, 'friend_id' => $result->friend_id, 'group_id' => $result->group_id];
         }
-
-        if (! $result = self::create([
-            'type' => $type,
-            'uid' => $user_id,
-            'status' => 1,
-            'friend_id' => $type === 1 ? $receive_id : 0,
-            'group_id' => $type === 2 ? $receive_id : 0,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ])) {
+        if (! ($result = self::create(['type' => $type, 'uid' => $user_id, 'status' => 1, 'friend_id' => $type === 1 ? $receive_id : 0, 'group_id' => $type === 2 ? $receive_id : 0, 'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')]))) {
             return [];
         }
-
-        return [
-            'id' => $result->id,
-            'type' => $result->type,
-            'friend_id' => $result->friend_id,
-            'group_id' => $result->group_id,
-        ];
+        return ['id' => $result->id, 'type' => $result->type, 'friend_id' => $result->friend_id, 'group_id' => $result->group_id];
     }
 
     /**
@@ -153,8 +124,6 @@ class UsersChatList extends Model
         if (! $result || $not_disturb === $result->not_disturb) {
             return false;
         }
-
         return (bool) self::where('id', $result->id)->update(['not_disturb' => $not_disturb]);
     }
-
 }

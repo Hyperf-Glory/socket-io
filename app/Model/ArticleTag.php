@@ -38,7 +38,7 @@ class ArticleTag extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['id', 'user_id', 'tag_name', 'sort', 'created_at'];
 
     /**
      * The attributes that should be cast to native types.

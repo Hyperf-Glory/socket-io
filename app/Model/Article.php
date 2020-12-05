@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,18 +18,18 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property int $class_id
- * @property string $tags_id
- * @property string $title
- * @property string $abstract
- * @property string $image
- * @property int $is_asterisk
- * @property int $status
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property string $deleted_at
+ * @property int $id 
+ * @property int $user_id 
+ * @property int $class_id 
+ * @property string $tags_id 
+ * @property string $title 
+ * @property string $abstract 
+ * @property string $image 
+ * @property int $is_asterisk 
+ * @property int $status 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
+ * @property string $deleted_at 
  */
 class Article extends Model
 {
@@ -39,14 +39,12 @@ class Article extends Model
      * @var string
      */
     protected $table = 'article';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
-
+    protected $fillable = ['id', 'user_id', 'class_id', 'tags_id', 'title', 'abstract', 'image', 'is_asterisk', 'status', 'created_at', 'updated_at', 'deleted_at'];
     /**
      * The attributes that should be cast to native types.
      *

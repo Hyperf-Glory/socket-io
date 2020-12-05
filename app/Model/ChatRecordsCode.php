@@ -39,7 +39,7 @@ class ChatRecordsCode extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['id', 'record_id', 'user_id', 'code_lang', 'code', 'created_at'];
 
     /**
      * The attributes that should be cast to native types.

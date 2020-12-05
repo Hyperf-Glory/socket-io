@@ -42,7 +42,7 @@ class UnreadTalk
         }
         $num = $this->get($uid, $uid) + 1;
 
-        return (bool) $redis->hset($this->_key($uid), $fid, $num);
+        return (bool) $redis->hset($this->_key($uid), (string) $fid, $num);
     }
 
     /**
@@ -87,7 +87,7 @@ class UnreadTalk
         if (is_null($redis)) {
             $redis = $this->redis();
         }
-        return (bool) $redis->hdel($this->_key($uid), $fid);
+        return (bool) $redis->hdel($this->_key($uid), (string) $fid);
     }
 
     /**

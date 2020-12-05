@@ -26,6 +26,7 @@ use App\Model\ChatRecords;
 use App\Model\ChatRecordsFile;
 use App\Model\EmoticonDetail;
 use App\Model\FileSplitUpload;
+use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
@@ -108,7 +109,10 @@ class TalkController extends AbstractController
         if ($result['type'] === 1) {
             $data['unread_num'] = di(UnreadTalk::class)->get($this->uid(), $result['friend_id']);
 
-            $userInfo = User::where('id', $this->uid())->first(['nickname', 'avatar']);
+            /**
+             * @var Users $userInfo
+             */
+            $userInfo = Users::where('id', $this->uid())->first(['nickname', 'avatar']);
             $data['name'] = $userInfo->nickname;
             $data['avatar'] = $userInfo->avatar;
         } elseif ($result['type'] === 2) {
@@ -173,6 +177,7 @@ class TalkController extends AbstractController
 
     /**
      * 更新对话列表未读数.
+     * @TODO 待解决对话列表设置为false的问题
      */
     public function updateUnreadNum(): PsrResponseInterface
     {
@@ -195,9 +200,9 @@ class TalkController extends AbstractController
     public function getChatRecords(): PsrResponseInterface
     {
         $user_id = (int) $this->uid();
-        $receive_id = (int) $this->request->get('receive_id', 0);
-        $source = (int) $this->request->get('source', 0);
-        $record_id = (int) $this->request->get('record_id', 0);
+        $receive_id = (int) $this->request->input('receive_id', 0);
+        $source = (int) $this->request->input('source', 0);
+        $record_id = (int) $this->request->input('record_id', 0);
         $limit = 30;
 
         if (! ValidateHelper::isInteger($receive_id) || ! ValidateHelper::isInteger($source) || ! ValidateHelper::isInteger($record_id)) {
@@ -228,7 +233,7 @@ class TalkController extends AbstractController
     public function revokeChatRecords(): PsrResponseInterface
     {
         $user_id = (int) $this->uid();
-        $record_id = (int) $this->request->get('record_id', 0);
+        $record_id = (int) $this->request->input('record_id', 0);
         if (! ValidateHelper::isInteger($record_id)) {
             return $this->response->parmasError();
         }
@@ -412,8 +417,8 @@ class TalkController extends AbstractController
      */
     public function getRecordsContext(): PsrResponseInterface
     {
-        $receive_id = (int) $this->request->get('receive_id', 0);
-        $source = (int) $this->request->get('source', 0);
+        $receive_id = (int) $this->request->input('receive_id', 0);
+        $source = (int) $this->request->input('source', 0);
         $record_id = (int) $this->request->post('record_id', 0);
         $find_mode = (int) $this->request->post('find_mode', 1);
 

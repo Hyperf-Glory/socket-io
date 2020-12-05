@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,12 +18,12 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property string $class_name
- * @property int $sort
- * @property int $is_default
- * @property \Carbon\Carbon $created_at
+ * @property int $id 
+ * @property int $user_id 
+ * @property string $class_name 
+ * @property int $sort 
+ * @property int $is_default 
+ * @property \Carbon\Carbon $created_at 
  */
 class ArticleClass extends Model
 {
@@ -33,14 +33,12 @@ class ArticleClass extends Model
      * @var string
      */
     protected $table = 'article_class';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
-
+    protected $fillable = ['id', 'user_id', 'class_name', 'sort', 'is_default', 'created_at'];
     /**
      * The attributes that should be cast to native types.
      *

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,11 +18,11 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $record_id
- * @property int $type
- * @property int $operate_user_id
- * @property string $user_ids
+ * @property int $id 
+ * @property int $record_id 
+ * @property int $type 
+ * @property int $operate_user_id 
+ * @property string $user_ids 
  */
 class ChatRecordsInvite extends Model
 {
@@ -32,14 +32,12 @@ class ChatRecordsInvite extends Model
      * @var string
      */
     protected $table = 'chat_records_invite';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
-
+    protected $fillable = ['id', 'record_id', 'type', 'operate_user_id', 'user_ids'];
     /**
      * The attributes that should be cast to native types.
      *

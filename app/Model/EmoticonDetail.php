@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,14 +18,14 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $emoticon_id
- * @property int $user_id
- * @property string $describe
- * @property string $url
- * @property string $file_suffix
- * @property int $file_size
- * @property \Carbon\Carbon $created_at
+ * @property int $id 
+ * @property int $emoticon_id 
+ * @property int $user_id 
+ * @property string $describe 
+ * @property string $url 
+ * @property string $file_suffix 
+ * @property int $file_size 
+ * @property \Carbon\Carbon $created_at 
  */
 class EmoticonDetail extends Model
 {
@@ -35,14 +35,12 @@ class EmoticonDetail extends Model
      * @var string
      */
     protected $table = 'emoticon_details';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
-
+    protected $fillable = ['id', 'emoticon_id', 'user_id', 'describe', 'url', 'file_suffix', 'file_size', 'created_at'];
     /**
      * The attributes that should be cast to native types.
      *

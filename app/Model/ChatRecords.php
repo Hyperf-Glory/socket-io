@@ -36,12 +36,14 @@ class ChatRecords extends Model
      */
     protected $table = 'chat_records';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = ['id', 'source', 'msg_type', 'user_id', 'receive_id', 'content', 'is_revoke', 'created_at'];
 
     /**
      * The attributes that should be cast to native types.

@@ -22,11 +22,11 @@ use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
 use App\Services\Common\UnreadTalk;
+use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;
 use Hyperf\SocketIOServer\Socket;
-use Psr\Log\LoggerInterface;
 
 class SocketIOController extends BaseNamespace
 {
@@ -37,11 +37,19 @@ class SocketIOController extends BaseNamespace
      * @param  $data
      * @example {"event":"event_talk","data":{"send_user":4166,"receive_user":"4168","source_type":"1","text_message":"1"}}
      * @Event("event_talk")
+     * @todo 待解决消息不能发送的问题
      */
     public function onEventTalk(Socket $socket, $data): bool
     {
+        $data = [
+            'send_user' => (int) $data['send_user'],
+            'receive_user' => (int) $data['receive_user'],
+            'source_type' => (int) $data['source_type'],
+            'text_message' => $data['text_message'],
+        ];
+
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) ($data['send_user'] ?? 0)) === $socket->getSid()) {
+        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) ($data['receive_user'] ?? 0)) === $socket->getSid()) {
             $socket->emit('notify', [
                 'notify' => '非法操作!!!',
             ]);
@@ -60,7 +68,7 @@ class SocketIOController extends BaseNamespace
                 ]);
                 return true;
             }
-        } elseif ($data['source_type'] === 2) {//群聊
+        } elseif ((int) $data['source_type'] === 2) {//群聊
             //判断是否属于群成员
             if (! UserGroup::isMember($data['receive_user'], $data['send_user'])) {
                 $socket->emit('notify', [
@@ -85,12 +93,12 @@ class SocketIOController extends BaseNamespace
         if ($result->content) {
             $result->content = replace_url_link($result->content);
         }
-        //获取消息推送的客户端
-        $msg = SocketIO::formatTalkMsg([
+
+        $msg = ([
             'send_user' => $data['send_user'],
             'receive_user' => $data['receive_user'],
             'source_type' => $data['source_type'],
-            'data' => PushMessageHelper::formatTalkMsg([
+            'data' => SocketIO::formatTalkMsg([
                 'id' => $result->id,
                 'source' => $result->source,
                 'msg_type' => 1,
@@ -130,6 +138,6 @@ class SocketIOController extends BaseNamespace
      */
     public function onEventKeyboard(Socket $socket, $data): void
     {
-        di(LoggerInterface::class)->error('不能给自己发消息，可以忽略该事件!');
+        di(StdoutLoggerInterface::class)->error('不能给自己发消息，可以忽略该事件!');
     }
 }

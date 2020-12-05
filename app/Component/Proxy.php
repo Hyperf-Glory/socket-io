@@ -115,7 +115,7 @@ class Proxy
         if ($records->source === 1) {
             //好友推送
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string) $records->receive_id);
+            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $records->receive_id);
         } else {
             $client = 'room' . $records->receive_id;
             //群聊推送
@@ -158,7 +158,7 @@ class Proxy
             if ($records->source === 1) {
                 //好友推送
                 $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-                $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string) $record->receive_id);
+                $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->receive_id);
             } else {
                 //群聊推送
                 $client = 'room' . $record->receive_id;
@@ -228,7 +228,7 @@ class Proxy
         if ($info->source === 1) {
             //好友推送
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_FD_PREFIX, (string) $info->receive_id);
+            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->receive_id);
         } else {
             $client = 'room' . $info->receive_id;
         }

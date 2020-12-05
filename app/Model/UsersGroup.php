@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,12 +18,12 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int            $id
- * @property int            $user_id
- * @property string         $group_name
- * @property string         $group_profile
- * @property int            $status
- * @property string         $avatar
+ * @property int $id
+ * @property int $user_id
+ * @property string $group_name
+ * @property string $group_profile
+ * @property int $status
+ * @property string $avatar
  * @property \Carbon\Carbon $created_at
  */
 class UsersGroup extends Model
@@ -34,21 +34,18 @@ class UsersGroup extends Model
      * @var string
      */
     protected $table = 'users_group';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
-
+    protected $fillable = ['id', 'user_id', 'group_name', 'group_profile', 'status', 'avatar', 'created_at'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
-
     /**
      * 判断用户是否是管理员.
      *
@@ -59,9 +56,8 @@ class UsersGroup extends Model
      */
     public static function isManager(int $uid, int $groupId)
     {
-        return UsersGroup::where('id', $groupId)->where('user_id', $uid)->exists();
+        return self::where('id', $groupId)->where('user_id', $uid)->exists();
     }
-
     /**
      * 判断用户是否是群成员.
      *

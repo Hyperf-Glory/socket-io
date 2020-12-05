@@ -47,6 +47,7 @@ return [
                 'path' => 'app/Model',
                 'force_casts' => true,
                 'inheritance' => 'Model',
+                'refresh_fillable' => true,
                 'uses' => '',
                 'table_mapping' => [],
             ],

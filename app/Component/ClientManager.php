@@ -22,7 +22,7 @@ use Hyperf\Redis\RedisProxy;
 
 class ClientManager
 {
-    public const HASH_UID_TO_FD_PREFIX = 'hash.socket_user_fd';
+    public const HASH_UID_TO_SID_PREFIX = 'hash.socket_user_fd';
 
     public const HASH_FD_TO_UID_PREFIX = 'hash.socket_fd_user';
 
@@ -34,7 +34,7 @@ class ClientManager
     public static function put(RedisProxy $redis, string $uid, int $fd)
     {
         //bind key to fd
-        $redis->hSet(self::HASH_UID_TO_FD_PREFIX, $uid, $fd);
+        $redis->hSet(self::HASH_UID_TO_SID_PREFIX, $uid, $fd);
         $redis->hSet(self::HASH_FD_TO_UID_PREFIX, $fd, $uid);
     }
 
@@ -44,7 +44,7 @@ class ClientManager
     public static function del(RedisProxy $redis, string $uid, int $fd = null)
     {
         //del key to fd
-        $redis->hDel(self::HASH_UID_TO_FD_PREFIX, $uid);
+        $redis->hDel(self::HASH_UID_TO_SID_PREFIX, $uid);
         $redis->hDel(self::HASH_FD_TO_UID_PREFIX, $fd);
     }
 
@@ -62,7 +62,7 @@ class ClientManager
      */
     public static function fd(\Redis $redis, string $uid)
     {
-        return (int) $redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? null;
+        return (int) $redis->hGet(self::HASH_UID_TO_SID_PREFIX, $uid) ?? null;
     }
 
     /**
@@ -73,7 +73,7 @@ class ClientManager
         if (empty($uids)) {
             return [];
         }
-        return ArrayHelper::multiArrayValues($redis->hMGet(self::HASH_UID_TO_FD_PREFIX, $uids) ?? []);
+        return ArrayHelper::multiArrayValues($redis->hMGet(self::HASH_UID_TO_SID_PREFIX, $uids) ?? []);
     }
 
     /**
@@ -100,6 +100,6 @@ class ClientManager
      */
     public static function isOnline(RedisProxy $redis, int $uid)
     {
-        return $redis->hGet(self::HASH_UID_TO_FD_PREFIX, $uid) ?? false;
+        return $redis->hGet(self::HASH_UID_TO_SID_PREFIX, $uid) ?? false;
     }
 }

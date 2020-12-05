@@ -126,12 +126,12 @@ Router::addGroup('/api/upload/', function () {
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-Emoticon -------------------------- */
 Router::addGroup('/api/emoticon/', function () {
-    Router::get('user-emoticon', 'EmoticonController@getUserEmoticon');
-    Router::get('system-emoticon', 'EmoticonController@getSystemEmoticon');
-    Router::post('set-user-emoticon', 'EmoticonController@setUserEmoticon');
-    Router::post('upload-emoticon', 'EmoticonController@uploadEmoticon');
-    Router::post('collect-emoticon', 'EmoticonController@collectEmoticon');
-    Router::post('del-collect-emoticon', 'EmoticonController@delCollectEmoticon');
+    Router::get('user-emoticon', 'App\Controller\EmoticonController@getUserEmoticon');
+    Router::get('system-emoticon', 'App\Controller\EmoticonController@getSystemEmoticon');
+    Router::post('set-user-emoticon', 'App\Controller\EmoticonController@setUserEmoticon');
+    Router::post('upload-emoticon', 'App\Controller\EmoticonController@uploadEmoticon');
+    Router::post('collect-emoticon', 'App\Controller\EmoticonController@collectEmoticon');
+    Router::post('del-collect-emoticon', 'App\Controller\EmoticonController@delCollectEmoticon');
 }, [
     'middleware' => [HttpAuthMiddleware::class],
 ]);
