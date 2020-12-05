@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace App\Kernel;
 
 use App\JsonRpc\Contract\InterfaceUserService;
+use App\Model\Users;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\WebSocketServer\Context as WsContext;
@@ -25,7 +26,7 @@ use Swoole\Http\Request;
 
 class SocketIO extends \Hyperf\SocketIOServer\SocketIO
 {
-    public const HASH_UID_TO_FD_PREFIX = 'hash.socket_user';
+    public const HASH_UID_TO_SID_PREFIX = 'hash.socket_user';
 
     protected $pingTimeout = 2000;
 
@@ -51,7 +52,6 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
      */
     protected $userFriendService;
 
-
     public function onOpen($server, Request $request): void
     {
         $token = $request->get['token'] ?? '';
@@ -63,24 +63,23 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             $server->close($request->fd);
             return;
         }
-        //TODO 建立json-rpc客户端获取用户详细信息
         WsContext::set('user', array_merge(
             ['user' => $user],
             ['sid' => $this->sidProvider->getSid($request->fd)]
         ));
         //判断用户是否在其它地方登录
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $isOnline = $sid = $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string) $uid);
+        $isOnline = $sid = $redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $uid);
         $redis->multi();
         if ($sid) {
             //解除之前的关系
-            $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string) $uid);
+            $redis->hDel(self::HASH_UID_TO_SID_PREFIX, (string) $uid);
             $this->to($sid)->emit('leave', '您的账号在其他地方登录,请注意是否是账号信息被泄漏,请及时更改密码!');
         }
         unset($sid);
         $sid = $this->sidProvider->getSid($request->fd);
         // 绑定用户与fd该功能
-        $redis->hSet(self::HASH_UID_TO_FD_PREFIX, (string) $uid, $sid);
+        $redis->hSet(self::HASH_UID_TO_SID_PREFIX, (string) $uid, $sid);
         $redis->exec();
 
         // 绑定聊天群
@@ -96,19 +95,14 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         if (! $isOnline) {
             //获取所有好友的用户ID
             $uids = $this->userFriendService->getFriends($uid);
-            $friendSids = []; //所有好友的客户端socketid(sid)
             foreach ($uids as $friend) {
-                $friendSids = array_push($friendSids, $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string) $friend));
-            }
-            //推送好友上线通知
-            if ($friendSids) {
-                $this->to($sid)->emit('login_notify', $friendSids, ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
+                //推送好友上线通知
+                $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend))->emit('login_notify', ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
             }
         }
         // 绑定聊天群
         parent::onOpen($server, $request);
     }
-
 
     public function onClose($server, int $fd, int $reactorId): void
     {
@@ -122,19 +116,15 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         // 获取客户端对应的c用户ID
         // 清除用户绑定信息
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $redis->hDel(self::HASH_UID_TO_FD_PREFIX, (string) $user['user']['id']);
+        $redis->hDel(self::HASH_UID_TO_SID_PREFIX, (string) $user['user']['id']);
         // 将fd 退出所有聊天室
         $this->getAdapter()->del($user['sid']);
         WsContext::destroy('user');
         //获取所有好友的用户ID
         $uids = $this->userFriendService->getFriends($user['user']['id']);
-        $friendSids = []; //所有好友的客户端socketid(sid)
         foreach ($uids as $friend) {
-            $friendSids = array_push($friendSids, $redis->hGet(self::HASH_UID_TO_FD_PREFIX, (string) $friend));
-        }
-        //推送好友下线通知
-        if ($friendSids) {
-            $this->to($user['sid'])->emit('login_notify', $friendSids, [
+            //推送好友下线通知
+            $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend))->emit('login_notify', [
                 'user_id' => $user['id'],
                 'status' => 0,
                 'notify' => '好友离线通知...',
@@ -142,5 +132,51 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         }
         // 判断用户是否多平台登录
         parent::onClose($server, $fd, $reactorId);
+    }
+
+    /**
+     * 格式化对话的消息体.
+     *
+     * @param array $data 对话的消息
+     */
+    public static function formatTalkMsg(array $data): array
+    {
+        // 缓存优化
+        if (! isset($data['nickname'], $data['avatar']) || empty($data['nickname']) || empty($data['avatar'])) {
+            if (isset($data['user_id']) && ! empty($data['user_id'])) {
+                /**
+                 * @var Users $info
+                 */
+                $info = Users::where('id', $data['user_id'])->first(['nickname', 'avatar']);
+                if ($info) {
+                    $data['nickname'] = $info->nickname;
+                    $data['avatar'] = $info->avatar;
+                }
+            }
+        }
+
+        $arr = [
+            'id' => 0,
+            'source' => 1,
+            'msg_type' => 1,
+            'user_id' => 0,
+            'receive_id' => 0,
+            'content' => '',
+            'is_revoke' => 0,
+
+            // 发送消息人的信息
+            'nickname' => '',
+            'avatar' => '',
+
+            // 不同的消息类型
+            'file' => [],
+            'code_block' => [],
+            'forward' => [],
+            'invite' => [],
+
+            'created_at' => '',
+        ];
+
+        return array_merge($arr, array_intersect_key($data, $arr));
     }
 }
