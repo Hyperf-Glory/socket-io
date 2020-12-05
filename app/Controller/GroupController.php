@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Controller;
 
@@ -198,7 +204,7 @@ class GroupController extends AbstractController
 
     public function getInviteFriends(): PsrResponseInterface
     {
-        $group_id = $this->request->get('group_id', 0);
+        $group_id = $this->request->input('group_id', 0);
         $user = $this->request->getAttribute('user');
         $rpcGroup = $this->container->get(InterfaceGroupService::class);
         $ret = $rpcGroup->getInviteFriends($user['id'] ?? 0, $group_id);

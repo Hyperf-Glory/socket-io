@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Kernel;
 
@@ -15,7 +21,6 @@ use App\JsonRpc\Contract\InterfaceUserService;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\WebSocketServer\Context as WsContext;
-use Phper666\JWTAuth\Exception\TokenValidException;
 use Swoole\Http\Request;
 
 class SocketIO extends \Hyperf\SocketIOServer\SocketIO
@@ -46,32 +51,18 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
      */
     protected $userFriendService;
 
-    /**
-     * @param \Swoole\Http\Response|\Swoole\WebSocket\Server $server
-     *
-     * @throws \Throwable
-     */
+
     public function onOpen($server, Request $request): void
     {
-        try {
-            $isValidToken = false;
-            $token = $request->get['token'] ?? '';
-            if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
-                $isValidToken = true;
-            }
-            if (! $isValidToken) {
-                throw new TokenValidException('Token authentication does not pass', 401);
-            }
-        } catch (\Throwable $throwable) {
-            $this->stdoutLogger->error(sprintf('[%s] [%s]', $throwable->getMessage(), $throwable->getCode()));
-            $server->close($request->fd);
-            return;
-        }
-
+        $token = $request->get['token'] ?? '';
         $userData = di(InterfaceUserService::class)->decodeToken($token);
         $uid = $userData['cloud_uid'] ?? 0;
         $rpcUser = di(InterfaceUserService::class);
         $user = $rpcUser->get($uid);
+        if (is_null($user)) {
+            $server->close($request->fd);
+            return;
+        }
         //TODO 建立json-rpc客户端获取用户详细信息
         WsContext::set('user', array_merge(
             ['user' => $user],
@@ -118,11 +109,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         parent::onOpen($server, $request);
     }
 
-    /**
-     * @param \Swoole\Http\Response|\Swoole\Server $server
-     *
-     * @throws \Throwable
-     */
+
     public function onClose($server, int $fd, int $reactorId): void
     {
         /**

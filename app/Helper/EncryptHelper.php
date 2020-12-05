@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -17,6 +23,8 @@ class EncryptHelper
 {
     /**
      * url安全的base64_encode.
+     *
+     * @param string $data
      */
     public static function base64UrlEncode(string $data): string
     {
@@ -25,6 +33,8 @@ class EncryptHelper
 
     /**
      * url安全的base64_decode.
+     *
+     * @param string $data
      */
     public static function base64UrlDecode(string $data): string
     {
@@ -41,7 +51,7 @@ class EncryptHelper
      */
     public static function authcode(string $data, string $key, bool $encode = true, int $expiry = 0): array
     {
-        if ($data == '') {
+        if ($data === '') {
             return ['', 0];
         }
         if (! $encode && strlen($data) < Consts::DYNAMIC_KEY_LEN) {
@@ -63,8 +73,8 @@ class EncryptHelper
         $keyLength = strlen($cryptkey);
 
         if ($encode) {
-            if ($expiry != 0) {
-                $expiry = $expiry + $now;
+            if ($expiry !== 0) {
+                $expiry += $now;
             }
             $expMd5 = substr(md5($data . $keyb), 0, 16);
             $data = sprintf('%010d', $expiry) . $expMd5 . $data;
@@ -101,8 +111,8 @@ class EncryptHelper
             return [$res, $expiry];
         }
         if (strlen($res) > 26) {
-            $expTime = intval(substr($res, 0, 10));
-            if (($expTime == 0 || $expTime - $now > 0) && substr($res, 10, 16) == substr(md5(substr($res, 26) . $keyb), 0, 16)) {
+            $expTime = (int) substr($res, 0, 10);
+            if (($expTime === 0 || $expTime - $now > 0) && substr($res, 10, 16) === substr(md5(substr($res, 26) . $keyb), 0, 16)) {
                 return [substr($res, 26), $expTime];
             }
         }
@@ -117,7 +127,7 @@ class EncryptHelper
      */
     public static function easyEncrypt(string $data, string $key): string
     {
-        if ($data == '') {
+        if ($data === '') {
             return '';
         }
 
@@ -127,7 +137,7 @@ class EncryptHelper
         $x = 0;
         $str = $char = '';
         for ($i = 0; $i < $dataLen; ++$i) {
-            if ($x == $keyLen) {
+            if ($x === $keyLen) {
                 $x = 0;
             }
 
@@ -151,7 +161,7 @@ class EncryptHelper
         }
 
         $key = md5($key);
-        if (substr($key, 0, Consts::DYNAMIC_KEY_LEN) != substr($data, 0, Consts::DYNAMIC_KEY_LEN)) {
+        if (strpos($data, substr($key, 0, Consts::DYNAMIC_KEY_LEN)) !== 0) {
             return '';
         }
 
@@ -165,7 +175,7 @@ class EncryptHelper
         $x = 0;
         $str = $char = '';
         for ($i = 0; $i < $dataLen; ++$i) {
-            if ($x == $keyLen) {
+            if ($x === $keyLen) {
                 $x = 0;
             }
 

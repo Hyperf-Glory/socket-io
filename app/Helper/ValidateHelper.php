@@ -1,13 +1,19 @@
-<?php
+<?php /** @noinspection ALL */
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -15,13 +21,7 @@ use App\Component\MessageParser;
 
 class ValidateHelper
 {
-    /**
-     * 是否整数.
-     *
-     * @param mixed $val
-     * @param bool $bigInt 是否大整数(>PHP_INT_MAX)
-     */
-    public static function isInteger($val, $bigInt = false): bool
+    public static function isInteger($val, bool $bigInt = false): bool
     {
         if (! is_numeric($val)) {
             return false;
@@ -35,21 +35,11 @@ class ValidateHelper
         return (bool) preg_match(RegularHelper::$patternInteger, strval($val));
     }
 
-    /**
-     * 是否自然数.
-     *
-     * @param mixed $val
-     */
     public static function isNaturalNum($val): bool
     {
         return is_numeric($val) && preg_match(RegularHelper::$patternNaturalNum, strval($val));
     }
 
-    /**
-     * 是否浮点数.
-     *
-     * @param mixed $val
-     */
     public static function isFloat($val): bool
     {
         return is_numeric($val) && is_float($val + 0);
@@ -143,7 +133,7 @@ class ValidateHelper
      */
     public static function checkPassword(string $password)
     {
-        return (bool) preg_match('/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/', $password);
+        return (bool) preg_match('/^(?![0-9\d]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/', $password);
     }
 
     /**
@@ -203,25 +193,25 @@ class ValidateHelper
         }
 
         //省市代码
-        if (! in_array(substr($val, 0, 2), array_keys($city))) {
+        if (! array_key_exists(substr($val, 0, 2), $city)) {
             return false;
         }
 
         $len = strlen($val);
 
         //将15位身份证升级到17位
-        if ($len == 15) {
+        if ($len === 15) {
             $val = substr($val, 0, 6) . '19' . substr($val, 6, 9);
         }
 
         //检查生日
         $birthday = substr($val, 6, 4) . '-' . substr($val, 10, 2) . '-' . substr($val, 12, 2);
-        if (date('Y-m-d', strtotime($birthday)) != $birthday) {
+        if (date('Y-m-d', strtotime($birthday)) !== $birthday) {
             return false;
         }
 
         //18位身份证需要验证最后一位校验位
-        if ($len == 18) {
+        if ($len === 18) {
             //∑(ai×Wi)(mod 11)
             //加权因子
             $factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
@@ -229,11 +219,11 @@ class ValidateHelper
             $parity = ['1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2'];
             $sum = 0;
             for ($i = 0; $i < 17; ++$i) {
-                $sum += substr($val, $i, 1) * $factor[$i];
+                $sum += $val[$i] * $factor[$i];
             }
 
             $mod = $sum % 11;
-            if (strtoupper(substr($val, 17, 1)) != $parity[$mod]) {
+            if (strtoupper($val[17]) !== $parity[$mod]) {
                 return false;
             }
         }
@@ -339,9 +329,9 @@ class ValidateHelper
             return false;
         }
 
-        if ($case == 1) { //小写
+        if ($case === 1) { //小写
             $res = ctype_lower($val);
-        } elseif ($case == 2) { //大写
+        } elseif ($case === 2) { //大写
             $res = ctype_upper($val);
         } else {
             $res = ctype_alpha($val);

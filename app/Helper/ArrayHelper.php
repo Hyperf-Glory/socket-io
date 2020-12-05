@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -23,14 +29,14 @@ class ArrayHelper
      * @param string $sortKey 排序键值
      * @param int $sort 排序类型:SORT_DESC/SORT_ASC
      */
-    public static function multiArraySort(array $arr, string $sortKey, int $sort = SORT_DESC): array
+    public static function multiArraySort(array $arr, string $sortKey, int $sort): array
     {
         $keyArr = [];
         foreach ($arr as $subArr) {
             if (! is_array($subArr) || ! isset($subArr[$sortKey])) {
                 return [];
             }
-            array_push($keyArr, $subArr[$sortKey]);
+            $keyArr[] = $subArr[$sortKey];
         }
         array_multisort($keyArr, $sort, $arr);
         return $arr;
@@ -46,8 +52,8 @@ class ArrayHelper
         $hasArr = $res = [];
         foreach ($arr as $k => $v) {
             $hash = md5(serialize($v));
-            if (! in_array($hash, $hasArr)) {
-                array_push($hasArr, $hash);
+            if (! in_array($hash, $hasArr, true)) {
+                $hasArr[] = $hash;
                 if ($keepKey) {
                     $res[$k] = $v;
                 } else {
@@ -70,7 +76,7 @@ class ArrayHelper
             if (is_array($v)) {
                 self::multiArrayValues($v, $vals);
             } else {
-                array_push($vals, $v);
+                $vals[] = $v;
             }
         }
         return $vals;
@@ -85,7 +91,7 @@ class ArrayHelper
     {
         $res = [];
         foreach ($arr as $k => $v) {
-            $res[$k] = is_array($v) ? (self::mapRecursive($v, $fn)) : call_user_func($fn, $v);
+            $res[$k] = is_array($v) ? (self::mapRecursive($v, $fn)) : $fn($v);
         }
         return $res;
     }
@@ -134,10 +140,10 @@ class ArrayHelper
         $res = [];
         foreach ($keys as $key) {
             if (isset($arr[$key])) {
-                array_push($res, $arr[$key]);
+                $res[] = $arr[$key];
                 unset($arr[$key]);
             } else {
-                array_push($res, null);
+                $res[] = null;
             }
         }
         return $res;
@@ -148,16 +154,14 @@ class ArrayHelper
      *
      * @param array $arr 要排列组合的数组
      * @param string $separator 分隔符
-     *
-     * @return array
      */
-    public static function combinationAll(array $arr, string $separator = '')
+    public static function combinationAll(array $arr, string $separator = ''): array
     {
         $len = count($arr);
-        if ($len == 0) {
+        if ($len === 0) {
             return [];
         }
-        if ($len == 1) {
+        if ($len === 1) {
             return $arr;
         }
         //保证初始数组是有序的
@@ -165,7 +169,7 @@ class ArrayHelper
         $last = $len - 1; //尾部元素下标
         $x = $last;
         $res = [];
-        array_push($res, implode($separator, $arr)); //第一种组合
+        $res[] = implode($separator, $arr); //第一种组合
         while (true) {
             $y = $x--; //相邻的两个元素
             if ($arr[$x] < $arr[$y]) { //如果前一个元素的值小于后一个元素的值
@@ -179,10 +183,10 @@ class ArrayHelper
                 for ($i = $last; $i > $y; $i--, $y++) {
                     [$arr[$i], $arr[$y]] = [$arr[$y], $arr[$i]];
                 }
-                array_push($res, implode($separator, $arr));
+                $res[] = implode($separator, $arr);
                 $x = $last;
             }
-            if ($x == 0) { //全部组合完毕
+            if ($x === 0) { //全部组合完毕
                 break;
             }
         }
@@ -204,7 +208,7 @@ class ArrayHelper
             for ($i = 1; $i <= $len; ++$i) {
                 $news = self::_combinationValue($arr, $i, $separator);
                 if (! empty($news)) {
-                    $res = array_merge($res, $news);
+                    $res = array_merge(...$news);
                 }
             }
         } else {
@@ -227,7 +231,7 @@ class ArrayHelper
      *
      * @return bool|mixed
      */
-    public static function searchItem(array &$arr, array $conditions, bool $delSource = false)
+    public static function searchItem(array &$arr, array $conditions, bool $delSource = false): bool
     {
         if (empty($arr) || empty($conditions)) {
             return false;
@@ -243,7 +247,7 @@ class ArrayHelper
                 }
             }
             //条件完全匹配
-            if ($chk == $condLen) {
+            if ($chk === $condLen) {
                 if ($delSource) {
                     unset($arr[$i]);
                 }
@@ -272,16 +276,16 @@ class ArrayHelper
             foreach ($conditions as $k => $v) {
                 if (is_bool($v) && $v) {
                     ++$chk;
-                } elseif (isset($item[$k]) && $item[$k] == $v) {
+                } elseif (isset($item[$k]) && $item[$k] === $v) {
                     ++$chk;
                 }
             }
             //条件完全匹配
-            if ($chk == $condLen) {
+            if ($chk === $condLen) {
                 if ($delSource) {
                     unset($arr[$i]);
                 }
-                array_push($res, $item);
+                $res[] = $item;
             }
         }
         return $res;
@@ -336,8 +340,8 @@ class ArrayHelper
             $sortConditions = [];
             foreach ($sorts as $sortInfo) {
                 //$sortInfo必须形如['field', SORT_ASC],或者['field']
-                $file = strval(current($sortInfo));
-                $sort = intval($sortInfo[1] ?? SORT_DESC);
+                $file = (string) current($sortInfo);
+                $sort = (int) ($sortInfo[1] ?? SORT_DESC);
                 $tmpArr = [];
                 foreach ($arr as $k => $item) {
                     //排序字段不存在
@@ -348,7 +352,7 @@ class ArrayHelper
                 }
                 array_push($sortConditions, $tmpArr, $sort);
             }
-            array_push($sortConditions, $arr);
+            $sortConditions[] = $arr;
             array_multisort(...$sortConditions);
             return end($sortConditions);
         }
@@ -358,13 +362,14 @@ class ArrayHelper
     /**
      * 交换2个元素的值
      *
+     * @param array
      * @param int|string $keya 键a
      * @param int|string $keyb 键b
      */
     public static function swapItem(array &$arr, $keya, $keyb): bool
     {
-        $keya = strval($keya);
-        $keyb = strval($keyb);
+        $keya = (string) $keya;
+        $keyb = (string) $keyb;
         if (isset($arr[$keya], $arr[$keyb])) {
             [$arr[$keya], $arr[$keyb]] = [$arr[$keyb], $arr[$keya]];
             return true;
@@ -382,11 +387,11 @@ class ArrayHelper
      */
     public static function setDotKey(array &$arr, $key, $value): void
     {
-        if (is_null($key) || $key == '') {
+        if (is_null($key) || $key === '') {
             $arr = is_array($value) ? $value : (array) $value;
             return;
         }
-        $keyStr = strval($key);
+        $keyStr = (string) $key;
         if (ValidateHelper::isInteger($keyStr) || strpos($keyStr, '.') === false) {
             $arr[$keyStr] = $value;
             return;
@@ -415,17 +420,17 @@ class ArrayHelper
      */
     public static function getDotKey(array $arr, $key = null, $default = null)
     {
-        if (is_null($key) || $key == '') {
+        if (is_null($key) || $key === '') {
             return $arr;
         }
-        $keyStr = strval($key);
+        $keyStr = (string) $key;
         if (ValidateHelper::isInteger($keyStr) || strpos($keyStr, '.') === false) {
             return $arr[$keyStr] ?? $default;
         }
         $keys = explode('.', $keyStr);
-        foreach ($keys as $key) {
-            if (is_array($arr) && array_key_exists($key, $arr)) {
-                $arr = $arr[$key];
+        foreach ($keys as $_key) {
+            if (is_array($arr) && array_key_exists($_key, $arr)) {
+                $arr = $arr[$_key];
             } else {
                 return $default;
             }
@@ -435,12 +440,12 @@ class ArrayHelper
 
     /**
      * 数组是否存在带点的键.
-     *
+     * @param array
      * @param mixed $key 键,可带点的多级,如row.usr.name
      */
     public static function hasDotKey(array $arr, $key = null): bool
     {
-        if (is_null($key) || $key == '') {
+        if (is_null($key) || $key === '') {
             return false;
         }
         $keyStr = strval($key);
@@ -448,20 +453,21 @@ class ArrayHelper
             return array_key_exists($keyStr, $arr);
         }
         $keys = explode('.', $keyStr);
-        foreach ($keys as $key) {
-            if (is_null($key) || $key == '') {
+        foreach ($keys as $_key) {
+            if (is_null($_key) || $_key === '') {
                 return false;
             }
-            if (! is_array($arr) || ! array_key_exists($key, $arr)) {
+            if (! is_array($arr) || ! array_key_exists($_key, $arr)) {
                 return false;
             }
-            $arr = $arr[$key];
+            $arr = $arr[$_key];
         }
         return true;
     }
 
     /**
      * 对(多维)数组进行正常排序,将会改变原数组.
+     * @param array
      * @param bool $recursive 是否递归
      */
     public static function regularSort(array &$arr, bool $recursive = false): bool
@@ -469,7 +475,7 @@ class ArrayHelper
         $res = false;
 
         if ($recursive) {
-            foreach ($arr as $key => &$item) {
+            foreach ($arr as $key => $item) {
                 if (is_array($item)) {
                     self::regularSort($item, true);
                 }
@@ -499,19 +505,19 @@ class ArrayHelper
             return $arr;
         }
         if ($len >= count($arr)) {
-            array_push($res, implode($separator, $arr));
+            $res[] = implode($separator, $arr);
             return $res;
         }
         $firstItem = array_shift($arr);
         $newArr = array_values($arr);
         $list1 = self::_combinationValue($newArr, $len - 1, $separator);
         foreach ($list1 as $item) {
-            $str = strval($firstItem) . $separator . strval($item);
-            array_push($res, $str);
+            $str = (string) $firstItem . $separator . strval($item);
+            $res[] = $str;
         }
         $list2 = self::_combinationValue($newArr, $len, $separator);
         foreach ($list2 as $item) {
-            array_push($res, strval($item));
+            $res[] = (string) $item;
         }
         return $res;
     }
@@ -520,6 +526,7 @@ class ArrayHelper
      * 数组元素组合(按元素值和位置组合).
      *
      * @param array $arr 数组
+     * @param string
      */
     private static function _combinationPosition(array $arr, string $separator = ''): array
     {
@@ -531,7 +538,7 @@ class ArrayHelper
                 self::cutItems($newArr, $k);
                 $newRes = self::_combinationPosition($newArr, $separator);
                 if (! empty($newRes)) {
-                    $res = array_merge($res, $newRes);
+                    $res = array_merge(...$newRes);
                 }
             }
         }

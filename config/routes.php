@@ -2,13 +2,21 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
+
+use App\Controller\SocketIOController;
 use App\Controller\WebSocketController;
 /*
  * This file is part of Hyperf.
@@ -19,9 +27,9 @@ use App\Controller\WebSocketController;
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-use App\Milddleware\AuthMiddleware;
 use App\Milddleware\HttpAuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
+use Hyperf\SocketIOServer\Collector\SocketIORouter;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 
@@ -129,16 +137,12 @@ Router::addGroup('/api/emoticon/', function () {
 ]);
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-Download -------------------------- */
-Router::addGroup('/api/download/', function () {
+Router::addGroup('/api/download/', static function () {
 }, [
     'middleware' => [HttpAuthMiddleware::class],
 ]);
 /* ----------------------  结束   ------------------------------------ */
-Router::addServer('ws', function () {
-    Router::get('/', WebSocketController::class, [
-        'middleware' => [AuthMiddleware::class],
-    ]);
-});
+SocketIORouter::addNamespace('/', SocketIOController::class);
 Router::get('/favicon.ico', function () {
     return '';
 });

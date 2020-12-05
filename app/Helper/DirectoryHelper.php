@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -21,13 +27,13 @@ class DirectoryHelper
      */
     public static function mkdirDeep(string $dir, int $mode = 0766): bool
     {
-        if ($dir == '') {
+        if ($dir === '') {
             return false;
         }
         if (is_dir($dir) && @chmod($dir, $mode)) {
             return true;
         }
-        if (@mkdir($dir, $mode, true)) { //第三个参数为true即可以创建多级目录
+        if (mkdir($dir, $mode, true) || is_dir($dir)) { //第三个参数为true即可以创建多级目录
             return true;
         }
 
@@ -49,19 +55,19 @@ class DirectoryHelper
         foreach (glob($path . '/{.,*}*', GLOB_BRACE) as $single) {
             if (is_dir($single)) {
                 $file = str_replace($path . '/', '', $single);
-                if ($file == '.' || $file == '..') {
+                if ($file === '.' || $file === '..') {
                     continue;
                 }
 
-                if ($type != 'file') {
-                    array_push($tree, $single);
+                if ($type !== 'file') {
+                    $tree[] = $single;
                 }
 
                 if ($recursive) {
-                    $tree = array_merge($tree, self::getFileTree($single, $type, $recursive));
+                    $tree = array_merge(...self::getFileTree($single, $type, $recursive));
                 }
-            } elseif ($type != 'dir') {
-                array_push($tree, $single);
+            } elseif ($type !== 'dir') {
+                $tree[] = $single;
             }
         }
 
@@ -74,13 +80,13 @@ class DirectoryHelper
     public static function getDirSize(string $path): int
     {
         $size = 0;
-        if ($path == '' || ! is_dir($path)) {
+        if ($path === '' || ! is_dir($path)) {
             return $size;
         }
 
         $dh = @opendir($path); //比dir($path)快
-        while (($file = @readdir($dh)) != false) {
-            if ($file != '.' and $file != '..') {
+        while (($file = @readdir($dh)) !== false) {
+            if ($file !== '.' and $file !== '..') {
                 $fielpath = $path . DIRECTORY_SEPARATOR . $file;
                 if (is_dir($fielpath)) {
                     $size += self::getDirSize($fielpath);
@@ -102,16 +108,16 @@ class DirectoryHelper
      */
     public static function copyDir(string $from, string $dest, bool $cover = false): bool
     {
-        if (! file_exists($dest) && ! @mkdir($dest, 0766, true)) {
+        if (! file_exists($dest) && ! mkdir($dest, 0766, true) && ! is_dir($dest)) {
             return false;
         }
 
         $dh = @opendir($from);
         while (($fileName = @readdir($dh)) !== false) {
-            if (($fileName != '.') && ($fileName != '..')) {
+            if (($fileName !== '.') && ($fileName !== '..')) {
                 $newFile = "{$dest}/{$fileName}";
                 if (! is_dir("{$from}/{$fileName}")) {
-                    if (file_exists($newFile) && ! $cover) {
+                    if (! $cover & file_exists($newFile)) {
                         continue;
                     }
                     if (! copy("{$from}/{$fileName}", $newFile)) {
@@ -136,7 +142,7 @@ class DirectoryHelper
      */
     public static function chmodBatch(string $path, int $filemode = 0766, int $dirmode = 0766): void
     {
-        if ($path == '') {
+        if ($path === '') {
             return;
         }
 
@@ -146,7 +152,7 @@ class DirectoryHelper
             }
             $dh = @opendir($path);
             while (($file = @readdir($dh)) !== false) {
-                if ($file != '.' && $file != '..') {
+                if ($file !== '.' && $file !== '..') {
                     $fullpath = $path . '/' . $file;
                     self::chmodBatch($fullpath, $filemode, $dirmode);
                 }
@@ -163,8 +169,8 @@ class DirectoryHelper
     public static function delDir(string $path): bool
     {
         if (is_dir($path) && $dh = @opendir($path)) {
-            while (($file = @readdir($dh)) != false) {
-                if ($file != '.' && $file != '..') {
+            while (($file = @readdir($dh)) !== false) {
+                if ($file !== '.' && $file !== '..') {
                     $fielpath = $path . DIRECTORY_SEPARATOR . $file;
                     if (is_dir($fielpath)) {
                         self::delDir($fielpath);
@@ -181,6 +187,10 @@ class DirectoryHelper
 
     /**
      * 清空目录(删除目录下所有文件,仅保留当前目录).
+     *
+     * @param string $path
+     *
+     * @return bool
      */
     public static function clearDir(string $path): bool
     {
@@ -195,7 +205,7 @@ class DirectoryHelper
         foreach ($iterator as $single => $file) {
             $fpath = $file->getRealPath();
             if ($file->isDir()) {
-                array_push($dirs, $fpath);
+                $dirs[] = $fpath;
             } else {
                 //先删除文件
                 @unlink($fpath);
@@ -208,16 +218,20 @@ class DirectoryHelper
             @rmdir($dir);
         }
 
-        unset($dir, $iterator, $dirs);
+        unset($iterator, $dirs);
         return true;
     }
 
     /**
      * 格式化路径字符串(路径后面加/).
+     *
+     * @param string $dir
+     *
+     * @return string
      */
     public static function formatDir(string $dir): string
     {
-        if ($dir == '') {
+        if ($dir === '') {
             return '';
         }
 

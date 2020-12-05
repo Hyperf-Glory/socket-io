@@ -1,18 +1,23 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Controller;
 
 use App\Amqp\Producer\ChatProducer;
-use App\Component\ClientManager;
 use App\Component\MessageParser;
 use App\Helper\StringHelper;
 use App\Service\GroupService;
@@ -22,7 +27,6 @@ use Hyperf\Di\Aop\ProceedingJoinPoint;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\RequestMapping;
 use Hyperf\RateLimit\Annotation\RateLimit;
-use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\Coroutine;
 use Hyperf\Utils\Exception\ParallelExecutionException;
 use Hyperf\Utils\Parallel;
@@ -31,8 +35,6 @@ use Hyperf\WebSocketClient\Frame;
 
 /**
  * @Controller(prefix="index")
- * Class IndexController
- * @package App\Controller
  */
 class IndexController extends AbstractController
 {
@@ -43,7 +45,7 @@ class IndexController extends AbstractController
     protected $clientFactory;
 
     /**
-     * @Inject()
+     * @Inject
      * @var \Hyperf\Contract\StdoutLoggerInterface
      */
     protected $logger;
@@ -93,7 +95,6 @@ class IndexController extends AbstractController
         //                    });
         //
         //                }
-
     }
 
     /**
@@ -107,17 +108,17 @@ class IndexController extends AbstractController
         if ($username && $password) {
             $userData = [
                 'cloud_uid' => 1, // 如果使用单点登录，必须存在配置文件中的sso_key的值，一般设置为用户的id
-                'username'  => 'xx',
+                'username' => 'xx',
             ];
             // 使用默认场景登录
             $token = $this->jwt->setScene('cloud')->getToken($userData);
-            $data  = [
+            $data = [
                 'code' => 0,
-                'msg'  => 'success',
+                'msg' => 'success',
                 'data' => [
                     'token' => $token,
-                    'exp'   => $this->jwt->getTTL(),
-                ]
+                    'exp' => $this->jwt->getTTL(),
+                ],
             ];
             return $this->response->success($data);
         }
@@ -136,12 +137,12 @@ class IndexController extends AbstractController
 
     /**
      * @RequestMapping(path="rate-limit")
-     * @RateLimit(create=1,consume=2,capacity=2,waitTimeout=3,limitCallback={TestController::class,"limitCallback"})
+     * @RateLimit(create=1, consume=2, capacity=2, waitTimeout=3, limitCallback={TestController::class, "limitCallback"})
      */
     public function rateLimit()
     {
         sleep(1);
-        return ["QPS 2, 峰值2"];
+        return ['QPS 2, 峰值2'];
     }
 
     public static function limitCallback(float $seconds, ProceedingJoinPoint $proceedingJoinPoint)
@@ -183,16 +184,15 @@ class IndexController extends AbstractController
         /**
          * @var array $ips
          */
-        $serverIps   = (config('websocket_server_ips'));
-        $ips         = array_values($serverIps);
+        $serverIps = (config('websocket_server_ips'));
+        $ips = array_values($serverIps);
         $parallelCnt = count($ips);
 
         //利用swoole wait_group
         //创建N个协程并行
         $parallels = new Parallel($parallelCnt);
         foreach ($serverIps as $server => $ip) {
-            $parallels->add(function () use ($ip, $server, $groupUids)
-            {
+            $parallels->add(function () use ($ip, $server, $groupUids) {
                 if (empty($fds)) {
                     //协程内抛出异常
                     throw new ParallelExecutionException(sprintf('Server:[%s]服务器暂时无该群组[%s]的人员!', $server, 1));
@@ -205,7 +205,6 @@ class IndexController extends AbstractController
             //执行协程
             return $parallels->wait();
         } catch (ParallelExecutionException $e) {
-
             /**
              * @var ParallelExecutionException $ex
              */
@@ -228,12 +227,12 @@ class IndexController extends AbstractController
     {
         $ips = config('websocket_server_ips');
         dump($ips);
-        $data      = [
+        $data = [
             'hello' => 'word',
-            'word'  => 'hello'
+            'word' => 'hello',
         ];
         $startTime = microtime(true);
-        $json      = json_encode($data);
+        $json = json_encode($data);
         dump(json_decode($json, true));
         $endTime = microtime(true);
         echo 'php_json执行了' . ($endTime - $startTime) * 1000 . ' ms' . PHP_EOL;
@@ -244,12 +243,12 @@ class IndexController extends AbstractController
      */
     public function swoolejson()
     {
-        $data1      = [
+        $data1 = [
             'hello' => 'word1',
-            'word'  => 'hello1'
+            'word' => 'hello1',
         ];
         $startTime1 = microtime(true);
-        $json1      = json_encode($data1);
+        $json1 = json_encode($data1);
         dump(MessageParser::decode($json1));
         $endTime1 = microtime(true);
         echo 'swoole_json执行了' . ($endTime1 - $startTime1) * 1000 . ' ms' . PHP_EOL;

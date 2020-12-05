@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -96,7 +102,7 @@ class DateHelper
 
         $hours = floor($second / 3600);
         $hours = $hours ? str_pad($hours, 2, '0', STR_PAD_LEFT) : 0;
-        $second = $second % 3600;
+        $second %= 3600;
         $minutes = floor($second / 60);
         $minutes = str_pad($minutes, 2, '0', STR_PAD_LEFT);
         $seconds = $second % 60;
@@ -111,7 +117,7 @@ class DateHelper
     public static function getMicrosecond(): float
     {
         [$usec,] = explode(' ', microtime());
-        return (float) $usec * pow(10, 6);
+        return (float) $usec * (10 ** 6);
     }
 
     /**
@@ -131,10 +137,10 @@ class DateHelper
     public static function getXingZuo($datetime): string
     {
         $res = '';
-        if (is_numeric($datetime) && strlen($datetime) == 10) {
+        if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = strval($datetime);
+            $datetime = (string) $datetime;
         }
 
         if (! ValidateHelper::isDate2time($datetime)) {
@@ -142,7 +148,7 @@ class DateHelper
         }
 
         $month = substr($datetime, 5, 2); //取出月份
-        $day = intval(substr($datetime, 8, 2)); //取出日期
+        $day = (int) substr($datetime, 8, 2); //取出日期
         switch ($month) {
             case '01':
                 if ($day < 21) {
@@ -241,10 +247,10 @@ class DateHelper
     public static function getShengXiao($datetime): string
     {
         $res = '';
-        if (is_numeric($datetime) && strlen($datetime) == 10) {
+        if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = strval($datetime);
+            $datetime = (string) $datetime;
         }
 
         if (! ValidateHelper::isDate2time($datetime)) {
@@ -316,10 +322,10 @@ class DateHelper
     public static function getLunarYear($datetime): string
     {
         $res = '';
-        if (is_numeric($datetime) && strlen($datetime) == 10) {
+        if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = strval($datetime);
+            $datetime = (string) $datetime;
         }
 
         if (! ValidateHelper::isDate2time($datetime)) {
@@ -331,15 +337,12 @@ class DateHelper
         //地支
         $earth = ['申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未'];
 
-        $year = intval(substr($datetime, 0, 4));
+        $year = (int) substr($datetime, 0, 4);
         $diff = $year - 1900 + 40;
         return $sky[$diff % 10] . $earth[$diff % 12];
     }
 
-    /**
-     * @return array
-     */
-    public static function createDate(string $beginDate, string $endDate, string $format = 'Ymd')
+    public static function createDate(string $beginDate, string $endDate, string $format = 'Ymd'): array
     {
         $i = 0;
         $arr = [];
@@ -353,10 +356,7 @@ class DateHelper
         return $arr;
     }
 
-    /**
-     * @return null|string
-     */
-    public static function getChineseWeek(string $key = null)
+    public static function getChineseWeek(string $key = null): ?string
     {
         $array = [
             'Sunday' => '周日',
@@ -367,6 +367,6 @@ class DateHelper
             'Friday' => '周五',
             'Saturday' => '周六',
         ];
-        return isset($array[$key]) ? $array[$key] : null;
+        return $array[$key] ?? null;
     }
 }

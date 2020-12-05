@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -39,8 +45,8 @@ class FileHelper
         $res = false;
         if (! empty($file) && ! empty($data)) {
             $dir = dirname($file);
-            if (! is_dir($dir)) {
-                @mkdir($dir, 0766, true);
+            if (! is_dir($dir) && ! mkdir($dir, 0766, true) && ! is_dir($dir)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
             }
 
             if ($fp = @fopen($file, $append ? 'ab' : 'wb')) {
@@ -85,9 +91,9 @@ class FileHelper
         foreach ($files as $file) {
             if (is_dir($file)) {
                 $arr = DirectoryHelper::getFileTree($file, 'file');
-                $validFiles = array_merge($validFiles, $arr);
+                $validFiles = array_merge(...$arr);
             } elseif (file_exists($file)) {
-                array_push($validFiles, $file);
+                $validFiles[] = $file;
             }
         }
 
@@ -128,7 +134,7 @@ class FileHelper
         }
 
         $imgInfo = getimagesize($file); //取得图片的大小，类型等
-        $fp = fopen($file, 'r');
+        $fp = fopen($file, 'rb');
         if ($fp) {
             $fileContent = chunk_split(base64_encode(fread($fp, filesize($file)))); //base64编码
             $imgType = 'jpg';
@@ -156,9 +162,8 @@ class FileHelper
 
     /**
      * 获取所有的文件MIME键值数组.
-     * @return array
      */
-    public static function getAllMimes()
+    public static function getAllMimes(): array
     {
         return [
             '323' => 'text/h323',
@@ -392,6 +397,8 @@ class FileHelper
 
     /**
      * 把整个文件读入一个数组中,每行作为一个元素.
+     *
+     * @param string $path
      */
     public static function readInArray(string $path): array
     {

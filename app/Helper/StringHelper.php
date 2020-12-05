@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -218,7 +224,7 @@ class StringHelper
      */
     public static function md5Short(string $str): string
     {
-        return substr(md5(strval($str)), 8, 16);
+        return substr(md5($str), 8, 16);
     }
 
     /**
@@ -246,6 +252,7 @@ class StringHelper
     /**
      * 获取宽字符串长度函数.
      *
+     * @param string
      * @param bool $filterTags 是否过滤(html/php)标签
      */
     public static function length(string $str, bool $filterTags = false): int
@@ -263,6 +270,8 @@ class StringHelper
      *
      * @param int $len 字符串长度
      * @param bool $hasSpecial 是否有特殊字符
+     *
+     * @throws \Exception
      */
     public static function randSimple(int $len = 6, bool $hasSpecial = false): string
     {
@@ -274,7 +283,7 @@ class StringHelper
         $result = '';
         $max = strlen($chars) - 1;
         for ($i = 0; $i < $len; ++$i) {
-            $result .= $chars[rand(0, $max)];
+            $result .= $chars[random_int(0, $max)];
         }
         return $result;
     }
@@ -289,7 +298,7 @@ class StringHelper
         if ($len <= 10) {
             $arr = range(0, 9);
         } else {
-            $arr = range(0, pow(10, ceil($len / 10)) - 1);
+            $arr = range(0, (10 ** ceil($len / 10)) - 1);
         }
         shuffle($arr);
         $str = implode('', $arr);
@@ -341,9 +350,9 @@ class StringHelper
             $chars = str_repeat($chars, ceil($diff));
         }
 
-        if ($type == 5) { // 中文随机字
+        if ($type === 5) { // 中文随机字
             for ($i = 0; $i < $len; ++$i) {
-                $str .= mb_substr($chars, floor(mt_rand(0, $charLen - 1)), 1, 'UTF-8');
+                $str .= mb_substr($chars, floor(random_int(0, $charLen - 1)), 1, 'UTF-8');
             }
         } else {
             $chars = str_shuffle($chars);
@@ -374,7 +383,7 @@ class StringHelper
         }
 
         if (! $hasBodyTag) {
-            $res = preg_replace('/<(\\!DOCTYPE.*?)>/is', '', $res);
+            $res = preg_replace('/<(!DOCTYPE.*?)>/is', '', $res);
             $res = preg_replace('/<(\\/?(html|body).*?)>/is', '', $res);
         }
 
@@ -410,7 +419,7 @@ class StringHelper
 
         foreach ($searchs as $search) {
             $lev = levenshtein($word, $search);
-            if ($lev == 0) { //完全相等
+            if ($lev === 0) { //完全相等
                 $closest = $search;
                 $shortest = 0;
                 break;
@@ -462,11 +471,11 @@ class StringHelper
         $arr = $matches[0] ?? [];
 
         foreach ($arr as $k => $v) {
-            if (substr($v, 0, 2) == '%u') {
+            if (strpos($v, '%u') === 0) {
                 $arr[$k] = mb_convert_encoding(pack('H4', substr($v, -4)), $charset, 'UCS-2');
-            } elseif (substr($v, 0, 3) == '&#x') {
+            } elseif (strpos($v, '&#x') === 0) {
                 $arr[$k] = mb_convert_encoding(pack('H4', substr($v, 3, -1)), $charset, 'UCS-2');
-            } elseif (substr($v, 0, 2) == '&#') {
+            } elseif (strpos($v, '&#') === 0) {
                 $arr[$k] = mb_convert_encoding(pack('H4', substr($v, 2, -1)), $charset, 'UCS-2');
             }
         }
@@ -574,7 +583,7 @@ class StringHelper
             if (isset($matchs[1]) && count($matchs[1]) > 0) {
                 foreach ($matchs[1] as $v) {
                     $item = trim($v, "\"'"); //删除首尾的引号 ' "
-                    array_push($images, $item);
+                    $images[] = $item;
                 }
             }
         }
@@ -601,11 +610,12 @@ class StringHelper
     /**
      * 移除字符串中的空格
      *
+     * @param string
      * @param bool $all 为true时移除全部空白,为false时只替换连续的空白字符为一个空格
      */
     public static function removeSpace(string $str, bool $all = true): string
     {
-        if ($str == '') {
+        if ($str === '') {
             return '';
         }
 
@@ -623,7 +633,7 @@ class StringHelper
      */
     public static function getText(string $html): string
     {
-        if ($html == '') {
+        if ($html === '') {
             return '';
         }
 
@@ -683,7 +693,7 @@ class StringHelper
      */
     public static function removeHtml(string $html): string
     {
-        if ($html == '') {
+        if ($html === '') {
             return '';
         }
 
@@ -768,6 +778,7 @@ class StringHelper
     /**
      * 字符串/单词统计
      *
+     * @param string
      * @param int $type 统计类型: 0:按字符统计; 1:只统计英文单词; 2:按英文单词和中文字数
      */
     public static function stringWordCount(string $str, int $type = 0): int
@@ -836,7 +847,7 @@ class StringHelper
     public static function hideTrueName(string $str): string
     {
         $res = '**';
-        if ($str != '') {
+        if ($str !== '') {
             $len = mb_strlen($str, 'UTF-8');
             if ($len <= 3) {
                 $res = mb_substr($str, 0, 1, 'UTF-8') . $res;
@@ -868,7 +879,7 @@ class StringHelper
         $str = preg_replace('/^(data:\s*(image|img)\/(\w+);base64,)/', '', $str);
         $str = str_replace('=', '', $str);
         $len = strlen($str);
-        return intval($len * (3 / 4));
+        return (int) ($len * (3 / 4));
     }
 
     /**
@@ -890,7 +901,7 @@ class StringHelper
 
     /**
      * 将二进制转换成字符串.
-     */
+     * 3     */
     public static function bin2Str(string $str): string
     {
         $arr = explode(' ', $str);
@@ -898,7 +909,7 @@ class StringHelper
             $v = pack('H' . strlen(base_convert($v, 2, 16)), base_convert($v, 2, 16));
         }
 
-        return join('', $arr);
+        return implode('', $arr);
     }
 
     /**
@@ -910,13 +921,13 @@ class StringHelper
     public static function multiExplode(string $str, string ...$delimiters): array
     {
         $res = [];
-        if ($str == '') {
+        if ($str === '') {
             return $res;
         }
 
         $dLen = count($delimiters);
-        if ($dLen == 0) {
-            array_push($res, $str);
+        if ($dLen === 0) {
+            $res[] = $str;
         } else {
             if ($dLen > 1) {
                 $str = str_replace($delimiters, $delimiters[0], $str);
@@ -933,11 +944,11 @@ class StringHelper
      */
     public static function removeEmoji(string $str): string
     {
-        if ($str != '') {
+        if ($str !== '') {
             $hasTree = false;
             $str = preg_replace_callback(
                 '/./u',
-                function (array $match) use (&$hasTree) {
+                static function (array $match) use (&$hasTree) {
                     $len = strlen($match[0]);
                     //存在3字节长度的表情符
                     if ($len == 3) {
@@ -962,17 +973,19 @@ class StringHelper
 
     /**
      * 转为驼峰写法.
+     *
+     * @param string
      */
     public static function toCamelCase(string $str): string
     {
-        if ($str == '') {
+        if ($str === '') {
             return '';
         }
 
         $res = [];
         $r0 = $r1 = '';
 
-        while (strlen($str) > 0) {
+        while ($str !== '') {
             $r0 = mb_substr($str, 0, 1);
             $str = mb_substr($str, 1);
 
@@ -981,16 +994,16 @@ class StringHelper
                 break;
             }
 
-            array_push($res, $r0);
+            $res[] = $r0;
         }
 
-        while (strlen($str) > 0) {
+        while ($str !== '') {
             $r1 = $r0;
             $r0 = mb_substr($str, 0, 1);
             $str = mb_substr($str, 1);
 
             if (self::isCaseConnector($r0) && self::isCaseConnector($r1)) {
-                array_push($res, $r1);
+                $res[] = $r1;
                 continue;
             }
 
@@ -998,10 +1011,10 @@ class StringHelper
                 $r0 = strtoupper($r0);
             } else {
                 $r0 = strtolower($r0);
-                array_push($res, $r1);
+                $res[] = $r1;
             }
         }
-        array_push($res, $r0);
+        $res[] = $r0;
 
         return implode('', $res);
     }
@@ -1025,11 +1038,12 @@ class StringHelper
     /**
      * 检查字符串 $str 是否包含数组$arr的元素之一
      *
+     * @param string
      * @param array $arr 字符串数组
      * @param bool $returnValue 是否返回匹配的值
      * @param bool $case 是否检查大小写
      *
-     * @return bool|mixed
+     * @return mixed
      */
     public static function dstrpos(string $str, array $arr, bool $returnValue = false, bool $case = false)
     {
@@ -1038,7 +1052,7 @@ class StringHelper
         }
 
         foreach ($arr as $v) {
-            $v = strval($v);
+            $v = (string) $v;
             if ($case ? strpos($str, $v) !== false : stripos($str, $v) !== false) {
                 return $returnValue ? $v : true;
             }
@@ -1050,12 +1064,14 @@ class StringHelper
     /**
      * 移除before之前的字符串.
      *
+     * @param string
+     * @param string
      * @param bool $include 是否移除包括before本身
      * @param bool $ignoreCase 是否忽略大小写
      */
     public static function removeBefore(string $str, string $before, bool $include = false, bool $ignoreCase = false): string
     {
-        if ($str == '' || $before == '') {
+        if ($str === '' || $before === '') {
             return $str;
         }
 
@@ -1073,12 +1089,14 @@ class StringHelper
     /**
      * 移除after之后的字符串.
      *
+     * @param string
+     * @param string
      * @param bool $include 是否移除包括after本身
      * @param bool $ignoreCase 是否忽略大小写
      */
     public static function removeAfter(string $str, string $after, bool $include = false, bool $ignoreCase = false): string
     {
-        if ($str == '' || $after == '') {
+        if ($str === '' || $after === '') {
             return $str;
         }
 
@@ -1119,7 +1137,7 @@ class StringHelper
             foreach ($partArr as $part) {
                 //某类型存在加分
                 if (preg_match($part, $str)) {
-                    $score += ($part == $special) ? 7 : 3;
+                    $score += ($part === $special) ? 7 : 3;
                 }
 
                 $regexCount = preg_match_all($part, $str, $out); //某类型存在，并且存在个数大于2加2分，个数大于5加6分
@@ -1135,7 +1153,7 @@ class StringHelper
         $repeatChar = '';
         $repeatCount = 0;
         for ($i = 0; $i < $leng; ++$i) {
-            if ($str[$i] == $repeatChar) {
+            if ($str[$i] === $repeatChar) {
                 ++$repeatCount;
             } else {
                 $repeatChar = $str[$i];
@@ -1185,7 +1203,7 @@ class StringHelper
             'zxcvbnm',
         ];
         foreach ($weakPwds as $weakPwd) {
-            if ($str == $weakPwd || stripos($weakPwd, $str) !== false) {
+            if ($str === $weakPwd || stripos($weakPwd, $str) !== false) {
                 $level = 1;
                 break;
             }
@@ -1196,7 +1214,7 @@ class StringHelper
 
     /**
      * 获取UUID(Version4).
-     * @throws Exception
+     * @throws \Exception
      */
     public static function uuidV4(): string
     {
@@ -1209,11 +1227,13 @@ class StringHelper
     /**
      * 字符串$str是否包含$sub.
      *
+     * @param string
+     * @param string
      * @param bool $ignoreCase 是否忽略大小写
      */
     public static function contains(string $str, string $sub, bool $ignoreCase = false): bool
     {
-        if (is_null($str) || $str === '') {
+        if ($str === '' || is_null($str)) {
             return false;
         }
 
@@ -1235,7 +1255,7 @@ class StringHelper
         }
 
         // 如果提供了开始定界符
-        if (! is_null($begin) && $begin !== '') {
+        if ($begin !== '' && ! is_null($begin)) {
             // 计算开始定界符的出现位置
             $beginPos = mb_stripos($str, $begin);
 
@@ -1249,7 +1269,7 @@ class StringHelper
         }
 
         // 如果未提供结束定界符,直接 返回了.
-        if (is_null($end) || $end === '') {
+        if ($end === '' || is_null($end)) {
             return $str;
         }
 
@@ -1272,20 +1292,23 @@ class StringHelper
 
     /**
      * 是否字符转换连接符.
+     *
+     * @param string
      */
     private static function isCaseConnector(string $str): bool
     {
-        return mb_strlen($str) == 1 && ($str == '-' || $str == '_' || ValidateHelper::isSpace($str));
+        return mb_strlen($str) === 1 && ($str === '-' || $str === '_' || ValidateHelper::isSpace($str));
     }
 
     /**
      * 驼峰转为小写.
      *
-     * @param string $connector 连接符
+     * @param string
+     * @param string 连接符
      */
     private static function camelCaseToLowerCase(string $str, string $connector): string
     {
-        if ($str == '') {
+        if ($str === '') {
             return '';
         }
 
@@ -1293,20 +1316,20 @@ class StringHelper
         $prev = $r0 = $r1 = '';
         $r0 = $connector;
 
-        while (mb_strlen($str) > 0) {
+        while ($str !== '') {
             $prev = $r0;
             $r0 = mb_substr($str, 0, 1);
             $str = mb_substr($str, 1);
 
             switch ($r0) {
                 case ValidateHelper::isUpperLetter($r0):
-                    if ($prev != $connector && ! is_numeric($prev)) {
-                        array_push($res, $connector);
+                    if ($prev !== $connector && ! is_numeric($prev)) {
+                        $res[] = $connector;
                     }
 
-                    array_push($res, strtolower($r0));
+                    $res[] = strtolower($r0);
 
-                    if (strlen($str) == 0) {
+                    if ($str === '') {
                         break;
                     }
 
@@ -1314,11 +1337,11 @@ class StringHelper
                     $str = mb_substr($str, 1);
 
                     if (! ValidateHelper::isUpperLetter($r0)) {
-                        array_push($res, $r0);
+                        $res[] = $r0;
                         break;
                     }
 
-                    while (mb_strlen($str) > 0) {
+                    while ($str !== '') {
                         $r1 = $r0;
                         $r0 = mb_substr($str, 0, 1);
                         $str = mb_substr($str, 1);
@@ -1326,40 +1349,40 @@ class StringHelper
                         if (! ValidateHelper::isUpperLetter($r0)) {
                             if (self::isCaseConnector($r0)) {
                                 $r0 = $connector;
-                                array_push($res, strtolower($r1));
+                                $res[] = strtolower($r1);
                             } elseif (is_numeric($r0)) {
-                                array_push($res, strtolower($r1));
-                                array_push($res, $connector);
-                                array_push($res, $r0);
+                                $res[] = strtolower($r1);
+                                $res[] = $connector;
+                                $res[] = $r0;
                             } else {
-                                array_push($res, $connector);
-                                array_push($res, strtolower($r1));
-                                array_push($res, $r0);
+                                $res[] = $connector;
+                                $res[] = strtolower($r1);
+                                $res[] = $r0;
                             }
 
                             break;
                         }
 
-                        array_push($res, strtolower($r1));
+                        $res[] = strtolower($r1);
                     }
 
-                    if (strlen($str) == 0 || $r0 == $connector) {
-                        array_push($res, strtolower($r0));
+                    if ($str === '' || $r0 === $connector) {
+                        $res[] = strtolower($r0);
                     }
 
                     break;
                 case is_numeric($r0):
-                    if ($prev != $connector && ! is_numeric($prev)) {
-                        array_push($res, $connector);
+                    if ($prev !== $connector && ! is_numeric($prev)) {
+                        $res[] = $connector;
                     }
-                    array_push($res, $r0);
+                    $res[] = $r0;
 
                     break;
                 default:
                     if (self::isCaseConnector($r0)) {
                         $r0 = $connector;
                     }
-                    array_push($res, $r0);
+                    $res[] = $r0;
                     break;
             }
         }

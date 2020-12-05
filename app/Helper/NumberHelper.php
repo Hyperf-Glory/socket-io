@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * This file is part of Hyperf.
  *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ * This file is part of the My App.
+ *
+ * Copyright CodingHePing 2016-2020.
+ *
+ * This is my open source code, please do not use it for commercial applications.
+ *
+ * For the full copyright and license information,
+ * please view the LICENSE file that was distributed with this source code
+ *
+ * @author CodingHePing<847050412@qq.com>
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 namespace App\Helper;
 
@@ -107,7 +113,7 @@ class NumberHelper
 
         $calcLongitude = $lng2 - $lng1;
         $calcLatitude = $lat2 - $lat1;
-        $stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
+        $stepOne = (sin($calcLatitude / 2) ** 2) + cos($lat1) * cos($lat2) * (sin($calcLongitude / 2) ** 2);
         $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
         return $earthRadius * $stepTwo;
     }
