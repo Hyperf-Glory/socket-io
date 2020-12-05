@@ -97,7 +97,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             $uids = $this->userFriendService->getFriends($uid);
             foreach ($uids as $friend) {
                 //推送好友上线通知
-                $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend))->emit('login_notify', ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
+                $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('login_notify', ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
             }
         }
         // 绑定聊天群
@@ -124,8 +124,8 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         $uids = $this->userFriendService->getFriends($user['user']['id']);
         foreach ($uids as $friend) {
             //推送好友下线通知
-            $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend))->emit('login_notify', [
-                'user_id' => $user['id'],
+            $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('login_notify', [
+                'user_id' => $user['user']['id'],
                 'status' => 0,
                 'notify' => '好友离线通知...',
             ]);

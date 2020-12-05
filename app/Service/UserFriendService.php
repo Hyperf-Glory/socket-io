@@ -21,7 +21,9 @@ use App\Model\Users;
 use App\Model\UsersFriends;
 use App\Model\UsersFriendsApply;
 use App\Service\Traits\PagingTrait;
+use Exception;
 use Hyperf\DbConnection\Db;
+use RuntimeException;
 
 class UserFriendService
 {
@@ -68,10 +70,8 @@ SQL;
      * @param int $user_id 用户ID
      * @param int $friend_id 好友ID
      * @param string $remarks 好友申请备注
-     *
-     * @return bool
      */
-    public function addFriendApply(int $user_id, int $friend_id, string $remarks)
+    public function addFriendApply(int $user_id, int $friend_id, string $remarks): bool
     {
         // 判断是否是好友关系
         if (UsersFriends::isFriend($user_id, $friend_id)) {
@@ -83,18 +83,16 @@ SQL;
          */
         $result = UsersFriendsApply::where('user_id', $user_id)->where('friend_id', $friend_id)->orderBy('id', 'desc')->first();
         if (! $result) {
-            $result = UserFriendsApply::create([
+            $result = UsersFriendsApply::create([
                 'user_id' => $user_id,
                 'friend_id' => $friend_id,
                 'status' => 0,
                 'remarks' => $remarks,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
             return $result ? true : false;
         }
-        if ($result->status == 0) {
+        if ($result->status === 0) {
             $result->remarks = $remarks;
             $result->updated_at = date('Y-m-d H:i:s');
             $result->save();
@@ -110,22 +108,13 @@ SQL;
      *
      * @param int $uid 用户ID
      * @param int $applyId 好友申请ID
-     *
-     * @return mixed
      */
-    public function delFriendApply(int $uid, int $applyId)
+    public function delFriendApply(int $uid, int $applyId): bool
     {
         return (bool) UsersFriendsApply::where('id', $applyId)->where('friend_id', $uid)->delete();
     }
 
-    /**
-     * 处理好友的申请.
-     *
-     * @param string $remarks 备注信息
-     *
-     * @return bool
-     */
-    public function handleFriendApply(int $uid, int $applyId, $remarks = '')
+    public function handleFriendApply(int $uid, int $applyId, $remarks = ''): bool
     {
         /**
          * @var UsersFriendsApply $info
@@ -139,7 +128,7 @@ SQL;
         try {
             $res = UsersFriendsApply::where('id', $applyId)->update(['status' => 1, 'updated_at' => date('Y-m-d H:i:s')]);
             if (! $res) {
-                throw new \Exception('更新好友申请表信息失败');
+                throw new RuntimeException('更新好友申请表信息失败');
             }
 
             $user1 = $info->user_id;
@@ -154,9 +143,9 @@ SQL;
              */
             $friendResult = UsersFriends::select(['id', 'user1', 'user2', 'active', 'status'])->where('user1', '=', $user1)->where('user2', '=', $user2)->first();
             if ($friendResult) {
-                $active = ($friendResult->user1 == $info->user_id && $friendResult->user2 == $info->friend_id) ? 1 : 2;
+                $active = ($friendResult->user1 === $info->user_id && $friendResult->user2 === $info->friend_id) ? 1 : 2;
                 if (! UserFriends::where('id', $friendResult->id)->update(['active' => $active, 'status' => 1])) {
-                    throw new \Exception('更新好友关系信息失败');
+                    throw new RuntimeException('更新好友关系信息失败');
                 }
             } else {
                 //好友昵称
@@ -164,21 +153,22 @@ SQL;
                 $insRes = UsersFriends::create([
                     'user1' => $user1,
                     'user2' => $user2,
-                    'user1_remark' => $user1 == $uid ? $remarks : $friend_nickname,
-                    'user2_remark' => $user2 == $uid ? $remarks : $friend_nickname,
-                    'active' => $user1 == $uid ? 2 : 1,
+                    'user1_remark' => $user1 === $uid ? $remarks : $friend_nickname,
+                    'user2_remark' => $user2 === $uid ? $remarks : $friend_nickname,
+                    'active' => $user1 === $uid ? 2 : 1,
                     'status' => 1,
                     'agree_time' => date('Y-m-d H:i:s'),
                     'created_at' => date('Y-m-d H:i:s'),
                 ]);
 
                 if (! $insRes) {
-                    throw new \Exception('创建好友关系失败');
+                    throw new RuntimeException('创建好友关系失败');
                 }
             }
 
             Db::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            dump($e->getMessage());
             Db::rollBack();
             return false;
         }
@@ -188,10 +178,8 @@ SQL;
 
     /**
      * 解除好友关系.
-     *
-     * @return bool
      */
-    public function removeFriend(int $uid, int $friendId)
+    public function removeFriend(int $uid, int $friendId): bool
     {
         if (! UsersFriends::isFriend($uid, $friendId)) {
             return false;
@@ -213,10 +201,8 @@ SQL;
      * @param int $user_id 用户ID
      * @param int $page 分页数
      * @param int $page_size 分页大小
-     *
-     * @return array
      */
-    public function findApplyRecords(int $user_id, int $page = 1, int $page_size = 30)
+    public function findApplyRecords(int $user_id, int $page = 1, int $page_size = 30): array
     {
         $rowsSqlObj = UsersFriendsApply::select([
             'users_friends_apply.id',
@@ -244,16 +230,12 @@ SQL;
 
     /**
      * 编辑好友备注信息.
-     *
-     * @param string $remarks 好友备注名称
-     *
-     * @return bool
      */
-    public function editFriendRemark(int $uid, int $friendId, string $remarks)
+    public function editFriendRemark(int $uid, int $friendId, string $remarks): bool
     {
         $data = [];
         if ($uid > $friendId) {
-            [$user_id, $friend_id] = [$friendId, $uid];
+            [$uid, $friendId] = [$friendId, $uid];
             $data['user2_remark'] = $remarks;
         } else {
             $data['user1_remark'] = $remarks;

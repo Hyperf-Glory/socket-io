@@ -43,7 +43,13 @@ class UsersChatList extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'type',
+        'uid',
+        'status',
+        'friend_id',
+        'group_id',
+    ];
 
     /**
      * The attributes that should be cast to native types.
@@ -150,4 +156,5 @@ class UsersChatList extends Model
 
         return (bool) self::where('id', $result->id)->update(['not_disturb' => $not_disturb]);
     }
+
 }

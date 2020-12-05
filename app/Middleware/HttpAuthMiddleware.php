@@ -22,7 +22,6 @@ use App\Kernel\Http\Response;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Context;
-use Phper666\JWTAuth\Exception\JWTException;
 use Phper666\JWTAuth\Exception\TokenValidException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -33,13 +32,10 @@ class HttpAuthMiddleware implements MiddlewareInterface
 {
     protected $prefix = 'Bearer';
 
-    private $stdoutLogger;
-
     private $response;
 
     public function __construct(StdoutLoggerInterface $logger, Response $response)
     {
-        $this->stdoutLogger = $logger;
         $this->response = $response;
     }
 
@@ -62,14 +58,9 @@ class HttpAuthMiddleware implements MiddlewareInterface
             if (! $isValidToken) {
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
-        } catch (\Throwable $throwable) {
-            $this->stdoutLogger->error(sprintf('[%s] [%s] [%s] [%s]', $throwable->getMessage(), $throwable->getCode(), $throwable->getLine(), $throwable->getFile()));
-            if ($throwable instanceof TokenValidException || $throwable instanceof JWTException) {
-                throw new TokenValidException('Token authentication does not pass', 401);
-            }
+        } catch (\TokenValidException $throwable) {
+            return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
         }
-
-        return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
     }
 
     private function setRequestContext(string $token): ServerRequestInterface

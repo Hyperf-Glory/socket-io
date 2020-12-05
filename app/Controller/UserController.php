@@ -101,7 +101,7 @@ class UserController extends AbstractController
     {
         $rows = UsersFriends::getUserFriends($this->uid());
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $cache = array_keys($redis->hGetAll(SocketIO::HASH_UID_TO_FD_PREFIX));
+        $cache = array_keys($redis->hGetAll(SocketIO::HASH_UID_TO_SID_PREFIX));
 
         foreach ($rows as $k => $row) {
             $rows[$k]['online'] = in_array($row['id'], $cache, true);
@@ -166,17 +166,17 @@ class UserController extends AbstractController
             return $this->response->parmasError('参数错误!');
         }
 
-        $bool = $this->friendService->addFriendApply($this->uid(), $friendId, $remarks);
+        $bool = $this->friendService->addFriendApply($this->uid(), (int) $friendId, $remarks);
         if (! $bool) {
             return $this->response->error('发送好友申请失败...');
         }
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
 
         //判断对方是否在线。如果在线发送消息通知
-        if ($redis->hGet(SocketIO::HASH_UID_TO_FD_PREFIX, (string) $friendId)) {
+        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $friendId)) {
         }
         // 好友申请未读消息数自增
-        ApplyNumCache::setInc($friendId);
+        ApplyNumCache::setInc((int) $friendId);
         return $this->response->success('发送好友申请成功...');
     }
 
@@ -190,7 +190,7 @@ class UserController extends AbstractController
         if (! ValidateHelper::isInteger($applyId)) {
             return $this->response->parmasError('参数错误!');
         }
-        $bool = $this->friendService->handleFriendApply($this->uid(), $applyId, $remarks);
+        $bool = $this->friendService->handleFriendApply($this->uid(), (int) $applyId, $remarks);
         //判断是否是同意添加好友
         if ($bool) {
             //... 推送处理消息
@@ -221,9 +221,9 @@ class UserController extends AbstractController
         if (empty($remarks) || ! ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
         }
-        $bool = $this->friendService->editFriendRemark($this->uid(), $friendId, $remarks);
+        $bool = $this->friendService->editFriendRemark($this->uid(), (int) $friendId, $remarks);
         if ($bool) {
-            FriendRemarkCache::set($this->uid(), $friendId, $remarks);
+            FriendRemarkCache::set($this->uid(), (int) $friendId, $remarks);
         }
         return $bool ? $this->response->success('备注修改成功...') : $this->response->error('备注修改失败，请稍后再试...');
     }

@@ -118,7 +118,11 @@ class UserService implements InterfaceUserService
      */
     public function logout(string $token): void
     {
-        $this->jwt->logout($token);
+        try {
+            $this->jwt->logout($token);
+        } catch (Throwable $throwable) {
+            $this->logger->error(sprintf('json-rpc logout Error [%s] [%s]', $token, $throwable->getMessage()));
+        }
     }
 
     public function sendVerifyCode(string $mobile, string $type = User::REGISTER): array
@@ -160,11 +164,16 @@ class UserService implements InterfaceUserService
         if (! di(Sms::class)->check('forget_password', $mobile, $smsCode)) {
             return ['code' => 0, 'msg' => '验证码填写错误...'];
         }
-        $bool = $this->userService->resetPassword($mobile, $password);
-        if ($bool) {
-            di(Sms::class)->delCode('forget_password', $mobile);
+        try {
+            $bool = $this->userService->resetPassword($mobile, $password);
+            if ($bool) {
+                di(Sms::class)->delCode('forget_password', $mobile);
+            }
+            return $bool ? ['code' => 1, 'msg' => '重置密码成功...'] : ['code' => 0, 'msg' => '重置密码失败...'];
+        } catch (Throwable $throwable) {
+            $this->logger->error(sprintf('json-rpc forgetPassword fail [%s] [%s]', $mobile, $throwable->getMessage()));
+            return ['code' => 0, 'msg' => '重置密码失败...'];
         }
-        return $bool ? ['code' => 1, 'msg' => '重置密码成功...'] : ['code' => 0, 'msg' => '重置密码失败...'];
     }
 
     public function get(int $uid): ?array
@@ -191,7 +200,12 @@ class UserService implements InterfaceUserService
      */
     public function checkToken(string $token): bool
     {
-        return $this->jwt->checkToken($token);
+        try {
+            return $this->jwt->checkToken($token);
+        } catch (\Throwable $throwable) {
+            $this->logger->error(sprintf('json-rpc CheckToken Fail [%s]  [%s]', $token, $throwable->getMessage()));
+            return false;
+        }
     }
 
     public function decodeToken(string $token): array

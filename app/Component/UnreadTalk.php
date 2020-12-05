@@ -57,7 +57,7 @@ class UnreadTalk
             $redis = $this->redis();
         }
 
-        return (int) $redis->hget($this->_key($uid), $fid);
+        return (int) $redis->hget($this->_key($uid), (string) $fid);
     }
 
     /**

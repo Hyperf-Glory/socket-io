@@ -40,7 +40,13 @@ class UsersFriendsApply extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'id',
+        'user_id',
+        'friend_id',
+        'status',
+        'remarks',
+    ];
 
     /**
      * The attributes that should be cast to native types.

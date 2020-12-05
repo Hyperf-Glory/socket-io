@@ -29,8 +29,7 @@ use Hyperf\SocketIOServer\SocketIO;
 use RuntimeException;
 
 /**
- * Class Proxy.
- * @description  一定要注意该组件不能推送给自己,推送给自己请用$socketio->emit()即可
+ * Class Proxy.一定要注意该组件不能推送给自己,推送给自己请用$socketio->emit()即可.
  */
 class Proxy
 {

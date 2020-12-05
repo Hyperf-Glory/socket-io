@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 namespace App\Controller;
 
+use App\Cache\LastMsgCache;
 use App\Component\Proxy;
 use App\Helper\ArrayHelper;
 use App\Helper\StringHelper;
@@ -69,8 +70,8 @@ class TalkController extends AbstractController
      */
     public function create(): PsrResponseInterface
     {
-        $type = $this->request->post('type', 1); //创建的类型
-        $receive_id = $this->request->post('receive_id', 0); //接收者ID
+        $type = (int) $this->request->post('type', 1); //创建的类型
+        $receive_id = (int) $this->request->post('receive_id', 0); //接收者ID
         if (! in_array($type, [1, 2], true) || ! ValidateHelper::isInteger($receive_id)) {
             return $this->response->parmasError();
         }
@@ -116,7 +117,7 @@ class TalkController extends AbstractController
             $data['avatar'] = $groupInfo->avatar;
         }
 
-        $records = LastMsgCache::get($result['type'] === 1 ? $result['friend_id'] : $result['group_id'], $result['type'] === 1 ? $this->uid() : 0);
+        $records = LastMsgCache::get($result['type'] === 1 ? (int) $result['friend_id'] : (int) $result['group_id'], $result['type'] === 1 ? $this->uid() : 0);
         if ($records) {
             $data['msg_text'] = $records['text'];
             $data['updated_at'] = $records['created_at'];
@@ -129,7 +130,7 @@ class TalkController extends AbstractController
      */
     public function delete(): PsrResponseInterface
     {
-        $list_id = $this->request->post('list_id', 0);
+        $list_id = (int) $this->request->post('list_id', 0);
         if (! ValidateHelper::isInteger($list_id)) {
             return $this->response->parmasError();
         }
@@ -143,8 +144,8 @@ class TalkController extends AbstractController
      */
     public function topping(): PsrResponseInterface
     {
-        $list_id = $this->request->post('list_id', 0);
-        $type = $this->request->post('type', 0);
+        $list_id = (int) $this->request->post('list_id', 0);
+        $type = (int) $this->request->post('type', 0);
         if (! ValidateHelper::isInteger($list_id) || ! in_array($type, [1, 2], true)) {
             return $this->response->parmasError();
         }
@@ -157,9 +158,9 @@ class TalkController extends AbstractController
      */
     public function setNotDisturb(): PsrResponseInterface
     {
-        $type = $this->request->post('type', 0);
-        $receive_id = $this->request->post('receive_id', 0);
-        $not_disturb = $this->request->post('not_disturb', 0);
+        $type = (int) $this->request->post('type', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $not_disturb = (int) $this->request->post('not_disturb', 0);
 
         if (! ValidateHelper::isInteger($receive_id) || ! in_array($type, [1, 2], true) || ! in_array($not_disturb, [0, 1], true)) {
             return $this->response->parmasError();
@@ -175,9 +176,9 @@ class TalkController extends AbstractController
      */
     public function updateUnreadNum(): PsrResponseInterface
     {
-        $type = $this->request->post('type', 0);
-        $receive_id = $this->request->post('receive_id', 0);
-        $not_disturb = $this->request->post('not_disturb', 0);
+        $type = (int) $this->request->post('type', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $not_disturb = (int) $this->request->post('not_disturb', 0);
 
         if (! ValidateHelper::isInteger($receive_id) || ! in_array($type, [1, 2], true) || ! in_array($not_disturb, [0, 1], true)) {
             return $this->response->parmasError();
@@ -193,10 +194,10 @@ class TalkController extends AbstractController
      */
     public function getChatRecords(): PsrResponseInterface
     {
-        $user_id = $this->uid();
-        $receive_id = $this->request->get('receive_id', 0);
-        $source = $this->request->get('source', 0);
-        $record_id = $this->request->get('record_id', 0);
+        $user_id = (int) $this->uid();
+        $receive_id = (int) $this->request->get('receive_id', 0);
+        $source = (int) $this->request->get('source', 0);
+        $record_id = (int) $this->request->get('record_id', 0);
         $limit = 30;
 
         if (! ValidateHelper::isInteger($receive_id) || ! ValidateHelper::isInteger($source) || ! ValidateHelper::isInteger($record_id)) {
@@ -226,8 +227,8 @@ class TalkController extends AbstractController
      */
     public function revokeChatRecords(): PsrResponseInterface
     {
-        $user_id = $this->uid();
-        $record_id = $this->request->get('record_id', 0);
+        $user_id = (int) $this->uid();
+        $record_id = (int) $this->request->get('record_id', 0);
         if (! ValidateHelper::isInteger($record_id)) {
             return $this->response->parmasError();
         }
@@ -252,10 +253,10 @@ class TalkController extends AbstractController
         $user_id = $this->uid();
 
         //消息来源（1：好友消息 2：群聊消息）
-        $source = $this->request->post('source', 0);
+        $source = (int) $this->request->post('source', 0);
 
         //接收者ID（好友ID或者群聊ID）
-        $receive_id = $this->request->post('receive_id', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
 
         //消息ID
         $record_ids = explode(',', $this->request->input('record_id', ''));
@@ -276,17 +277,17 @@ class TalkController extends AbstractController
     {
         $user_id = $this->uid();
         //转发方方式
-        $forward_mode = $this->request->post('forward_mode', 0);
+        $forward_mode = (int) $this->request->post('forward_mode', 0);
         //消息来源（1：好友消息 2：群聊消息）
-        $source = $this->request->post('source', 1);
+        $source = (int) $this->request->post('source', 1);
         //接收者ID（好友ID或者群聊ID）
-        $receive_id = $this->request->post('receive_id', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
         //转发的记录IDS
-        $records_ids = $this->request->post('records_ids', []);
+        $records_ids = (array) $this->request->post('records_ids', []);
         //转发的好友的ID
-        $receive_user_ids = $this->request->post('receive_user_ids', []);
+        $receive_user_ids = (array) $this->request->post('receive_user_ids', []);
         //转发的群聊ID
-        $receive_group_ids = $this->request->post('receive_group_ids', []);
+        $receive_group_ids = (int) $this->request->post('receive_group_ids', []);
 
         if (empty($records_ids) || empty($receive_user_ids) || empty($receive_group_ids) || ! in_array($forward_mode, [1, 2], true) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($receive_id)) {
             return $this->response->parmasError();
@@ -295,10 +296,10 @@ class TalkController extends AbstractController
         $items = array_merge(
             array_map(static function ($friend_id) {
                 return ['source' => 1, 'id' => $friend_id];
-            }, $receive_user_ids),
+            }, (array) $receive_user_ids),
             array_map(static function ($group_id) {
                 return ['source' => 2, 'id' => $group_id];
-            }, $receive_group_ids)
+            }, (array) $receive_group_ids)
         );
 
         if ($forward_mode === 1) {//单条转发
@@ -331,7 +332,7 @@ class TalkController extends AbstractController
      */
     public function getForwardRecords(): PsrResponseInterface
     {
-        $records_id = $this->request->post('records_id', 0);
+        $records_id = (int) $this->request->post('records_id', 0);
         if (! ValidateHelper::isInteger($records_id)) {
             return $this->response->parmasError();
         }
@@ -346,10 +347,10 @@ class TalkController extends AbstractController
     public function findChatRecords(): PsrResponseInterface
     {
         $user_id = $this->uid();
-        $receive_id = $this->request->input('receive_id', 0);
-        $source = $this->request->input('source', 0);
-        $record_id = $this->request->input('record_id', 0);
-        $msg_type = $this->request->input('msg_type', 0);
+        $receive_id = (int) $this->request->input('receive_id', 0);
+        $source = (int) $this->request->input('source', 0);
+        $record_id = (int) $this->request->input('record_id', 0);
+        $msg_type = (int) $this->request->input('msg_type', 0);
         $limit = 30;
 
         if (! ValidateHelper::isInteger($receive_id) || ! ValidateHelper::isInteger($source) || ! ValidateHelper::isInteger($record_id, true)) {
@@ -384,11 +385,11 @@ class TalkController extends AbstractController
      */
     public function searchChatRecords(): PsrResponseInterface
     {
-        $receive_id = $this->request->input('receive_id', 0);
-        $source = $this->request->input('source', 0);
-        $keywords = $this->request->input('keywords', '');
+        $receive_id = (int) $this->request->input('receive_id', 0);
+        $source = (int) $this->request->input('source', 0);
+        $keywords = (int) $this->request->input('keywords', '');
         $date = $this->request->input('date', '');
-        $page = $this->request->input('page', 1);
+        $page = (int) $this->request->input('page', 1);
 
         if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($page)) {
             return $this->response->parmasError();
@@ -411,10 +412,10 @@ class TalkController extends AbstractController
      */
     public function getRecordsContext(): PsrResponseInterface
     {
-        $receive_id = $this->request->get('receive_id', 0);
-        $source = $this->request->get('source', 0);
-        $record_id = $this->request->post('record_id', 0);
-        $find_mode = $this->request->post('find_mode', 1);
+        $receive_id = (int) $this->request->get('receive_id', 0);
+        $source = (int) $this->request->get('source', 0);
+        $record_id = (int) $this->request->post('record_id', 0);
+        $find_mode = (int) $this->request->post('find_mode', 1);
 
         if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true) || ! ValidateHelper::isInteger($record_id) || ! in_array($find_mode, [1, 2], true)) {
             return $this->response->parmasError();
@@ -429,8 +430,8 @@ class TalkController extends AbstractController
     public function sendImage(Filesystem $fileSystem): PsrResponseInterface
     {
         $file = $this->request->file('img');
-        $receive_id = $this->request->post('receive_id', 0);
-        $source = $this->request->post('source', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $source = (int) $this->request->post('source', 0);
 
         if (! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
@@ -510,8 +511,8 @@ class TalkController extends AbstractController
     {
         $code = $this->request->post('code', '');
         $lang = $this->request->post('lang', '');
-        $receive_id = $this->request->post('receive_id', 0);
-        $source = $this->request->post('source', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $source = (int) $this->request->post('source', 0);
 
         if (empty($code) || empty($lang) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
@@ -573,8 +574,8 @@ class TalkController extends AbstractController
     public function sendFile(Filesystem $fileSystem): PsrResponseInterface
     {
         $hash_name = $this->request->post('hash_name', '');
-        $receive_id = $this->request->post('receive_id', 0);
-        $source = $this->request->post('source', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $source = (int) $this->request->post('source', 0);
 
         if (empty($hash_name) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->response->parmasError();
@@ -654,8 +655,8 @@ class TalkController extends AbstractController
     public function sendEmoticon(): PsrResponseInterface
     {
         $emoticon_id = $this->request->post('emoticon_id', 0);
-        $receive_id = $this->request->post('receive_id', 0);
-        $source = $this->request->post('source', 0);
+        $receive_id = (int) $this->request->post('receive_id', 0);
+        $source = (int) $this->request->post('source', 0);
 
         if (! ValidateHelper::isInteger($emoticon_id) || ! ValidateHelper::isInteger($receive_id) || ! in_array($source, [1, 2], true)) {
             return $this->ajaxParamError();
