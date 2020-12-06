@@ -117,9 +117,9 @@ Router::addGroup('/api/group/', function () {
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-File -------------------------- */
 Router::addGroup('/api/upload/', function () {
-    Router::post('file-stream', 'UploadController@fileStream');
-    Router::post('file-subarea-upload', 'UploadController@fileSubareaUpload');
-    Router::post('get-file-split-info', 'UploadController@getFileSplitInfo');
+    Router::post('file-stream', 'App\Controller\UploadController@fileStream');
+    Router::post('file-subarea-upload', 'App\Controller\UploadController@fileSubareaUpload');
+    Router::get('get-file-split-info', 'App\Controller\UploadController@getFileSplitInfo');
 }, [
     'middleware' => [HttpAuthMiddleware::class],
 ]);

@@ -111,6 +111,12 @@ class Proxy
             throw new RuntimeException('数据不存在...');
         }
         $io = di(SocketIO::class);
+        $data = [
+            'record_id' => $records->id,
+            'source' => $records->source,
+            'user_id' => $records->user_id,
+            'receive_id' => $records->receive_id,
+        ];
         //TODO 好友或群聊推送
         if ($records->source === 1) {
             //好友推送
@@ -120,12 +126,8 @@ class Proxy
             $client = 'room' . $records->receive_id;
             //群聊推送
         }
-        $io->to($client)->emit('revoke_records', [
-            'record_id' => $records->id,
-            'source' => $records->source,
-            'user_id' => $records->user_id,
-            'receive_id' => $records->receive_id,
-        ]);
+        $io->to($client)->emit('revoke_records', $data);
+        $io->emit('revoke_records', $data);
     }
 
     /**
@@ -151,6 +153,7 @@ class Proxy
                 'chat_records_forward.text',
             ]);
         $io = di(SocketIO::class);
+
         /**
          * @var ChatRecords|ChatRecordsForward|Users $record
          */
@@ -163,7 +166,7 @@ class Proxy
                 //群聊推送
                 $client = 'room' . $record->receive_id;
             }
-            $io->to($client)->emit('revoke_records', [
+            $data = [
                 'send_user' => $record->user_id,
                 'receive_user' => $record->receive_id,
                 'source_type' => $record->source,
@@ -181,7 +184,9 @@ class Proxy
                         'list' => MessageParser::decode($record->text) ?? [],
                     ],
                 ]),
-            ]);
+            ];
+            $io->to($client)->emit('revoke_records', $data);
+            $io->emit('revoke_records', $data);
         }
     }
 
@@ -225,14 +230,7 @@ class Proxy
             $codeBlock = $codeBlock ? $codeBlock->toArray() : [];
         }
 
-        if ($info->source === 1) {
-            //好友推送
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->receive_id);
-        } else {
-            $client = 'room' . $info->receive_id;
-        }
-        $io->to($client)->emit('chat_message', [
+        $data = [
             'send_user' => $info->user_id,
             'receive_user' => $info->receive_id,
             'source_type' => $info->source,
@@ -244,10 +242,20 @@ class Proxy
                 'nickname' => $info->nickname,
                 'user_id' => $info->user_id,
                 'receive_id' => $info->receive_id,
-                'created_at' => $info->created_at,
+                'created_at' => $info->created_at->toDateTimeString(),
                 'file' => $file,
                 'code_block' => $codeBlock,
             ]),
-        ]);
+        ];
+        if ($info->source === 1) {
+            //好友推送
+            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->receive_id);
+            //给自己推送
+            $io->emit('chat_message', $data);
+        } else {
+            $client = 'room' . $info->receive_id;
+        }
+        $io->to($client)->emit('chat_message', $data);
     }
 }

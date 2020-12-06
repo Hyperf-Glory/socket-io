@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Cache\LastMsgCache;
+use App\Component\MessageParser;
 use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
@@ -98,7 +99,7 @@ class SocketIOController extends BaseNamespace
             'send_user' => $data['send_user'],
             'receive_user' => $data['receive_user'],
             'source_type' => $data['source_type'],
-            'data' => SocketIO::formatTalkMsg([
+            'data' => MessageParser::formatTalkMsg([
                 'id' => $result->id,
                 'source' => $result->source,
                 'msg_type' => 1,

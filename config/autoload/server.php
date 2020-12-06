@@ -44,6 +44,9 @@ return [
             'host' => '0.0.0.0',
             'port' => 9500,
             'sock_type' => SWOOLE_SOCK_TCP,
+            'settings' => [
+                'package_max_length' => 1024 * 1024 * 4,
+            ],
             'callbacks' => [
                 SwooleEvent::ON_REQUEST => [Hyperf\HttpServer\Server::class, 'onRequest'],
             ],

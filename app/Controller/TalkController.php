@@ -452,11 +452,14 @@ class TalkController extends AbstractController
         $imgInfo = getimagesize($file->getRealPath());
         $filename = create_image_name($ext, $imgInfo[0], $imgInfo[1]);
         $stream = fopen($file->getRealPath(), 'rb+');
-
+        $save_path = 'media/images/talks/' . date('Ymd') . $filename;
         //保存图片
-        if (! $save_path = $fileSystem->put('media/images/talks/' . date('Ymd') . $filename, $stream)) {
+        if (! $fileSystem->put($save_path, $stream)) {
+            fclose($stream);
             return $this->response->error('图片上传失败');
         }
+
+        fclose($stream);
 
         Db::beginTransaction();
         try {
@@ -595,11 +598,10 @@ class TalkController extends AbstractController
         $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
         $save_dir = 'files/talks/' . date('Ymd') . '/' . $file_hash_name;
 
-        $stream = fopen($file->file_ext, 'rb+');
         if (! $fileSystem->copy($file->save_dir, $save_dir)) {
             return $this->response->fail(303, '文件上传失败...');
         }
-        fclose($stream);
+
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([

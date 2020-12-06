@@ -25,7 +25,7 @@ return [
     'websocket_server_ips' => value(function () {
         return Json::decode(env('WEBSOCKET_SERVER_IPS'), true) ?? [];
     }),
-    'image_url' => 'https://image.com',
+    'image_url' => 'http://127.0.0.1:9500/',
     'scan_cacheable' => env('SCAN_CACHEABLE', true),
     StdoutLoggerInterface::class => [
         'log_level' => [

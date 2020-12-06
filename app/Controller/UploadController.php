@@ -47,7 +47,7 @@ class UploadController extends AbstractController
         }
 
         $logic = new SplitUpload($this->uid());
-        $data = $logic->createSplitInfo($this->request->post('file_name'), $this->request->post('file_size'));
+        $data = $logic->createSplitInfo($this->request->input('file_name'), $this->request->input('file_size'));
 
         return $data ? $this->response->success('success', $data) : $this->response->error('获取文件拆分信息失败...');
     }
@@ -66,11 +66,11 @@ class UploadController extends AbstractController
 
         $logic = new SplitUpload($this->uid());
 
-        if (! $uploadRes = $logic->saveSplitFile($file, $info['hash'], $info['split_index'], $fileSize)) {
+        if (! $uploadRes = $logic->saveSplitFile($file, $info['hash'], (int) $info['split_index'], $fileSize)) {
             return $this->response->error('上传文件失败...');
         }
 
-        if (($info['split_index'] + 1) === $info['split_num']) {
+        if (((int) $info['split_index'] + 1) === (int) $info['split_num']) {
             $fileInfo = $logic->fileMerge($info['hash']);
             if (! $fileInfo) {
                 return $this->response->error('上传文件失败...');

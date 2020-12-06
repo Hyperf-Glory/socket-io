@@ -92,7 +92,7 @@ class TalkService
                 $data['name'] = $item['nickname'];
                 $data['avatar'] = $item['user_avatar'];
                 $data['unread_num'] = di(UnreadTalk::class)->get($uid, $item['friend_id']);
-                $data['online'] = $redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $item['friend_id']);
+                $data['online'] = $redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $item['friend_id']) ? 1 : 0;
 
                 $remark = FriendRemarkCache::get($uid, $item['friend_id'], $redis);
                 if ($remark) {

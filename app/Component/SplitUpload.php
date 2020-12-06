@@ -161,8 +161,9 @@ class SplitUpload
             return false;
         }
 
-        $dir = config('filesystem.storage.local.root');
+        $dir = config('file.storage.local.root');
         $fileMerge = "tmp/{$hash_name}/{$fileInfo->original_name}.tmp";
+
         foreach ($files as $file) {
             file_put_contents($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']), FILE_APPEND);
         }
