@@ -182,16 +182,13 @@ class TalkController extends AbstractController
     public function updateUnreadNum(): PsrResponseInterface
     {
         $type = (int) $this->request->post('type', 0);
-        $receive_id = (int) $this->request->post('receive_id', 0);
-        $not_disturb = (int) $this->request->post('not_disturb', 0);
+        $receive_id = (int) $this->request->post('receive', 0);
 
-        if (! ValidateHelper::isInteger($receive_id) || ! in_array($type, [1, 2], true) || ! in_array($not_disturb, [0, 1], true)) {
-            return $this->response->parmasError();
+        if ($type === 1) {
+            di(UnreadTalk::class)->del($this->uid(), $receive_id);
         }
 
-        $bool = UsersChatList::notDisturbItem($this->uid(), $receive_id, $type, $not_disturb);
-
-        return $bool ? $this->response->success('设置成功...') : $this->response->error('设置失败...');
+        return  $this->response->success('success...');
     }
 
     /**

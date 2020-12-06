@@ -119,12 +119,11 @@ class TalkService
 
             if ($records) {
                 $data['msg_text'] = $records['text'];
-                $data['updated_at'] = $records['created_at'];
+                $data['updated_at'] = $records['created_at']->toDateTimeString() ?? $item['updated_at'];
             }
 
             return $data;
         }, $rows);
-
         return $rows;
     }
 

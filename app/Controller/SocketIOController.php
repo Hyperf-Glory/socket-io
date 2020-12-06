@@ -105,7 +105,7 @@ class SocketIOController extends BaseNamespace
                 'user_id' => $result->user_id,
                 'receive_id' => $result->receive_id,
                 'content' => $result->content,
-                'created_at' => $result->created_at,
+                'created_at' => $result->created_at->toDateTimeString(),
             ]), ]);
         if ($data['source_type'] === 1) {//私聊
             $msg_text = mb_substr($result->content, 0, 30);
@@ -119,6 +119,8 @@ class SocketIOController extends BaseNamespace
             di(UnreadTalk::class)->setInc($result->receive_id, $result->user_id, $redis);
 
             $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $data['receive_user']))->emit('chat_message', $msg);
+            //给自己发送消息
+            $socket->emit('chat_message', $msg);
 
             return true;
         }
@@ -135,9 +137,11 @@ class SocketIOController extends BaseNamespace
      * @param \Hyperf\SocketIOServer\Socket
      * @param $data
      * @Event("event_keyboard")
+     * @example {"event":"event_keyboard","data":{"send_user":4166,"receive_user":"4168"}}
      */
     public function onEventKeyboard(Socket $socket, $data): void
     {
-        di(StdoutLoggerInterface::class)->error('不能给自己发消息，可以忽略该事件!');
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $data['receive_user']))->emit('input_tip', $data);
     }
 }

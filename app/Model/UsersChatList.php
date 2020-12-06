@@ -121,6 +121,7 @@ class UsersChatList extends Model
          * @var self $result
          */
         $result = self::where('uid', $user_id)->where($type === 1 ? 'friend_id' : 'group_id', $receive_id)->where('status', 1)->first(['id', 'not_disturb']);
+
         if (! $result || $not_disturb === $result->not_disturb) {
             return false;
         }
