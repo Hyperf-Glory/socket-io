@@ -64,7 +64,10 @@ class HttpAuthMiddleware implements MiddlewareInterface
             return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
         } catch (\Throwable $exception) {
             return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream(MessageParser::encode([
-                'msg' => '服务端请求错误!',
+                'msg' => $exception->getMessage(),
+                'trace' => $exception->getTrace(),
+                'line' => $exception->getLine(),
+                'file' => $exception->getFile(),
             ])));
         }
     }

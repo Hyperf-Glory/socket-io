@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -28,24 +28,29 @@ namespace App\Model;
  */
 class UsersGroup extends Model
 {
+    public $timestamps = false;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'users_group';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'user_id', 'group_name', 'group_profile', 'status', 'avatar', 'created_at'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
+
     /**
      * 判断用户是否是管理员.
      *
@@ -58,6 +63,7 @@ class UsersGroup extends Model
     {
         return self::where('id', $groupId)->where('user_id', $uid)->exists();
     }
+
     /**
      * 判断用户是否是群成员.
      *

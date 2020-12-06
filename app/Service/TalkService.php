@@ -31,6 +31,7 @@ use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Service\Traits\PagingTrait;
 use App\Services\Common\UnreadTalk;
+use Carbon\Carbon;
 use Exception;
 use Hyperf\DbConnection\Db;
 use Hyperf\Redis\RedisFactory;
@@ -111,15 +112,15 @@ class TalkService
                     }
                 }
             } else {
-                $data['name'] = $item['group_name'];
-                $data['avatar'] = $item['group_avatar'];
+                $data['name'] = $item['group_name'] ?? '';
+                $data['avatar'] = $item['group_avatar'] ?? '';
             }
 
             $records = LastMsgCache::get($item['type'] === 1 ? $item['friend_id'] : $item['group_id'], $item['type'] === 1 ? $uid : 0, $redis);
 
             if ($records) {
                 $data['msg_text'] = $records['text'];
-                $data['updated_at'] = $records['created_at']->toDateTimeString() ?? $item['updated_at'];
+                $data['updated_at'] = $records['created_at'] instanceof Carbon ? $records['created_at']->toDateTimeString() : $item['updated_at'];
             }
 
             return $data;
@@ -137,7 +138,7 @@ class TalkService
         foreach ($data as $friend_id => $num) {
             UsersChatList::updateOrCreate([
                 'uid' => $uid,
-                'friend_id' => intval($friend_id),
+                'friend_id' => (int) ($friend_id),
                 'type' => 1,
             ], [
                 'status' => 1,

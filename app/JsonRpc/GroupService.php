@@ -23,8 +23,6 @@ use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Model\UsersGroupMember;
 use App\Model\UsersGroupNotice;
-use App\Service\UserService as UserSer;
-use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
 use Phper666\JWTAuth\JWT;
 use Psr\Container\ContainerInterface;
@@ -46,25 +44,13 @@ class GroupService implements InterfaceGroupService
     protected $jwt;
 
     /**
-     * @var \Psr\Log\LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var \App\Service\UserService
-     */
-    private $userService;
-
-    /**
      * @var \App\Service\GroupService
      */
     private $groupService;
 
-    public function __construct(ContainerInterface $container, UserSer $userService, JWT $jwt, \App\Service\GroupService $groupService)
+    public function __construct(ContainerInterface $container, JWT $jwt, \App\Service\GroupService $groupService)
     {
         $this->container = $container;
-        $this->logger = $container->get(LoggerFactory::class)->get();
-        $this->userService = $userService;
         $this->groupService = $groupService;
         $this->jwt = $jwt;
     }
@@ -74,7 +60,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function create(int $uid, array $groupInfo, $friendIds = [])
+    public function create(int $uid, array $groupInfo, $friendIds = []): array
     {
         if (empty($uid) || empty($groupInfo)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -92,7 +78,7 @@ class GroupService implements InterfaceGroupService
     /**
      * @return array|mixed
      */
-    public function dismiss(int $groupId, int $uid)
+    public function dismiss(int $groupId, int $uid): array
     {
         if (empty($groupId) || empty($uid)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -112,7 +98,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function invite(int $uid, int $groupId, $friendIds = [])
+    public function invite(int $uid, int $groupId, $friendIds = []): array
     {
         if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -140,7 +126,7 @@ class GroupService implements InterfaceGroupService
      * @throws \Exception
      * @return array|mixed
      */
-    public function quit(int $uid, int $groupId)
+    public function quit(int $uid, int $groupId): array
     {
         if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -168,7 +154,7 @@ class GroupService implements InterfaceGroupService
      * @throws \Exception
      * @return array|mixed
      */
-    public function removeMember(int $groupId, int $uid, array $memberIds)
+    public function removeMember(int $groupId, int $uid, array $memberIds): array
     {
         if (empty($uid) || empty($groupId) || empty($memberIds)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -198,7 +184,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function setGroupCard(int $uid, int $groupId, string $visitCard)
+    public function setGroupCard(int $uid, int $groupId, string $visitCard): array
     {
         if (empty($uid) || empty($groupId) || empty($visitCard)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -217,11 +203,8 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function getInviteFriends(int $uid, int $groupId)
+    public function getInviteFriends(int $uid, int $groupId): array
     {
-        if (empty($uid) || empty($groupId)) {
-            return ['code' => 0, 'msg' => '参数不正确...'];
-        }
         if (! ValidateHelper::isInteger($groupId) || ! ValidateHelper::isInteger($uid)) {
             return ['code' => 0, 'msg' => '参数错误...'];
         }
@@ -244,7 +227,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function getGroupMembers(int $groupId, int $uid)
+    public function getGroupMembers(int $groupId, int $uid): array
     {
         if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -280,7 +263,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function getGroupNotices(int $uid, int $groupId)
+    public function getGroupNotices(int $uid, int $groupId): array
     {
         if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -309,7 +292,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function editNotice(int $uid, int $noticeid, int $groupId, string $title, string $content)
+    public function editNotice(int $uid, int $noticeid, int $groupId, string $title, string $content): array
     {
         if (empty($uid) || empty($groupId) || empty($title) || empty($content)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -344,7 +327,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function deleteNotice(int $uid, int $groupId, int $noticeId)
+    public function deleteNotice(int $uid, int $groupId, int $noticeId): array
     {
         if (empty($uid) || empty($groupId) || empty($noticeId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];
@@ -361,7 +344,7 @@ class GroupService implements InterfaceGroupService
      *
      * @return array|mixed
      */
-    public function detail(int $uid, int $groupId)
+    public function detail(int $uid, int $groupId): array
     {
         if (empty($uid) || empty($groupId)) {
             return ['code' => 0, 'msg' => '参数不正确...'];

@@ -144,7 +144,7 @@ SQL;
             $friendResult = UsersFriends::select(['id', 'user1', 'user2', 'active', 'status'])->where('user1', '=', $user1)->where('user2', '=', $user2)->first();
             if ($friendResult) {
                 $active = ($friendResult->user1 === $info->user_id && $friendResult->user2 === $info->friend_id) ? 1 : 2;
-                if (! UserFriends::where('id', $friendResult->id)->update(['active' => $active, 'status' => 1])) {
+                if (! UsersFriends::where('id', $friendResult->id)->update(['active' => $active, 'status' => 1])) {
                     throw new RuntimeException('更新好友关系信息失败');
                 }
             } else {

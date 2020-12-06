@@ -24,6 +24,7 @@ use App\Model\UsersChatList;
 use App\Model\UsersGroup;
 use App\Model\UsersGroupMember;
 use Hyperf\DbConnection\Db;
+use RuntimeException;
 
 class GroupService
 {
@@ -57,60 +58,61 @@ class GroupService
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
             if (! $group) {
-                throw new \Exception('创建群失败!');
+                throw new RuntimeException('创建群失败!');
             }
 
-            foreach ($friendIds as $k => $uid) {
+            foreach ($friendIds as $k => $_uid) {
                 $groupMember[] = [
                     'group_id' => $group->id,
                     'user_id' => $uid,
-                    'group_owner' => ($k == 0) ? 1 : 0,
+                    'group_owner' => ($k === 0) ? 1 : 0,
                     'status' => 0,
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
 
                 $chatList[] = [
                     'type' => 2,
-                    'uid' => $uid,
+                    'uid' => $_uid,
                     'friend_id' => 0,
                     'group_id' => $group->id,
                     'status' => 1,
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
-                if (! Db::table('users_group_member')->insert($groupMember)) {
-                    throw new \Exception('创建群成员信息失败');
-                }
-                if (! Db::table('users_chat_list')->insert($chatList)) {
-                    throw new \Exception('创建群成员的聊天列表失败');
-                }
 
-                $result = ChatRecords::create([
-                    'msg_type' => 3,
-                    'source' => 2,
-                    'user_id' => 0,
-                    'receive_id' => $group->id,
-                    'created_at' => date('Y-m-d H:i;s'),
-                ]);
-
-                if (! $result) {
-                    throw new \Exception('创建群成员的聊天列表失败');
-                }
-                ChatRecordsInvite::insert([
-                    'record_id' => $result->id,
-                    'type' => 1,
-                    'operate_user_id' => $uid,
-                    'user_ids' => implode(',', $friendIds),
-                ]);
-                Db::commit();
-                LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $group->id, 0);
-                return [true, ['record_id' => $result, 'group_id' => $group->id]];
             }
+            if (! Db::table('users_group_member')->insert($groupMember)) {
+                throw new RuntimeException('创建群成员信息失败');
+            }
+            if (! Db::table('users_chat_list')->insert($chatList)) {
+                throw new RuntimeException('创建群成员的聊天列表失败');
+            }
+
+            $result = ChatRecords::create([
+                'msg_type' => 3,
+                'source' => 2,
+                'user_id' => 0,
+                'receive_id' => $group->id,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (! $result) {
+                throw new RuntimeException('创建群成员的聊天列表失败');
+            }
+            ChatRecordsInvite::insert([
+                'record_id' => $result->id,
+                'type' => 1,
+                'operate_user_id' => $_uid,
+                'user_ids' => implode(',', $friendIds),
+            ]);
+            Db::commit();
+            LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $group->id, 0);
+            return [true, ['record_id' => $result->id, 'group_id' => $group->id]];
         } catch (\Throwable $throwable) {
             Db::rollBack();
             return [false, 0];
         }
-        return [false, 0];
+
     }
 
     /**

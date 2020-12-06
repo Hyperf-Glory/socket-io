@@ -50,6 +50,7 @@ class Proxy
             'receive_id',
             'created_at',
         ]);
+
         if (! $recordInfo) {
             throw new RuntimeException('fail');
         }
@@ -80,7 +81,7 @@ class Proxy
             'send_user' => 0,
             'receive_user' => $recordInfo->receive_id,
             'source_type' => 2,
-            'data' => PushMessageHelper::formatTalkMsg([
+            'data' => MessageParser::formatTalkMsg([
                 'id' => $recordInfo->id,
                 'source' => 2,
                 'msg_type' => 3,
