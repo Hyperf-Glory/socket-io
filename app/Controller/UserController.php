@@ -253,6 +253,7 @@ class UserController extends AbstractController
 
     /**
      * 获取用户群聊列表.
+     * @TODO 待解决获取用户群聊的问题,页面报错的问题
      */
     public function getUserGroups(): ResponseInterface
     {
