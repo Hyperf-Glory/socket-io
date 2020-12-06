@@ -23,7 +23,6 @@ use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
 use App\Services\Common\UnreadTalk;
-use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;

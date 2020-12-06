@@ -23,6 +23,7 @@ use App\Helper\ArrayHelper;
 use App\Helper\StringHelper;
 use App\Helper\ValidateHelper;
 use App\Model\ChatRecords;
+use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;
 use App\Model\EmoticonDetail;
 use App\Model\FileSplitUpload;

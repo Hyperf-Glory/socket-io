@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace App\Kernel;
 
 use App\JsonRpc\Contract\InterfaceUserService;
-use App\Model\Users;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\WebSocketServer\Context as WsContext;

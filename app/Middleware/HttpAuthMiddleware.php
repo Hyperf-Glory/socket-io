@@ -17,11 +17,13 @@ declare(strict_types=1);
  */
 namespace App\Milddleware;
 
+use App\Component\MessageParser;
 use App\JsonRpc\Contract\InterfaceUserService;
 use App\Kernel\Http\Response;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Utils\Context;
+use Phper666\JWTAuth\Exception\JWTException;
 use Phper666\JWTAuth\Exception\TokenValidException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -58,8 +60,12 @@ class HttpAuthMiddleware implements MiddlewareInterface
             if (! $isValidToken) {
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
-        } catch (\TokenValidException $throwable) {
+        } catch (TokenValidException | JWTException $throwable) {
             return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
+        } catch (\Throwable $exception) {
+            return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream(MessageParser::encode([
+                'msg' => '服务端请求错误!',
+            ])));
         }
     }
 

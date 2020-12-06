@@ -34,6 +34,8 @@ class ChatRecordsCode extends Model
      */
     protected $table = 'chat_records_code';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

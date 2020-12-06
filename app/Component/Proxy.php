@@ -118,16 +118,16 @@ class Proxy
             'receive_id' => $records->receive_id,
         ];
         //TODO 好友或群聊推送
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         if ($records->source === 1) {
             //好友推送
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $records->receive_id);
         } else {
             $client = 'room' . $records->receive_id;
             //群聊推送
         }
         $io->to($client)->emit('revoke_records', $data);
-        $io->emit('revoke_records', $data);
+        $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->user_id))->emit('chat_message', $data);
     }
 
     /**
@@ -153,14 +153,13 @@ class Proxy
                 'chat_records_forward.text',
             ]);
         $io = di(SocketIO::class);
-
+        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         /**
          * @var ChatRecords|ChatRecordsForward|Users $record
          */
         foreach ($rows as $record) {
             if ($records->source === 1) {
                 //好友推送
-                $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
                 $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->receive_id);
             } else {
                 //群聊推送
@@ -186,7 +185,7 @@ class Proxy
                 ]),
             ];
             $io->to($client)->emit('revoke_records', $data);
-            $io->emit('revoke_records', $data);
+            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->user_id))->emit('chat_message', $data);
         }
     }
 
@@ -251,8 +250,7 @@ class Proxy
             //好友推送
             $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
             $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->receive_id);
-            //给自己推送
-            $io->emit('chat_message', $data);
+            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->user_id))->emit('chat_message', $data);
         } else {
             $client = 'room' . $info->receive_id;
         }
