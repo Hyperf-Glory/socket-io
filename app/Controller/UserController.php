@@ -69,6 +69,7 @@ class UserController extends AbstractController
     }
 
     /**
+     * //TODO 重点测试
      * 获取好友申请未读数.
      */
     public function getApplyUnreadNum(): ResponseInterface

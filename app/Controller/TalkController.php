@@ -118,6 +118,9 @@ class TalkController extends AbstractController
             $data['name'] = $userInfo->nickname;
             $data['avatar'] = $userInfo->avatar;
         } elseif ($result['type'] === 2) {
+            /**
+             * @var UsersGroup $groupInfo
+             */
             $groupInfo = UsersGroup::where('id', $result['group_id'])->first(['group_name', 'avatar']);
             $data['name'] = $groupInfo->group_name;
             $data['avatar'] = $groupInfo->avatar;
@@ -179,7 +182,7 @@ class TalkController extends AbstractController
 
     /**
      * 更新对话列表未读数.
-     * @TODO 待解决对话列表设置为false的问题
+     * @TODO 重点:待解决对话列表设置为false的问题
      */
     public function updateUnreadNum(): PsrResponseInterface
     {
