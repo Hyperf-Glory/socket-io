@@ -109,7 +109,7 @@ Router::addGroup('/api/group/', function () {
 
     Router::get('detail', 'App\Controller\GroupController@detail');
     Router::get('invite-friends', 'App\Controller\GroupController@getInviteFriends');
-    Router::get('members', 'App\Controller\GroupController@members');
+    Router::get('members', 'App\Controller\GroupController@getGroupMembers');
     Router::get('notices', 'App\Controller\GroupController@getGroupNotices');
 }, [
     'middleware' => [HttpAuthMiddleware::class],

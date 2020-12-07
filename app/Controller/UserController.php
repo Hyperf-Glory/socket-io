@@ -74,7 +74,7 @@ class UserController extends AbstractController
     public function getApplyUnreadNum(): ResponseInterface
     {
         return $this->response->success('success', [
-            'unread_num' => ApplyNumCache::get($this->uid()),
+            'unread_num' => ApplyNumCache::get($this->uid()) ?? '',
         ]);
     }
 

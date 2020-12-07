@@ -64,7 +64,7 @@ class GroupService
             foreach ($friendIds as $k => $_uid) {
                 $groupMember[] = [
                     'group_id' => $group->id,
-                    'user_id' => $uid,
+                    'user_id' => $_uid,
                     'group_owner' => ($k === 0) ? 1 : 0,
                     'status' => 0,
                     'created_at' => date('Y-m-d H:i:s'),
@@ -79,7 +79,6 @@ class GroupService
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
-
             }
             if (! Db::table('users_group_member')->insert($groupMember)) {
                 throw new RuntimeException('创建群成员信息失败');
@@ -102,7 +101,7 @@ class GroupService
             ChatRecordsInvite::insert([
                 'record_id' => $result->id,
                 'type' => 1,
-                'operate_user_id' => $_uid,
+                'operate_user_id' => $uid,
                 'user_ids' => implode(',', $friendIds),
             ]);
             Db::commit();
@@ -112,7 +111,6 @@ class GroupService
             Db::rollBack();
             return [false, 0];
         }
-
     }
 
     /**

@@ -22,6 +22,7 @@ use App\Component\MessageParser;
 use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
+use App\Model\UsersGroup;
 use App\Services\Common\UnreadTalk;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
@@ -37,7 +38,6 @@ class SocketIOController extends BaseNamespace
      * @param  $data
      * @example {"event":"event_talk","data":{"send_user":4166,"receive_user":"4168","source_type":"1","text_message":"1"}}
      * @Event("event_talk")
-     * @todo 待解决消息不能发送的问题
      */
     public function onEventTalk(Socket $socket, $data): bool
     {
@@ -68,9 +68,9 @@ class SocketIOController extends BaseNamespace
                 ]);
                 return true;
             }
-        } elseif ((int) $data['source_type'] === 2) {//群聊
+        } elseif ($data['source_type'] === 2) {//群聊
             //判断是否属于群成员
-            if (! UserGroup::isMember($data['receive_user'], $data['send_user'])) {
+            if (! UsersGroup::isMember($data['receive_user'], $data['send_user'])) {
                 $socket->emit('notify', [
                     'notify' => '温馨提示:您还没有加入该聊天群！',
                 ]);
@@ -126,6 +126,8 @@ class SocketIOController extends BaseNamespace
         }
         if ($data['source_type'] === 2) {
             $socket->to('room' . $data['receive_user'])->emit('chat_message', $msg);
+            //给自己发送消息
+            $socket->emit('chat_message', $msg);
             return true;
         }
         return false;

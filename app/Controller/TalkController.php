@@ -79,6 +79,7 @@ class TalkController extends AbstractController
         }
 
         if ($type === 1) {
+            //TODO  这里判断有问题,$receive_id是消息id不是好友id
             if (! UsersFriends::isFriend($this->uid(), $receive_id)) {
                 return $this->response->fail(305, '暂不属于好友关系，无法进行聊天...');
             }
@@ -117,7 +118,7 @@ class TalkController extends AbstractController
             $data['name'] = $userInfo->nickname;
             $data['avatar'] = $userInfo->avatar;
         } elseif ($result['type'] === 2) {
-            $groupInfo = UserGroup::where('id', $result['group_id'])->first(['group_name', 'avatar']);
+            $groupInfo = UsersGroup::where('id', $result['group_id'])->first(['group_name', 'avatar']);
             $data['name'] = $groupInfo->group_name;
             $data['avatar'] = $groupInfo->avatar;
         }

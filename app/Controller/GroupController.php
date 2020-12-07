@@ -42,7 +42,6 @@ class GroupController extends AbstractController
             'avatar' => '',
             'profile' => $params['group_profile'],
         ], array_unique($friends));
-        //TODO 创建群组
         if (isset($ret['code']) && $ret['code'] === 1) {
             //群聊创建成功后需要创建聊天室并发送消息通知
             Coroutine::create(function () use ($ret) {
@@ -58,7 +57,7 @@ class GroupController extends AbstractController
 
     public function detail(): PsrResponseInterface
     {
-        $groupId = $this->request->input('group_id');
+        $groupId = (int) $this->request->input('group_id');
         if (! ValidateHelper::isInteger($groupId)) {
             return $this->response->parmasError();
         }
@@ -209,7 +208,7 @@ class GroupController extends AbstractController
 
     public function getGroupMembers(): PsrResponseInterface
     {
-        $group_id = (int) $this->request->get('group_id', 0);
+        $group_id = (int) $this->request->input('group_id', 0);
 
         // 判断用户是否是群成员
         if (! UsersGroup::isMember($group_id, $this->uid())) {
