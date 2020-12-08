@@ -30,7 +30,6 @@ use App\Model\FileSplitUpload;
 use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersFriends;
-use App\Model\UsersFriendsApply;
 use App\Model\UsersGroup;
 use App\Service\TalkService;
 use App\Services\Common\UnreadTalk;
