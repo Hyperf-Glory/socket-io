@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,13 +18,13 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $group_id 
- * @property int $user_id 
- * @property int $group_owner 
- * @property int $status 
- * @property string $visit_card 
- * @property \Carbon\Carbon $created_at 
+ * @property int $id
+ * @property int $group_id
+ * @property int $user_id
+ * @property int $group_owner
+ * @property int $status
+ * @property string $visit_card
+ * @property \Carbon\Carbon $created_at
  */
 class UsersGroupMember extends Model
 {
@@ -34,18 +34,23 @@ class UsersGroupMember extends Model
      * @var string
      */
     protected $table = 'users_group_member';
+
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'group_id', 'user_id', 'group_owner', 'status', 'visit_card', 'created_at'];
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'group_id' => 'integer', 'user_id' => 'integer', 'group_owner' => 'integer', 'status' => 'integer', 'created_at' => 'datetime'];
+
     /**
      * 获取聊天群成员ID.
      *
@@ -55,6 +60,7 @@ class UsersGroupMember extends Model
     {
         return self::where('group_id', $groupId)->where('status', 0)->pluck('user_id')->toArray();
     }
+
     /**
      * 获取用户的群名片.
      *

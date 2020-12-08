@@ -30,6 +30,7 @@ use App\Model\FileSplitUpload;
 use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersFriends;
+use App\Model\UsersFriendsApply;
 use App\Model\UsersGroup;
 use App\Service\TalkService;
 use App\Services\Common\UnreadTalk;
@@ -79,7 +80,7 @@ class TalkController extends AbstractController
         }
 
         if ($type === 1) {
-            //TODO  这里判断有问题,$receive_id是消息id不是好友id
+
             if (! UsersFriends::isFriend($this->uid(), $receive_id)) {
                 return $this->response->fail(305, '暂不属于好友关系，无法进行聊天...');
             }

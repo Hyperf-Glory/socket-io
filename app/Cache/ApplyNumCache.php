@@ -25,33 +25,29 @@ use Hyperf\Redis\RedisProxy;
  */
 class ApplyNumCache
 {
-    const KEY = 'friend:apply:unread:num';
+    public const KEY = 'friend:apply:unread:num';
 
     /**
      * 获取好友未读申请数.
-     *
-     * @return string
      */
     public static function get(int $uid, ?RedisProxy $redis = null)
     {
         if (is_null($redis)) {
             $redis = self::redis();
         }
-        return $redis->hget(self::KEY, (string) $uid);
+        return $redis->hGet(self::KEY, (string) $uid);
     }
 
     /**
      * 设置未读好友申请数（自增加1）.
-     *
-     * @return int
      */
-    public static function setInc(int $uid, ?RedisProxy $redis = null)
+    public static function setInc(int $uid, ?RedisProxy $redis = null): int
     {
         if (is_null($redis)) {
             $redis = self::redis();
         }
 
-        return $redis->hincrby(self::KEY, (string) $uid, 1);
+        return $redis->hIncrBy(self::KEY, (string) $uid, 1);
     }
 
     /**

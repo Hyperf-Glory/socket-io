@@ -168,7 +168,6 @@ SQL;
 
             Db::commit();
         } catch (Exception $e) {
-            dump($e->getMessage());
             Db::rollBack();
             return false;
         }
@@ -243,4 +242,5 @@ SQL;
 
         return (bool) UsersFriends::where('user1', $uid)->where('user2', $friendId)->update($data);
     }
+
 }

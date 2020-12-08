@@ -69,13 +69,13 @@ class UserController extends AbstractController
     }
 
     /**
-     * //TODO 重点测试
+     *
      * 获取好友申请未读数.
      */
     public function getApplyUnreadNum(): ResponseInterface
     {
         return $this->response->success('success', [
-            'unread_num' => ApplyNumCache::get($this->uid()) ?? '',
+            'unread_num' => (int) ApplyNumCache::get($this->uid()),
         ]);
     }
 
@@ -254,7 +254,7 @@ class UserController extends AbstractController
 
     /**
      * 获取用户群聊列表.
-     * @TODO 待解决获取用户群聊的问题,页面报错的问题
+     *
      */
     public function getUserGroups(): ResponseInterface
     {

@@ -182,7 +182,7 @@ class GroupController extends AbstractController
 
     public function setGroupCard(): PsrResponseInterface
     {
-        $groupId = $this->request->post('group_id');
+        $groupId = (int) $this->request->post('group_id');
         $visit_card = $this->request->post('visit_card');
         if (empty($visit_card) || ! ValidateHelper::isInteger($groupId)) {
             return $this->response->parmasError();
@@ -224,7 +224,7 @@ class GroupController extends AbstractController
 
     public function getGroupNotices(): PsrResponseInterface
     {
-        $group_id = (int) $this->request->get('group_id', 0);
+        $group_id = (int) $this->request->input('group_id', 0);
 
         // 判断用户是否是群成员
         if (! UsersGroup::isMember($group_id, $this->uid())) {
@@ -233,7 +233,7 @@ class GroupController extends AbstractController
         $rpcGroup = $this->container->get(InterfaceGroupService::class);
         $ret = $rpcGroup->getGroupMembers($group_id, $this->uid());
         if (isset($ret['code']) && $ret['code'] === 1) {
-            return $this->response->success('success', $ret['data']['rows']);
+            return $this->response->success('success', $ret['data']['members']);
         }
         return $this->response->error('获取信息失败...');
     }

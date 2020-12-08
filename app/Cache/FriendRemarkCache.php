@@ -37,7 +37,7 @@ class FriendRemarkCache
         if (is_null($redis)) {
             $redis = self::redis();
         }
-        $redis->hset(self::KEY, "{$uid}_{$fid}", $remark);
+        $redis->hSet(self::KEY, "{$uid}_{$fid}", $remark);
     }
 
     /**
@@ -48,7 +48,7 @@ class FriendRemarkCache
         if (is_null($redis)) {
             $redis = self::redis();
         }
-        return $redis->hget(self::KEY, "{$uid}_{$fid}") ?: '';
+        return $redis->hGet(self::KEY, "{$uid}_{$fid}") ?: '';
     }
 
     /**

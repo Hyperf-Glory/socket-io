@@ -39,7 +39,7 @@ class LastMsgCache
             $redis = self::redis();
         }
 
-        $redis->hset(self::_name($sender), self::_key($receive, $sender), MessageParser::serialize($message));
+        $redis->hSet(self::_name($sender), self::_key($receive, $sender), MessageParser::serialize($message));
     }
 
     /**
@@ -55,7 +55,7 @@ class LastMsgCache
         if (is_null($redis)) {
             $redis = self::redis();
         }
-        $data = $redis->hget(self::_name($sender), self::_key($receive, $sender));
+        $data = $redis->hGet(self::_name($sender), self::_key($receive, $sender));
 
         return $data ? MessageParser::unserialize($data) : null;
     }
@@ -64,12 +64,10 @@ class LastMsgCache
      * 用户聊天或群聊的最后一条消息hash存储的hash名.
      *
      * @param int $sender
-     *
-     * @return string
      */
-    private static function _name($sender = 0)
+    private static function _name($sender = 0): string
     {
-        return $sender == 0 ? 'groups:chat:last.msg' : 'friends:chat:last:msg';
+        return $sender === 0 ? 'groups:chat:last.msg' : 'friends:chat:last:msg';
     }
 
     /**
