@@ -24,6 +24,7 @@ use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersFriendsApply;
 use App\Model\UsersGroupMember;
+use Exception;
 use Hyperf\DbConnection\Db;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -54,7 +55,7 @@ class UserService
                 'created_at' => time(),
             ]);
             Db::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $result = false;
             Db::rollBack();
         }
@@ -114,7 +115,7 @@ class UserService
      */
     public function get(int $uid)
     {
-        return Users::query()->where('id', $uid)->first() ?? null;
+        return Users::query()->where('id', $uid)->first();
     }
 
     /**

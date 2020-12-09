@@ -24,6 +24,10 @@ use App\Services\EmoticonService;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Class EmoticonController.
+ * @TODO 表情包管理待测试
+ */
 class EmoticonController extends AbstractController
 {
     /**

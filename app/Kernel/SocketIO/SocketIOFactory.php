@@ -27,7 +27,7 @@ use Psr\Container\ContainerInterface;
 
 class SocketIOFactory
 {
-    public function __invoke(ContainerInterface $container)
+    public function __invoke(ContainerInterface $container): SocketIO
     {
         $io = new SocketIO(
             $container->get(StdoutLoggerInterface::class),

@@ -69,7 +69,6 @@ class UserController extends AbstractController
     }
 
     /**
-     *
      * 获取好友申请未读数.
      */
     public function getApplyUnreadNum(): ResponseInterface
@@ -149,8 +148,8 @@ class UserController extends AbstractController
      */
     public function getFriendApplyRecords(): ResponseInterface
     {
-        $page = $this->request->input('page', 1);
-        $pageSize = $this->request->input('page_size', 10);
+        $page = (int) $this->request->input('page', 1);
+        $pageSize = (int) $this->request->input('page_size', 10);
         $data = $this->friendService->findApplyRecords($this->uid(), (int) $page, (int) $pageSize);
         ApplyNumCache::del($this->uid());
         return $this->response->success('success', $data);
@@ -161,7 +160,7 @@ class UserController extends AbstractController
      */
     public function sendFriendApply(): ResponseInterface
     {
-        $friendId = $this->request->post('friend_id');
+        $friendId = (int) $this->request->post('friend_id');
         $remarks = $this->request->post('remarks', '');
         if (! ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
@@ -173,7 +172,7 @@ class UserController extends AbstractController
         }
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
 
-        //判断对方是否在线。如果在线发送消息通知
+        //TODO 判断对方是否在线。如果在线发送消息通知
         if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $friendId)) {
         }
         // 好友申请未读消息数自增
@@ -186,7 +185,7 @@ class UserController extends AbstractController
      */
     public function handleFriendApply(): ResponseInterface
     {
-        $applyId = $this->request->post('apply_id');
+        $applyId = (int) $this->request->post('apply_id');
         $remarks = $this->request->post('remarks', '');
         if (! ValidateHelper::isInteger($applyId)) {
             return $this->response->parmasError('参数错误!');
@@ -204,7 +203,7 @@ class UserController extends AbstractController
      */
     public function deleteFriendApply(): ResponseInterface
     {
-        $applyId = $this->request->post('apply_id');
+        $applyId = (int) $this->request->post('apply_id');
         if (! ValidateHelper::isInteger($applyId)) {
             return $this->response->parmasError('参数错误!');
         }
@@ -217,7 +216,7 @@ class UserController extends AbstractController
      */
     public function editFriendRemark(): ResponseInterface
     {
-        $friendId = $this->request->post('friend_id');
+        $friendId = (int) $this->request->post('friend_id');
         $remarks = $this->request->post('remarks', '');
         if (empty($remarks) || ! ValidateHelper::isInteger($friendId)) {
             return $this->response->parmasError('参数错误!');
@@ -234,7 +233,7 @@ class UserController extends AbstractController
      */
     public function searchUserInfo(): ResponseInterface
     {
-        $uid = $this->request->post('user_id', '');
+        $uid = (int) $this->request->post('user_id', '');
         $mobile = $this->request->post('mobile', '');
 
         $where = [];
@@ -254,7 +253,6 @@ class UserController extends AbstractController
 
     /**
      * 获取用户群聊列表.
-     *
      */
     public function getUserGroups(): ResponseInterface
     {
@@ -322,7 +320,7 @@ class UserController extends AbstractController
      */
     public function removeFriend(): ResponseInterface
     {
-        $friendId = $this->request->post('friend_id');
+        $friendId = (int) $this->request->post('friend_id');
         if (! ValidateHelper::isInteger($this->uid())) {
             return $this->response->parmasError('参数错误!');
         }

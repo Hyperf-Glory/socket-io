@@ -99,7 +99,7 @@ class GroupController extends AbstractController
         if (count($params) !== 4 || empty($params['group_name'])) {
             return $this->response->parmasError();
         }
-        $result = UsersGroup::where('id', $params['group_id'])->where('user_id', $this->uid())->update([
+        $result = UsersGroup::where('id', (int) $params['group_id'])->where('user_id', $this->uid())->update([
             'group_name' => $params['group_name'],
             'group_profile' => $params['group_profile'],
             'avatar' => $params['avatar'],
@@ -129,7 +129,7 @@ class GroupController extends AbstractController
 
     public function removeMembers(): PsrResponseInterface
     {
-        $groupId = $this->request->post('group_id');
+        $groupId = (int) $this->request->post('group_id');
         $mids = $this->request->post('members_ids', []);
         if (empty($mids) || ! ValidateHelper::isInteger($groupId)) {
             return $this->response->parmasError();
@@ -149,7 +149,7 @@ class GroupController extends AbstractController
 
     public function dismiss(): PsrResponseInterface
     {
-        $groupId = $this->request->post('group_id');
+        $groupId = (int) $this->request->post('group_id');
         if (! ValidateHelper::isInteger($groupId)) {
             return $this->response->parmasError();
         }
@@ -164,7 +164,7 @@ class GroupController extends AbstractController
 
     public function secede(): PsrResponseInterface
     {
-        $groupId = $this->request->post('group_id');
+        $groupId = (int) $this->request->post('group_id');
         if (! ValidateHelper::isInteger($groupId)) {
             return $this->response->parmasError();
         }
@@ -246,11 +246,11 @@ class GroupController extends AbstractController
         }
 
         // 判断用户是否是管理员
-        if (! UsersGroup::isManager($this->uid(), $data['group_id'])) {
+        if (! UsersGroup::isManager($this->uid(), (int) $data['group_id'])) {
             return $this->response->fail(305, '非管理员禁止操作...');
         }
         $rpcGroup = $this->container->get(InterfaceGroupService::class);
-        $ret = $rpcGroup->editNotice($this->uid(), $data['notice_id'], $data['group_id'], $data['title'], $data['content']);
+        $ret = $rpcGroup->editNotice($this->uid(), (int) $data['notice_id'], (int) $data['group_id'], $data['title'], $data['content']);
         if (isset($ret['code']) && $ret['code'] === 1) {
             return $this->response->success('修改群公告信息成功...');
         }
