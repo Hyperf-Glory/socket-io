@@ -119,7 +119,6 @@ class UserController extends AbstractController
             return $this->response->parmasError('参数错误!');
         }
         //TODO 编辑个人资料
-        //待驾照拿到之后继续更新
         $bool = Users::where('id', $this->uid())->update($this->request->inputs($params));
         return $bool ? $this->response->success('个人信息修改成功') : $this->response->parmasError('个人信息修改失败');
     }
@@ -172,7 +171,7 @@ class UserController extends AbstractController
         }
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
 
-        //TODO 判断对方是否在线。如果在线发送消息通知
+        //断对方是否在线。如果在线发送消息通知
         if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $friendId)) {
         }
         // 好友申请未读消息数自增
