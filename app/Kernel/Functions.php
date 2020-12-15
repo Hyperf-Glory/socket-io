@@ -124,10 +124,8 @@ if (! function_exists('replace_url_link')) {
  * @param string $ext 图片后缀名
  * @param int $width 图片宽度
  * @param int $height 图片高度
- *
- * @return string
  */
-function create_image_name(string $ext, int $width, int $height)
+function create_image_name(string $ext, int $width, int $height): string
 {
     return uniqid('', false) . StringHelper::randString(18) . uniqid('', false) . '_' . $width . 'x' . $height . '.' . $ext;
 }
@@ -136,10 +134,8 @@ function create_image_name(string $ext, int $width, int $height)
  * 从HTML文本中提取所有图片.
  *
  * @param $content
- *
- * @return array
  */
-function get_html_images($content)
+function get_html_images($content): array
 {
     $pattern = "/<img.*?src=[\\'|\"](.*?)[\\'|\"].*?[\\/]?>/";
     preg_match_all($pattern, htmlspecialchars_decode($content), $match);
@@ -158,9 +154,8 @@ function get_html_images($content)
 
 /**
  * 生成6位字符的短码字符串.
- * @return string
  */
-function create_short_code(string $string)
+function create_short_code(string $string): string
 {
     $result = sprintf('%u', crc32($string));
     $show = '';
@@ -182,9 +177,8 @@ function create_short_code(string $string)
  * 获取媒体文件url.
  *
  * @param string $path 文件相对路径
- * @return string
  */
-function get_media_url(string $path)
+function get_media_url(string $path): string
 {
-    return config('config.img_url', '') . '/' . $path;
+    return config('image_url', '') . '/' . $path;
 }

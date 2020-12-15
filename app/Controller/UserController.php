@@ -115,7 +115,7 @@ class UserController extends AbstractController
     public function editUserDetail(): ResponseInterface
     {
         $params = ['nickname', 'avatar', 'motto', 'gender'];
-        if (! $this->request->has($params) || ValidateHelper::isInteger($this->request->post('gender'))) {
+        if (! $this->request->has($params) || ! ValidateHelper::isInteger((int) $this->request->post('gender'))) {
             return $this->response->parmasError('参数错误!');
         }
         //TODO 编辑个人资料
@@ -135,7 +135,7 @@ class UserController extends AbstractController
             return $this->response->error('新密码格式错误(8~16位字母加数字)');
         }
         $info = $this->service->findById($this->uid(), ['id', 'password', 'mobile']);
-        if (! $this->service->checkPassword($info->password, $this->request->input('password'))) {
+        if (! $this->service->checkPassword($this->request->input('old_password'), $info->password)) {
             return $this->response->error('旧密码验证失败!');
         }
         $bool = $this->service->resetPassword($info->mobile, $this->request->input('new_password'));
@@ -376,5 +376,17 @@ class UserController extends AbstractController
             $mail->delCode(Mail::CHANGE_EMAIL, $email);
         }
         return $bool ? $this->response->success('邮箱设置成功...') : $this->response->error('邮箱设置失败...');
+    }
+
+    public function editAvatar(): ResponseInterface
+    {
+        $avatar = $this->request->post('avatar');
+        if (empty($avatar)) {
+            return $this->response->parmasError();
+        }
+
+        $isTrue = Users::where('id', $this->uid())->update(['avatar' => $avatar]);
+
+        return $isTrue ? $this->response->success('头像修改成功') : $this->response->error('头像修改失败');
     }
 }

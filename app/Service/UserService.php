@@ -86,7 +86,7 @@ class UserService
             return [false, '手机号已被他人绑定'];
         }
 
-        $bool = Users::query()->where('uid', $uid)->update([
+        $bool = Users::query()->where('id', $uid)->update([
             'mobile' => $mobile,
         ]);
         return [(bool) $bool, null];

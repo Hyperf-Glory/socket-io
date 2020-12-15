@@ -18,15 +18,6 @@ declare(strict_types=1);
 
 use App\Controller\SocketIOController;
 use App\Controller\WebSocketController;
-/*
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
-
 use App\Milddleware\HttpAuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
 use Hyperf\SocketIOServer\Collector\SocketIORouter;
@@ -48,7 +39,7 @@ Router::addGroup('/api/user/', function () {
     Router::get('friends', 'App\Controller\UserController@getUserFriends');
     Router::post('remove-friend', 'App\Controller\UserController@removeFriend');
     Router::get('user-groups', 'App\Controller\UserController@getUserGroups');
-    Router::get('detail', 'App\Controller\UserController@editAvatar');
+    Router::get('detail', 'App\Controller\UserController@getUserDetail');
     Router::post('edit-user-detail', 'App\Controller\UserController@editUserDetail');
     Router::post('edit-avatar', 'App\Controller\UserController@editAvatar');
     Router::post('search-user', 'App\Controller\UserController@searchUserInfo');
