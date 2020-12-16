@@ -18,15 +18,15 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property string $mobile
- * @property string $nickname
- * @property string $avatar
- * @property int $gender
- * @property string $password
- * @property string $invite_code
- * @property string $motto
- * @property string $email
+ * @property int            $id
+ * @property string         $mobile
+ * @property string         $nickname
+ * @property string         $avatar
+ * @property int            $gender
+ * @property string         $password
+ * @property string         $invite_code
+ * @property string         $motto
+ * @property string         $email
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */

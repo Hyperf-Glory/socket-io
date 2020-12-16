@@ -371,7 +371,7 @@ class UserController extends AbstractController
         if (! $this->service->checkPassword($password, $upassword)) {
             return $this->response->error('账号密码验证失败...');
         }
-        $bool = Usesr::where('id', $this->uid())->update(['email' => $email]);
+        $bool = Users::where('id', $this->uid())->update(['email' => $email]);
         if ($bool) {
             $mail->delCode(Mail::CHANGE_EMAIL, $email);
         }

@@ -50,12 +50,14 @@ class Mail
     public function send(string $type, string $title, string $email): bool
     {
         $key = $this->getKey($type, $email);
+
         if (! $smsCode = $this->getCode($key)) {
             $smsCode = random_int(100000, 999999);
         }
 
         $this->setCode($key, (string) $smsCode);
         try {
+
             $view = $this->view(config('view.engine'), 'emails.verify-code', ['service_name' => $title, 'sms_code' => $smsCode, 'domain' => config('config.domain.web_url')]);
             return $this->mail($email, $title, $view);
         } catch (\Exception $e) {
