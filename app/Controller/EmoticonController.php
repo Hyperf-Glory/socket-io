@@ -26,7 +26,7 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class EmoticonController.
- * @TODO 表情包管理待测试
+ * @TODO 表情包管理待测试(测试完成上线)
  */
 class EmoticonController extends AbstractController
 {
