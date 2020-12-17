@@ -23,6 +23,7 @@ use App\Model\ChatRecordsInvite;
 use App\Model\UsersChatList;
 use App\Model\UsersGroup;
 use App\Model\UsersGroupMember;
+use Exception;
 use Hyperf\DbConnection\Db;
 use RuntimeException;
 
@@ -133,7 +134,7 @@ class GroupService
             UsersGroup::where('id', $groupId)->update(['status' => 1]);
             UsersGroupMember::where('group_id', $groupId)->update(['status' => 1]);
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return false;
         }
@@ -209,7 +210,7 @@ class GroupService
                 'created_at' => date('Y-m-d H:i;s'),
             ]);
             if (! $result) {
-                throw new \Exception('添加群通知记录失败1');
+                throw new Exception('添加群通知记录失败1');
             }
             $result2 = ChatRecordsInvite::create([
                 'record_id' => $result->id,
@@ -218,7 +219,7 @@ class GroupService
                 'user_ids' => implode(',', $friendIds),
             ]);
             if (! $result2) {
-                throw new \Exception('添加群通知记录失败2');
+                throw new Exception('添加群通知记录失败2');
             }
             DB::commit();
             LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $groupId, 0);
@@ -240,9 +241,9 @@ class GroupService
         $recordId = 0;
         DB::beginTransaction();
         try {
-            $res = UserGroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('group_owner', 0)->update(['status' => 1]);
+            $res = UsersGroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('group_owner', 0)->update(['status' => 1]);
             if ($res) {
-                UserChatList::where('uid', $uid)->where('type', 2)->where('group_id', $groupId)->update(['status' => 0]);
+                UsersChatList::where('uid', $uid)->where('type', 2)->where('group_id', $groupId)->update(['status' => 0]);
 
                 $result = ChatRecords::create([
                     'msg_type' => 3,
@@ -250,11 +251,11 @@ class GroupService
                     'user_id' => 0,
                     'receive_id' => $groupId,
                     'content' => $uid,
-                    'created_at' => date('Y-m-d H:i;s'),
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
 
                 if (! $result) {
-                    throw new \Exception('添加群通知记录失败 : quitGroupChat');
+                    throw new \RuntimeException('添加群通知记录失败 : quitGroupChat');
                 }
 
                 $result2 = ChatRecordsInvite::create([
@@ -265,7 +266,7 @@ class GroupService
                 ]);
 
                 if (! $result2) {
-                    throw new \Exception('添加群通知记录失败2  : quitGroupChat');
+                    throw new \RuntimeException('添加群通知记录失败2  : quitGroupChat');
                 }
 
                 $recordId = $result->id;
@@ -274,6 +275,7 @@ class GroupService
             DB::commit();
             return [true, $recordId];
         } catch (Exception $e) {
+            dump($e->getMessage());
             DB::rollBack();
             return [false, 0];
         }
@@ -304,7 +306,7 @@ class GroupService
             ]);
 
             if (! $result) {
-                throw new \Exception('添加群通知记录失败1');
+                throw new Exception('添加群通知记录失败1');
             }
 
             $result2 = ChatRecordsInvite::create([
@@ -315,7 +317,7 @@ class GroupService
             ]);
 
             if (! $result2) {
-                throw new \Exception('添加群通知记录失败2');
+                throw new Exception('添加群通知记录失败2');
             }
 
             DB::commit();

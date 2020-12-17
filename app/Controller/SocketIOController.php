@@ -21,13 +21,16 @@ use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
 use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
+use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Services\Common\UnreadTalk;
+use Carbon\Carbon;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;
 use Hyperf\SocketIOServer\Socket;
+use Hyperf\Utils\Coroutine;
 
 class SocketIOController extends BaseNamespace
 {
@@ -36,6 +39,7 @@ class SocketIOController extends BaseNamespace
      *
      * @param \Hyperf\SocketIOServer\Socket
      * @param  $data
+     *
      * @example {"event":"event_talk","data":{"send_user":4166,"receive_user":"4168","source_type":"1","text_message":"1"}}
      * @Event("event_talk")
      */
@@ -106,28 +110,34 @@ class SocketIOController extends BaseNamespace
                 'receive_id' => $result->receive_id,
                 'content' => $result->content,
                 'created_at' => $result->created_at->toDateTimeString(),
-            ]), ]);
+            ]),
+        ]);
         if ($data['source_type'] === 1) {//私聊
             $msg_text = mb_substr($result->content, 0, 30);
-            // 缓存最后一条消息
+
             LastMsgCache::set([
                 'text' => $msg_text,
                 'created_at' => $result->created_at,
             ], $data['receive_user'], $data['send_user']);
 
-            // 设置好友消息未读数
             di(UnreadTalk::class)->setInc($result->receive_id, $result->user_id, $redis);
 
             $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $data['receive_user']))->emit('chat_message', $msg);
-            //给自己发送消息
+
             $socket->emit('chat_message', $msg);
 
             return true;
         }
         if ($data['source_type'] === 2) {
             $socket->to('room' . $data['receive_user'])->emit('chat_message', $msg);
-            //给自己发送消息
+
             $socket->emit('chat_message', $msg);
+
+            Coroutine::create(function () use ($data) {
+                UsersChatList::where(['group_id' => $data['receive_user']])->update([
+                    'updated_at' => Carbon::now()->toDateTimeString(),
+                ]);
+            });
             return true;
         }
         return false;
@@ -139,6 +149,7 @@ class SocketIOController extends BaseNamespace
      * @param \Hyperf\SocketIOServer\Socket
      * @param $data
      * @Event("event_keyboard")
+     *
      * @example {"event":"event_keyboard","data":{"send_user":4166,"receive_user":"4168"}}
      */
     public function onEventKeyboard(Socket $socket, $data): void

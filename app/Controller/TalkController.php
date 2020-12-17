@@ -59,7 +59,6 @@ class TalkController extends AbstractController
         if ($result) {
             $this->service->updateUnreadTalkList($this->uid(), $result);
         }
-        //TODO 聊天列表updated_at没有更新,12月17号的聊天记录 列表显示还是在12月15日的问题 获取聊天列表
         $rows = $this->service->talks($this->uid());
         if ($rows) {
             $rows = ArrayHelper::sortByField($rows, 'updated_at');
