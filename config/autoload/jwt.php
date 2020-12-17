@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-/**
+/*
  * @TODO 重新封装JWT组件,现在的组件有许多不确定问题
  */
 return [

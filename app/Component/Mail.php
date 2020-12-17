@@ -123,6 +123,11 @@ class Mail
     }
 
     /**
+     * @param string $address
+     * @param string $subject
+     * @param string $view
+     *
+     * @return bool
      * @throws \PHPMailer\PHPMailer\Exception
      */
     private function mail(string $address, string $subject, string $view): bool
