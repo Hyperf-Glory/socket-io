@@ -66,7 +66,7 @@ return [
     ],
     'settings' => [
         'enable_coroutine' => true,
-        'worker_num' => swoole_cpu_num() * 2,
+        'worker_num' => 1,
         'pid_file' => BASE_PATH . '/runtime/hyperf.pid',
         'open_tcp_nodelay' => true,
         'max_coroutine' => 100000,
@@ -75,7 +75,7 @@ return [
         'socket_buffer_size' => 2 * 1024 * 1024,
         'buffer_output_size' => 2 * 1024 * 1024,
         // Task Worker 数量，根据您的服务器配置而配置适当的数量
-        'task_worker_num' => swoole_cpu_num() * 2,
+        'task_worker_num' => 1,
         // 因为 `Task` 主要处理无法协程化的方法，所以这里推荐设为 `false`，避免协程下出现数据混淆的情况
         'task_enable_coroutine' => true,
         // 将 public 替换为上传目录
