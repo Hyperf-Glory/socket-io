@@ -15,10 +15,19 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-use App\Listener\OnStartListener;
-use App\Listener\OnWorkerStopListener;
+namespace App\Listener;
 
-return [
-    OnStartListener::class,
-    OnWorkerStopListener::class
-];
+use Hyperf\Event\Contract\ListenerInterface;
+
+class OnWorkerStopListener implements ListenerInterface
+{
+    public function listen(): array
+    {
+        // TODO: Implement listen() method.
+    }
+
+    public function process(object $event)
+    {
+        // TODO: Implement process() method.
+    }
+}

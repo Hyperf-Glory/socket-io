@@ -22,6 +22,9 @@ use Psr\Log\LogLevel;
 return [
     'app_name' => env('APP_NAME', 'skeleton'),
     'app_env' => env('APP_ENV', 'dev'),
+    /*
+     * 暂时无用
+     */
     'websocket_server_ips' => value(function () {
         return Json::decode(env('WEBSOCKET_SERVER_IPS'), true) ?? [];
     }),

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 /**
+ *
  * This file is part of the My App.
  *
  * Copyright CodingHePing 2016-2020.
@@ -12,10 +13,8 @@ declare(strict_types=1);
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- *
- * @see   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-
 namespace App\Component;
 
 use Crypto\HashException;
@@ -24,15 +23,11 @@ class Hash
 {
     /**
      * Make a hash from the given plain data.
-     *
-     * @param string $plain
-     *
-     * @return string
      */
     public static function make(string $plain): string
     {
         $result = password_hash($plain, PASSWORD_BCRYPT);
-        if (false === $result) {
+        if ($result === false) {
             throw new HashException();
         }
 
