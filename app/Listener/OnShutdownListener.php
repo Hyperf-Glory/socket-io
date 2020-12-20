@@ -23,12 +23,15 @@ use Codedungeon\PHPCliColors\Color;
 use Hyperf\Contract\ApplicationInterface;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\OnShutdown;
+use Hyperf\SocketIOServer\SocketIO;
 use Hyperf\Utils\ApplicationContext;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
 class OnShutdownListener implements ListenerInterface
 {
+    protected $redisPrefix = 'ws';
+
     public function listen(): array
     {
         return [
@@ -56,19 +59,21 @@ class OnShutdownListener implements ListenerInterface
 | )___) )   | |   | (____/\  | )___) )   | |   | (____/\
 |/ \___/    \_/   (_______/  |/ \___/    \_/   (_______/
 
-';
-            $this->socketIoClear();
+',PHP_EOL;
+            $this->socketIoClearCommand();
+            echo Color::GREEN,'Clean Up Success!';
         }
     }
 
     /**
+     * 清除全部socket-io.
      * @throws \Exception
      */
-    private function socketIoClear(): void
+    private function socketIoClearCommand(): void
     {
-        $command = 'socketio:clear';
+        $command = 'socketio-self:clear';
 
-        $params = ['command' => $command];
+        $params = ['command' => $command, 'namespace' => '/', 'serverId' => SocketIO::$serverId];
 
         // 可以根据自己的需求, 选择使用的 input/output
         $input = new ArrayInput($params);
