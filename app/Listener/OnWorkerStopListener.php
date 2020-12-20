@@ -17,17 +17,30 @@ declare(strict_types=1);
  */
 namespace App\Listener;
 
+use Carbon\Carbon;
+use Codedungeon\PHPCliColors\Color;
 use Hyperf\Event\Contract\ListenerInterface;
+use Hyperf\Framework\Event\OnWorkerStop;
 
 class OnWorkerStopListener implements ListenerInterface
 {
     public function listen(): array
     {
-        // TODO: Implement listen() method.
+        return [
+            OnWorkerStop::class,
+        ];
     }
 
-    public function process(object $event)
+    public function process(object $event): void
     {
-        // TODO: Implement process() method.
+        if ($event instanceof OnWorkerStop) {
+            if ($event->server->taskworker) {
+                echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
+                "TaskWorker#{$event->workerId} stoped.",PHP_EOL;
+            } else {
+                echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
+                "Worker#{$event->workerId} stoped.",PHP_EOL;
+            }
+        }
     }
 }
