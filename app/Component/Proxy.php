@@ -118,7 +118,6 @@ class Proxy
             'user_id' => $records->user_id,
             'receive_id' => $records->receive_id,
         ];
-        //TODO 好友或群聊推送
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         if ($records->source === 1) {
             //好友推送
@@ -222,7 +221,6 @@ class Proxy
             $file = ChatRecordsFile::where('record_id', $info->id)->first(['id', 'record_id', 'user_id', 'file_source', 'file_type', 'save_type', 'original_name', 'file_suffix', 'file_size', 'save_dir']);
             $file = $file ? $file->toArray() : [];
             if ($file) {
-                //TODO 处理静态资源(图片,视频)
                 $file['file_url'] = config('image_url') . $file['save_dir'];
             }
         } elseif ($info->msg_type === 5) {

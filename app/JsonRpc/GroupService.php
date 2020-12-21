@@ -94,7 +94,7 @@ class GroupService implements InterfaceGroupService
     }
 
     /**
-     * @param array $friendIds
+     * @param array $friendIdsp
      *
      * @return array|mixed
      */
