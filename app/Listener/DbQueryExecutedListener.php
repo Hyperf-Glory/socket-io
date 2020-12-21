@@ -38,7 +38,7 @@ class DbQueryExecutedListener implements ListenerInterface
 
     public function __construct(ContainerInterface $container)
     {
-        $this->logger = $container->get(LoggerFactory::class)->get('sql','sql');
+        $this->logger = $container->get(LoggerFactory::class)->get('sql', 'sql');
     }
 
     public function listen(): array
@@ -49,7 +49,7 @@ class DbQueryExecutedListener implements ListenerInterface
     }
 
     /**
-     * @param QueryExecuted $event
+     * @param object $event
      */
     public function process(object $event)
     {
