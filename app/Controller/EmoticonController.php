@@ -93,7 +93,7 @@ class EmoticonController extends AbstractController
 
     public function setUserEmoticon(): ResponseInterface
     {
-        $emoticon_id = $this->request->post('emoticon_id');
+        $emoticon_id = (int) $this->request->post('emoticon_id');
         $type = $this->request->post('type');
         if (! ValidateHelper::isInteger($emoticon_id) || ! in_array($type, [1, 2], true)) {
             return $this->response->parmasError();
@@ -133,7 +133,7 @@ class EmoticonController extends AbstractController
      */
     public function collectEmoticon(): ResponseInterface
     {
-        $id = $this->request->post('record_id');
+        $id = (int) $this->request->post('record_id');
         if (! ValidateHelper::isInteger($id)) {
             return $this->response->parmasError();
         }

@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,10 +18,10 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $user_id 
- * @property string $ip 
- * @property \Carbon\Carbon $created_at 
+ * @property int $id
+ * @property int $user_id
+ * @property string $ip
+ * @property \Carbon\Carbon $created_at
  */
 class UserLoginLog extends Model
 {
@@ -31,12 +31,14 @@ class UserLoginLog extends Model
      * @var string
      */
     protected $table = 'user_login_log';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'user_id', 'ip', 'created_at'];
+
     /**
      * The attributes that should be cast to native types.
      *

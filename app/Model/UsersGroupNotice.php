@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -18,15 +18,15 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $group_id 
- * @property int $user_id 
- * @property string $title 
- * @property string $content 
- * @property int $is_delete 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
- * @property string $deleted_at 
+ * @property int $id
+ * @property int $group_id
+ * @property int $user_id
+ * @property string $title
+ * @property string $content
+ * @property int $is_delete
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ * @property string $deleted_at
  */
 class UsersGroupNotice extends Model
 {
@@ -36,12 +36,14 @@ class UsersGroupNotice extends Model
      * @var string
      */
     protected $table = 'users_group_notice';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'group_id', 'user_id', 'title', 'content', 'is_delete', 'created_at', 'updated_at', 'deleted_at'];
+
     /**
      * The attributes that should be cast to native types.
      *

@@ -21,16 +21,13 @@ use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
 use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
-use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Services\Common\UnreadTalk;
-use Carbon\Carbon;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;
 use Hyperf\SocketIOServer\Socket;
-use Hyperf\Utils\Coroutine;
 
 class SocketIOController extends BaseNamespace
 {
@@ -133,11 +130,11 @@ class SocketIOController extends BaseNamespace
 
             $socket->emit('chat_message', $msg);
 
-            Coroutine::create(function () use ($data) {
-                UsersChatList::where(['group_id' => $data['receive_user']])->update([
-                    'updated_at' => Carbon::now()->toDateTimeString(),
-                ]);
-            });
+            LastMsgCache::set([
+                'text' => $result->content,
+                'created_at' => $result->created_at,
+            ], $data['receive_user'], 0);
+
             return true;
         }
         return false;

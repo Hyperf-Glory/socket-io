@@ -95,7 +95,7 @@ class GroupController extends AbstractController
 
     public function editDetail(): PsrResponseInterface
     {
-        $params = $this->request->hasInput(['group_id', 'group_name', 'group_profile', 'avatar']);
+        $params = $this->request->inputs(['group_id', 'group_name', 'group_profile', 'avatar']);
         if (count($params) !== 4 || empty($params['group_name'])) {
             return $this->response->parmasError();
         }

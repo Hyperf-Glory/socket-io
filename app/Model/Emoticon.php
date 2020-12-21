@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
  *
  * This file is part of the My App.
@@ -17,8 +17,6 @@ declare (strict_types=1);
  */
 namespace App\Model;
 
-/**
- */
 class Emoticon extends Model
 {
     /**
@@ -27,12 +25,14 @@ class Emoticon extends Model
      * @var string
      */
     protected $table = 'emoticon';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [];
+
     /**
      * The attributes that should be cast to native types.
      *

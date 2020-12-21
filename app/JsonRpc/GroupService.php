@@ -163,7 +163,7 @@ class GroupService implements InterfaceGroupService
         if (! ValidateHelper::isInteger($groupId) || ! ValidateHelper::isInteger($uid) || ! ValidateHelper::isIndexArray($memberIds)) {
             return ['code' => 0, 'msg' => '参数错误...'];
         }
-        [$bool, $record] = $this->groupService->removeMember($uid, $groupId, $memberIds);
+        [$bool, $record] = $this->groupService->removeMember($groupId, $uid, $memberIds);
         if ($bool) {
             return [
                 'code' => 1,
