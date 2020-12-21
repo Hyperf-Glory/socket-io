@@ -76,10 +76,8 @@ class UserService
 
     /**
      * 修改绑定的手机号.
-     *
-     * @return array
      */
-    public function changeMobile(int $uid, string $mobile)
+    public function changeMobile(int $uid, string $mobile): array
     {
         $user_id = Users::query()->where('mobile', $mobile)->value('id');
         if ($user_id) {
@@ -95,7 +93,7 @@ class UserService
     public function sendEmailCode(string $email)
     {
         $key = "email_code:{$email}";
-        $sms_code = mt_rand(100000, 999999);
+        $sms_code = random_int(100000, 999999);
         $mail = make(PHPMailer::class);
         //TODO 发送邮件
     }
@@ -195,7 +193,6 @@ class UserService
         }
         $info = $info->first();
         $info = $info ? $info->toArray() : [];
-
         if ($info) {
             $info['friend_status'] = 0; //朋友关系状态  0:本人  1:陌生人 2:朋友
             $info['nickname_remark'] = '';

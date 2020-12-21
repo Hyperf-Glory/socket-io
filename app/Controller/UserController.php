@@ -118,7 +118,7 @@ class UserController extends AbstractController
         if (! $this->request->has($params) || ! ValidateHelper::isInteger((int) $this->request->post('gender'))) {
             return $this->response->parmasError('参数错误!');
         }
-        //TODO 编辑个人资料
+
         $bool = Users::where('id', $this->uid())->update($this->request->inputs($params));
         return $bool ? $this->response->success('个人信息修改成功') : $this->response->parmasError('个人信息修改失败');
     }
@@ -232,7 +232,7 @@ class UserController extends AbstractController
      */
     public function searchUserInfo(): ResponseInterface
     {
-        $uid = (int) $this->request->post('user_id', '');
+        $uid = $this->request->post('user_id', '');
         $mobile = $this->request->post('mobile', '');
 
         $where = [];
@@ -247,7 +247,7 @@ class UserController extends AbstractController
         if ($data = $this->service->searchUserInfo($where, $this->uid())) {
             return $this->response->success('success', $data);
         }
-        return $this->response->fail(303, 'success');
+        return $this->response->error('success');
     }
 
     /**
@@ -335,9 +335,6 @@ class UserController extends AbstractController
         return $this->response->success('success');
     }
 
-    /**
-     * //TODO 发送绑定邮箱的验证码
-     */
     public function sendChangeEmailCode(): ResponseInterface
     {
         $email = $this->request->post('email');
@@ -351,9 +348,6 @@ class UserController extends AbstractController
         return $this->response->error('验证码发送失败...');
     }
 
-    /**
-     * @TODO 修改用户邮箱接口.
-     */
     public function editUserEmail(): ResponseInterface
     {
         $email = $this->request->post('email', '');
@@ -362,7 +356,7 @@ class UserController extends AbstractController
         if (empty($email) || empty($email_code) || empty($password)) {
             return $this->response->parmasError();
         }
-        //TODO 验证邮箱
+
         $mail = di(Mail::class);
         if (! $mail->check(Mail::CHANGE_EMAIL, $email, $email_code)) {
             return $this->response->error('验证码填写错误...');
