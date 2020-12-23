@@ -13,3 +13,4 @@ vendor/
 .phpunit*
 app/Controller/TestOneController.php
 app/Controller/IndexController.php
+.env.docker
