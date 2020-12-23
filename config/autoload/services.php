@@ -33,7 +33,7 @@ return [
                 'service' => $interface,
                 'registry' => [
                     'protocol' => 'consul',
-                    'address' => 'http://127.0.0.1:8500',
+                    'address' => env('CONSUL_HOST', 'http://127.0.0.1:8500'),
                 ],
                 'id' => $interface,
                 // 服务提供者的服务协议，可选，默认值为 jsonrpc-http
