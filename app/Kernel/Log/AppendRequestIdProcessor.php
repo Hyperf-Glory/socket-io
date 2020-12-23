@@ -25,12 +25,12 @@ use Monolog\Processor\ProcessorInterface;
 
 class AppendRequestIdProcessor implements ProcessorInterface
 {
-    const TRACE_ID = 'log.trace.id';
+    public const TRACE_ID = 'log.trace.id';
 
-    public function __invoke(array $records)
+    public function __invoke(array $record): array
     {
-        $records['context']['trace_id'] = Context::getOrSet(self::TRACE_ID, StringHelper::randSimple(20));
-        $records['context'][Log::CONTEXT_KEY] = WsContext::get(Log::CONTEXT_KEY);
-        return $records;
+        $record['context']['trace_id'] = Context::getOrSet(self::TRACE_ID, StringHelper::randSimple(20));
+        $record['context'][Log::CONTEXT_KEY] = WsContext::get(Log::CONTEXT_KEY);
+        return $record;
     }
 }

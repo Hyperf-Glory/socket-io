@@ -15,6 +15,8 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
+
+use Hyperf\Tracer\Adapter\JaegerTracerFactory;
 use Zipkin\Samplers\BinarySampler;
 
 return [
@@ -42,7 +44,7 @@ return [
             'sampler' => BinarySampler::createAsAlwaysSample(),
         ],
         'jaeger' => [
-            'driver' => \Hyperf\Tracer\Adapter\JaegerTracerFactory::class,
+            'driver' => JaegerTracerFactory::class,
             'name' => env('APP_NAME', 'skeleton'),
             'options' => [
                 'local_agent' => [

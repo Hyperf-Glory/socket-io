@@ -15,6 +15,10 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Hmac\Sha384;
+use Lcobucci\JWT\Signer\Hmac\Sha512;
+
 /*
  * @TODO 重新封装JWT组件,现在的组件有许多不确定问题
  */
@@ -26,7 +30,7 @@ return [
      */
     'sso_key' => 'uid',
 
-    'secret' => env('JWT_SECRET', 'phper666'), // 非对称加密使用字符串,请使用自己加密的字符串
+    'secret' => env('JWT_SECRET', 'Hyperf-Chat'), // 非对称加密使用字符串,请使用自己加密的字符串
 
     /*
      * JWT 权限keys
@@ -46,15 +50,15 @@ return [
      * 支持的算法
      */
     'supported_algs' => [
-        'HS256' => 'Lcobucci\JWT\Signer\Hmac\Sha256',
-        'HS384' => 'Lcobucci\JWT\Signer\Hmac\Sha384',
-        'HS512' => 'Lcobucci\JWT\Signer\Hmac\Sha512',
-        'ES256' => 'Lcobucci\JWT\Signer\Ecdsa\Sha256',
-        'ES384' => 'Lcobucci\JWT\Signer\Ecdsa\Sha384',
-        'ES512' => 'Lcobucci\JWT\Signer\Ecdsa\Sha512',
-        'RS256' => 'Lcobucci\JWT\Signer\Rsa\Sha256',
-        'RS384' => 'Lcobucci\JWT\Signer\Rsa\Sha384',
-        'RS512' => 'Lcobucci\JWT\Signer\Rsa\Sha512',
+        'HS256' => Sha256::class,
+        'HS384' => Sha384::class,
+        'HS512' => Sha512::class,
+        'ES256' => \Lcobucci\JWT\Signer\Ecdsa\Sha256::class,
+        'ES384' => \Lcobucci\JWT\Signer\Ecdsa\Sha384::class,
+        'ES512' => \Lcobucci\JWT\Signer\Ecdsa\Sha512::class,
+        'RS256' => \Lcobucci\JWT\Signer\Rsa\Sha256::class,
+        'RS384' => \Lcobucci\JWT\Signer\Rsa\Sha384::class,
+        'RS512' => \Lcobucci\JWT\Signer\Rsa\Sha512::class,
     ],
 
     /*

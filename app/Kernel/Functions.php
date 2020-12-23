@@ -118,67 +118,74 @@ if (! function_exists('replace_url_link')) {
     }
 }
 
-/**
+/*
  * 随机生成图片名.
  *
  * @param string $ext 图片后缀名
  * @param int $width 图片宽度
  * @param int $height 图片高度
  */
-function create_image_name(string $ext, int $width, int $height): string
-{
-    return uniqid('', false) . StringHelper::randString(18) . uniqid('', false) . '_' . $width . 'x' . $height . '.' . $ext;
+if (! function_exists('create_image_name')) {
+    function create_image_name(string $ext, int $width, int $height): string
+    {
+        return uniqid('', false) . StringHelper::randString(18) . uniqid('', false) . '_' . $width . 'x' . $height . '.' . $ext;
+    }
 }
 
-/**
+/*
  * 从HTML文本中提取所有图片.
  *
  * @param $content
  */
-function get_html_images($content): array
-{
-    $pattern = "/<img.*?src=[\\'|\"](.*?)[\\'|\"].*?[\\/]?>/";
-    preg_match_all($pattern, htmlspecialchars_decode($content), $match);
-    $data = [];
-    if (! empty($match[1])) {
-        foreach ($match[1] as $img) {
-            if (! empty($img)) {
-                $data[] = $img;
+if (! function_exists('get_html_images')) {
+    function get_html_images($content): array
+    {
+        $pattern = "/<img.*?src=[\\'|\"](.*?)[\\'|\"].*?[\\/]?>/";
+        preg_match_all($pattern, htmlspecialchars_decode($content), $match);
+        $data = [];
+        if (! empty($match[1])) {
+            foreach ($match[1] as $img) {
+                if (! empty($img)) {
+                    $data[] = $img;
+                }
             }
+            return $data;
         }
+
         return $data;
     }
-
-    return $data;
 }
-
-/**
+/*
  * 生成6位字符的短码字符串.
  */
-function create_short_code(string $string): string
-{
-    $result = sprintf('%u', crc32($string));
-    $show = '';
-    while ($result > 0) {
-        $s = $result % 62;
-        if ($s > 35) {
-            $s = chr($s + 61);
-        } elseif ($s > 9 && $s <= 35) {
-            $s = chr($s + 55);
+if (! function_exists('create_short_code')) {
+    function create_short_code(string $string): string
+    {
+        $result = sprintf('%u', crc32($string));
+        $show = '';
+        while ($result > 0) {
+            $s = $result % 62;
+            if ($s > 35) {
+                $s = chr($s + 61);
+            } elseif ($s > 9 && $s <= 35) {
+                $s = chr($s + 55);
+            }
+            $show .= $s;
+            $result = floor($result / 62);
         }
-        $show .= $s;
-        $result = floor($result / 62);
-    }
 
-    return $show;
+        return $show;
+    }
 }
 
-/**
+/*
  * 获取媒体文件url.
  *
  * @param string $path 文件相对路径
  */
-function get_media_url(string $path): string
-{
-    return config('image_url', '') . '/' . $path;
+if (! function_exists('get_media_url')) {
+    function get_media_url(string $path): string
+    {
+        return config('image_url', '') . '/' . $path;
+    }
 }
