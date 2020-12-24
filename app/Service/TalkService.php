@@ -20,7 +20,7 @@ namespace App\Service;
 use App\Cache\FriendRemarkCache;
 use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
-use App\Kernel\SocketIO;
+use App\Kernel\SocketIO\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;

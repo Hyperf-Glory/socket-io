@@ -19,7 +19,7 @@ namespace App\Controller;
 
 use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
-use App\Kernel\SocketIO;
+use App\Kernel\SocketIO\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;

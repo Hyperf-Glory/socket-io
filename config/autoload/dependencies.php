@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-use App\Kernel\SocketIO as KernelSocketIO;
+use App\Kernel\SocketIO\SocketIO as KernelSocketIO;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\SocketIOServer\Room\AdapterInterface;

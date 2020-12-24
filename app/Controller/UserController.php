@@ -22,7 +22,7 @@ use App\Cache\FriendRemarkCache;
 use App\Component\Mail;
 use App\Component\Sms;
 use App\Helper\ValidateHelper;
-use App\Kernel\SocketIO;
+use App\Kernel\SocketIO\SocketIO;
 use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersFriends;

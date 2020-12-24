@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-namespace App\Kernel;
+namespace App\Kernel\SocketIO;
 
 use App\JsonRpc\Contract\InterfaceUserService;
 use Hyperf\Di\Annotation\Inject;

@@ -17,7 +17,7 @@ declare(strict_types=1);
  */
 namespace App\Component;
 
-use App\Kernel\SocketIO as KernelSocketIO;
+use App\Kernel\SocketIO\SocketIO as KernelSocketIO;
 use App\Model\ChatRecords;
 use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;
