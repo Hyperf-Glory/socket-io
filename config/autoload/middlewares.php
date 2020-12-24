@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
 use App\Middleware\CorsMiddleware;
-use App\Milddleware\SocketIOAuthMiddleware;
+use App\Middleware\SocketIOAuthMiddleware;
 
 return [
     'http' => [

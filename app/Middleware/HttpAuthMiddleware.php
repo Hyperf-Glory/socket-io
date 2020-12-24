@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-namespace App\Milddleware;
+namespace App\Middleware;
 
 use App\Component\MessageParser;
 use App\JsonRpc\Contract\InterfaceUserService;

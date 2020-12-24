@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 use App\Controller\SocketIOController;
 use App\Controller\WebSocketController;
-use App\Milddleware\HttpAuthMiddleware;
+use App\Middleware\HttpAuthMiddleware;
 use Hyperf\HttpServer\Router\Router;
 use Hyperf\SocketIOServer\Collector\SocketIORouter;
 
