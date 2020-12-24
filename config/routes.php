@@ -112,7 +112,7 @@ Router::addGroup('/api/upload/', function () {
     Router::post('file-subarea-upload', 'App\Controller\UploadController@fileSubareaUpload');
     Router::get('get-file-split-info', 'App\Controller\UploadController@getFileSplitInfo');
 }, [
-    'middleware' => [HttpAuthMiddleware::class],
+//    'middleware' => [HttpAuthMiddleware::class],
 ]);
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-Emoticon -------------------------- */

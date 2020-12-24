@@ -18,8 +18,8 @@ declare(strict_types=1);
 namespace App\Component;
 
 use App\Model\FileSplitUpload;
+use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpMessage\Upload\UploadedFile;
-use League\Flysystem\Filesystem;
 
 /**
  * Class SplitUpload.
@@ -37,11 +37,11 @@ class SplitUpload
      */
     protected $fileSystem;
 
-    public function __construct(int $uid, $splitSize = 2 * 1024 * 1024, ?Filesystem $filesystem = null)
+    public function __construct(int $uid, $splitSize = 2 * 1024 * 1024, ?FilesystemFactory $factory = null)
     {
         $this->splitSize = $splitSize;
         $this->uid = $uid;
-        $this->fileSystem = is_null($filesystem) ? di(Filesystem::class) : $filesystem;
+        $this->fileSystem = is_null($factory) ? di(FilesystemFactory::class)->get('qiniu') : $factory->get('qiniu');
     }
 
     /**
@@ -110,14 +110,11 @@ class SplitUpload
         if (! is_dir($save_dir)) {
             $this->fileSystem->createDir($save_dir);
         }
-        $stream = fopen($file->getRealPath(), 'rb+');
         $save_path = trim($save_dir . '/' . $fileName, '/');
         // 保存文件
-        if (! $this->fileSystem->put($save_path, $stream)) {
-            fclose($stream);
+        if (! $this->fileSystem->put($save_path, file_get_contents($file->getRealPath()))) {
             return false;
         }
-        fclose($stream);
         $info = FileSplitUpload::where('user_id', $this->uid)->where('hash_name', $hashName)->where('split_index', $split_index)->first();
         if (! $info) {
             return FileSplitUpload::create([

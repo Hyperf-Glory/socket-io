@@ -19,6 +19,7 @@ namespace App\Controller;
 
 use App\Cache\LastMsgCache;
 use App\Component\Proxy;
+use App\Component\UnreadTalk;
 use App\Helper\ArrayHelper;
 use App\Helper\StringHelper;
 use App\Helper\ValidateHelper;
@@ -32,11 +33,10 @@ use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Service\TalkService;
-use App\Component\UnreadTalk;
 use Exception;
 use Hyperf\DbConnection\Db;
+use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\Utils\Coroutine;
-use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use RuntimeException;
 
@@ -78,7 +78,6 @@ class TalkController extends AbstractController
         }
 
         if ($type === 1) {
-
             if (! UsersFriends::isFriend($this->uid(), $receive_id)) {
                 return $this->response->fail(305, '暂不属于好友关系，无法进行聊天...');
             }
@@ -181,7 +180,6 @@ class TalkController extends AbstractController
 
     /**
      * 更新对话列表未读数.
-     *
      */
     public function updateUnreadNum(): PsrResponseInterface
     {
@@ -433,8 +431,9 @@ class TalkController extends AbstractController
     /**
      * 上传聊天对话图片（待优化）.
      */
-    public function sendImage(Filesystem $fileSystem): PsrResponseInterface
+    public function sendImage(FilesystemFactory $factory): PsrResponseInterface
     {
+        $fileSystem = $factory->get('qiniu');
         $file = $this->request->file('img');
         $receive_id = (int) $this->request->post('receive_id', 0);
         $source = (int) $this->request->post('source', 0);
@@ -455,15 +454,13 @@ class TalkController extends AbstractController
 
         $imgInfo = getimagesize($file->getRealPath());
         $filename = create_image_name($ext, $imgInfo[0], $imgInfo[1]);
-        $stream = fopen($file->getRealPath(), 'rb+');
+
         $save_path = 'media/images/talks/' . date('Ymd') . $filename;
         //保存图片
-        if (! $fileSystem->put($save_path, $stream)) {
-            fclose($stream);
+        if (! $fileSystem->put($save_path, file_get_contents($file->getRealPath()))) {
             return $this->response->error('图片上传失败');
         }
 
-        fclose($stream);
 
         Db::beginTransaction();
         try {
@@ -580,8 +577,9 @@ class TalkController extends AbstractController
      * @throws \League\Flysystem\FileExistsException
      * @throws \League\Flysystem\FileNotFoundException
      */
-    public function sendFile(Filesystem $fileSystem): PsrResponseInterface
+    public function sendFile(FilesystemFactory $factory): PsrResponseInterface
     {
+        $fileSystem = $factory->get('qiniu');
         $hash_name = $this->request->post('hash_name', '');
         $receive_id = (int) $this->request->post('receive_id', 0);
         $source = (int) $this->request->post('source', 0);

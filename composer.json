@@ -53,6 +53,7 @@
         "hyperf/view-engine": "2.0.*",
         "hyperf/websocket-client": "2.0.*",
         "hyperf/websocket-server": "2.0.*",
+        "overtrue/flysystem-qiniu": "^1.0",
         "phper666/jwt-auth": "^3.0",
         "phpmailer/phpmailer": "^6.1"
     },
