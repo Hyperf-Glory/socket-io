@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/codingheping/hyperf-chat-upgrade
  */
-namespace App\Services;
+namespace App\Service;
 
 use App\Model\ChatRecords;
 use App\Model\ChatRecordsFile;

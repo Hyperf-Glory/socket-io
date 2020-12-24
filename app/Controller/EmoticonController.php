@@ -20,7 +20,7 @@ namespace App\Controller;
 use App\Helper\ValidateHelper;
 use App\Model\Emoticon;
 use App\Model\EmoticonDetail;
-use App\Services\EmoticonService;
+use App\Service\EmoticonService;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 
@@ -31,7 +31,7 @@ use Psr\Http\Message\ResponseInterface;
 class EmoticonController extends AbstractController
 {
     /**
-     * @var \App\Services\EmoticonService
+     * @var \App\Service\EmoticonService
      */
     private $service;
 

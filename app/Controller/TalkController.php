@@ -32,7 +32,7 @@ use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
 use App\Service\TalkService;
-use App\Services\Common\UnreadTalk;
+use App\Component\UnreadTalk;
 use Exception;
 use Hyperf\DbConnection\Db;
 use Hyperf\Utils\Coroutine;

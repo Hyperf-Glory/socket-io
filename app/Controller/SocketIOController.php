@@ -23,7 +23,7 @@ use App\Kernel\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
-use App\Services\Common\UnreadTalk;
+use App\Component\UnreadTalk;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;

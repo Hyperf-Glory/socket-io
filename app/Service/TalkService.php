@@ -30,7 +30,7 @@ use App\Model\Users;
 use App\Model\UsersChatList;
 use App\Model\UsersFriends;
 use App\Service\Traits\PagingTrait;
-use App\Services\Common\UnreadTalk;
+use App\Component\UnreadTalk;
 use Carbon\Carbon;
 use Exception;
 use Hyperf\DbConnection\Db;
