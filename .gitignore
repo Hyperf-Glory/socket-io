@@ -14,3 +14,4 @@ vendor/
 app/Controller/TestOneController.php
 app/Controller/IndexController.php
 .env.docker
+conf/
