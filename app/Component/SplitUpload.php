@@ -41,7 +41,7 @@ class SplitUpload
     {
         $this->splitSize = $splitSize;
         $this->uid = $uid;
-        $this->fileSystem = is_null($factory) ? di(FilesystemFactory::class)->get('qiniu') : $factory->get('qiniu');
+        $this->fileSystem = is_null($factory) ? di(FilesystemFactory::class)->get('local') : $factory->get('local');
     }
 
     /**
@@ -162,6 +162,10 @@ class SplitUpload
         $fileMerge = "tmp/{$hash_name}/{$fileInfo->original_name}.tmp";
 
         foreach ($files as $file) {
+            //TODO
+            // Write Files
+            // $filesystem->write('path/to/file.txt', 'contents');
+
             file_put_contents($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']), FILE_APPEND);
         }
 
