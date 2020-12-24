@@ -36,7 +36,7 @@ class SocketIOClear extends Command
     public function __construct(RedisFactory $factory)
     {
         parent::__construct('socketio-self:clear');
-        $this->redis = $factory->get(env('CLOUD_REDIS'));
+        $this->redis = $factory->get(env('CLOUD_REDIS', 'default'));
     }
 
     public function handle(): void
