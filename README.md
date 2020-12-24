@@ -1,3 +1,5 @@
+## 请暂时不要用于生产环境
+项目还在开发优化中
 ## Hyperf-Chat-Upgrade
 再次升级，此版本采用hyperf2.x+Vue+Element搭建的分布式Socket-io系统,利用rpc作为注册，鉴权服务,rpc发布到注册中心.准备采用dao-cloud+docker部署目前已初步搭建完成，待完成系统业务会继续优化，写份教程供大家学习.
 此次系统的业务逻辑借鉴[lumen-im](https://github.com/gzydong/LumenIM) 的逻辑用hyperf重写，第一版本求稳定运行上线.第二版本会重新整理业务架构，代码更加优化。更加符合PHP规范化.
@@ -19,7 +21,7 @@
 
 ## 体验地址
 
-暂未开放
+[Hyperf-Chat](https://im.jayjay.cn)
 
 ## 功能
 1.0
