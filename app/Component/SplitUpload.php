@@ -86,7 +86,6 @@ class SplitUpload
 
     /**
      * 保存拆分文件.
-     * TODO 待处理七牛文件分片上传的功能.
      *
      * @param UploadedFile $file 文件信息
      * @param string $hashName 上传临时问价hash名
