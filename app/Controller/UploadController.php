@@ -18,13 +18,14 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Component\SplitUpload;
-use League\Flysystem\Filesystem;
+use Hyperf\Filesystem\FilesystemFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class UploadController extends AbstractController
 {
-    public function fileStream(Filesystem $filesystem): ResponseInterface
+    public function fileStream(FilesystemFactory $factory): ResponseInterface
     {
+        $filesystem = $factory->get('qiniu');
         $fileStream = $this->request->post('fileStream', '');
 
         $data = base64_decode(str_replace(['data:image/png;base64,', ' '], ['', '+'], $fileStream));

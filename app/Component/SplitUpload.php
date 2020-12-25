@@ -18,8 +18,8 @@ declare(strict_types=1);
 namespace App\Component;
 
 use App\Model\FileSplitUpload;
+use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpMessage\Upload\UploadedFile;
-use League\Flysystem\Filesystem;
 
 /**
  * Class SplitUpload.
@@ -37,11 +37,11 @@ class SplitUpload
      */
     protected $fileSystem;
 
-    public function __construct(int $uid, $splitSize = 2 * 1024 * 1024, ?Filesystem $filesystem = null)
+    public function __construct(int $uid, $splitSize = 2 * 1024 * 1024, ?FilesystemFactory $factory = null)
     {
         $this->splitSize = $splitSize;
         $this->uid = $uid;
-        $this->fileSystem = is_null($filesystem) ? di(Filesystem::class) : $filesystem;
+        $this->fileSystem = is_null($factory) ? di(FilesystemFactory::class)->get('local') : $factory->get('local');
     }
 
     /**
@@ -110,14 +110,11 @@ class SplitUpload
         if (! is_dir($save_dir)) {
             $this->fileSystem->createDir($save_dir);
         }
-        $stream = fopen($file->getRealPath(), 'rb+');
         $save_path = trim($save_dir . '/' . $fileName, '/');
         // 保存文件
-        if (! $this->fileSystem->put($save_path, $stream)) {
-            fclose($stream);
+        if (! $this->fileSystem->put($save_path, file_get_contents($file->getRealPath()))) {
             return false;
         }
-        fclose($stream);
         $info = FileSplitUpload::where('user_id', $this->uid)->where('hash_name', $hashName)->where('split_index', $split_index)->first();
         if (! $info) {
             return FileSplitUpload::create([
@@ -138,8 +135,6 @@ class SplitUpload
     }
 
     /**
-     * 合并拆分文件.
-     *
      * @return array|bool
      */
     public function fileMerge(string $hash_name)
@@ -166,6 +161,7 @@ class SplitUpload
 
         foreach ($files as $file) {
             file_put_contents($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']), FILE_APPEND);
+            unlink($dir . '/' . $file['save_dir']);
         }
 
         FileSplitUpload::select(['id', 'original_name', 'split_num', 'file_ext', 'file_size'])->where('user_id', $this->uid)->where('hash_name', $hash_name)->where('file_type', 1)->update(['save_dir' => $fileMerge]);

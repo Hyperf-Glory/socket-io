@@ -63,7 +63,6 @@ class HttpAuthMiddleware implements MiddlewareInterface
         } catch (TokenValidException | JWTException $throwable) {
             return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
         } catch (\Throwable $exception) {
-            //TODO 待解决返回服务端错误问题
             if (env('APP_ENV') === 'dev') {
                 return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream(MessageParser::encode([
                     'msg' => $exception->getMessage(),
