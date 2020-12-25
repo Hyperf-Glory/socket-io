@@ -3,27 +3,23 @@
 declare(strict_types=1);
 /**
  *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
- *
  * This is my open source code, please do not use it for commercial applications.
  *
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Controller;
 
 use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
+use App\Component\UnreadTalk;
 use App\Kernel\SocketIO\SocketIO;
 use App\Model\ChatRecords;
 use App\Model\UsersFriends;
 use App\Model\UsersGroup;
-use App\Component\UnreadTalk;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;

@@ -3,17 +3,13 @@
 declare(strict_types=1);
 /**
  *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
- *
  * This is my open source code, please do not use it for commercial applications.
  *
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Constants;
 
@@ -31,38 +27,27 @@ class ErrorCode extends AbstractConstants
 
     //用户错误码 3000～3999
 
-    const
-        USER_NOT_FOUND = 3001;
+    const USER_NOT_FOUND = 3001;
 
-    const
-        USER_ID_INVALID = 3002;
+    const USER_ID_INVALID = 3002;
 
-    const
-        USER_EMAIL_ALREADY_USE = 3003;
+    const USER_EMAIL_ALREADY_USE = 3003;
 
-    const
-        USER_PASSWORD_ERROR = 3004;
+    const USER_PASSWORD_ERROR = 3004;
 
-    const
-        USER_CREATE_APPLICATION_FAIL = 3005;
+    const USER_CREATE_APPLICATION_FAIL = 3005;
 
-    const
-        USER_APPLICATION_SET_READ_FAIL = 3006;
+    const USER_APPLICATION_SET_READ_FAIL = 3006;
 
-    const
-        USER_INFO_MODIFY_FAIL = 3007;
+    const USER_INFO_MODIFY_FAIL = 3007;
 
-    const
-        USER_APPLICATION_NOT_FOUND = 3008;
+    const USER_APPLICATION_NOT_FOUND = 3008;
 
-    const
-        USER_APPLICATION_PROCESSED = 3009;
+    const USER_APPLICATION_PROCESSED = 3009;
 
-    const
-        USER_APPLICATION_TYPE_WRONG = 3010;
+    const USER_APPLICATION_TYPE_WRONG = 3010;
 
-    const
-        USER_IN_VIDEO_CALL = 3011;
+    const USER_IN_VIDEO_CALL = 3011;
 
     const FRIEND_GROUP_CREATE_FAIL = 4001;
 
@@ -89,23 +74,17 @@ class ErrorCode extends AbstractConstants
     const GROUP_NOT_MEMBER = 5013;
 
     // ext 9000~9999
-    const
-        JWT_PRIVATE_KEY_EMPTY = 9001;
+    const JWT_PRIVATE_KEY_EMPTY = 9001;
 
-    const
-        JWT_PUBLIC_KEY_EMPTY = 9002;
+    const JWT_PUBLIC_KEY_EMPTY = 9002;
 
-    const
-        JWT_ALG_EMPTY = 9003;
+    const JWT_ALG_EMPTY = 9003;
 
-    const
-        NO_PERMISSION_PROCESS = 9004;
+    const NO_PERMISSION_PROCESS = 9004;
 
-    const
-        CONFIG_NOT_FOUND = 9005;
+    const CONFIG_NOT_FOUND = 9005;
 
-    const
-        FILE_DOES_NOT_EXIST = 9006;
+    const FILE_DOES_NOT_EXIST = 9006;
 
     public static $errorMessages = [
         self::AUTH_ERROR => 'Authorization has been denied for this request !',

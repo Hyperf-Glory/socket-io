@@ -1,11 +1,7 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 /**
- *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
  *
  * This is my open source code, please do not use it for commercial applications.
  *
@@ -13,14 +9,14 @@ declare (strict_types=1);
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $user_id 
- * @property string $emoticon_ids 
+ * @property int $id
+ * @property int $user_id
+ * @property string $emoticon_ids
  */
 class UsersEmoticon extends Model
 {
@@ -30,12 +26,14 @@ class UsersEmoticon extends Model
      * @var string
      */
     protected $table = 'users_emoticon';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = ['id', 'user_id', 'emoticon_ids'];
+
     /**
      * The attributes that should be cast to native types.
      *
