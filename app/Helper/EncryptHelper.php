@@ -3,17 +3,13 @@
 declare(strict_types=1);
 /**
  *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
- *
  * This is my open source code, please do not use it for commercial applications.
  *
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Helper;
 
@@ -23,8 +19,6 @@ class EncryptHelper
 {
     /**
      * url安全的base64_encode.
-     *
-     * @param string $data
      */
     public static function base64UrlEncode(string $data): string
     {
@@ -33,8 +27,6 @@ class EncryptHelper
 
     /**
      * url安全的base64_decode.
-     *
-     * @param string $data
      */
     public static function base64UrlDecode(string $data): string
     {

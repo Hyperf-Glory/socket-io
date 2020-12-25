@@ -55,9 +55,8 @@ COPY ./.env.example /opt/www/.env
 
 RUN composer install --no-dev -o && php bin/hyperf.php
 
-EXPOSE 9501
+EXPOSE 9500
 EXPOSE 9502
-EXPOSE 9503
 EXPOSE 9504
 
 ENTRYPOINT ["php", "/opt/www/bin/hyperf.php", "start"]

@@ -3,17 +3,13 @@
 declare(strict_types=1);
 /**
  *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
- *
  * This is my open source code, please do not use it for commercial applications.
  *
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Controller;
 
@@ -192,7 +188,7 @@ class IndexController extends AbstractController
         //创建N个协程并行
         $parallels = new Parallel($parallelCnt);
         foreach ($serverIps as $server => $ip) {
-            $parallels->add(function () use ($ip, $server, $groupUids) {
+            $parallels->add(function () use ($server) {
                 if (empty($fds)) {
                     //协程内抛出异常
                     throw new ParallelExecutionException(sprintf('Server:[%s]服务器暂时无该群组[%s]的人员!', $server, 1));

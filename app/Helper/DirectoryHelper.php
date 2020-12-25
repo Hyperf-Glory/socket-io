@@ -3,17 +3,13 @@
 declare(strict_types=1);
 /**
  *
- * This file is part of the My App.
- *
- * Copyright CodingHePing 2016-2020.
- *
  * This is my open source code, please do not use it for commercial applications.
  *
  * For the full copyright and license information,
  * please view the LICENSE file that was distributed with this source code
  *
  * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/codingheping/hyperf-chat-upgrade
+ * @link   https://github.com/Hyperf-Glory/socket-io
  */
 namespace App\Helper;
 
@@ -187,10 +183,6 @@ class DirectoryHelper
 
     /**
      * 清空目录(删除目录下所有文件,仅保留当前目录).
-     *
-     * @param string $path
-     *
-     * @return bool
      */
     public static function clearDir(string $path): bool
     {
@@ -224,10 +216,6 @@ class DirectoryHelper
 
     /**
      * 格式化路径字符串(路径后面加/).
-     *
-     * @param string $dir
-     *
-     * @return string
      */
     public static function formatDir(string $dir): string
     {
