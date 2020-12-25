@@ -214,7 +214,6 @@ class TalkController extends AbstractController
         }
 
         $result = $this->service->getChatRecords($user_id, $receive_id, $source, $record_id, $limit);
-
         return $this->response->success('success', [
             'rows' => $result,
             'record_id' => $result ? $result[count($result) - 1]['id'] : 0,
@@ -426,6 +425,10 @@ class TalkController extends AbstractController
 
     /**
      * 上传聊天对话图片（待优化）.
+     *
+     * @param \Hyperf\Filesystem\FilesystemFactory $factory
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
     public function sendImage(FilesystemFactory $factory): PsrResponseInterface
     {
@@ -595,7 +598,7 @@ class TalkController extends AbstractController
         $stream = fopen(config('file.storage.local.root') . '/' . $file->save_dir, 'rb+');
 
         $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
-        $save_dir = '/files/talks/' . date('Ymd') . '/' . $file_hash_name;
+        $save_dir = 'files/talks/' . date('Ymd') . '/' . $file_hash_name;
 
         if (! $fileSystem->writeStream($save_dir, $stream)) {
             fclose($stream);

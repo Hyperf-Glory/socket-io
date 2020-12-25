@@ -31,6 +31,7 @@ use Carbon\Carbon;
 use Exception;
 use Hyperf\DbConnection\Db;
 use Hyperf\Redis\RedisFactory;
+use RuntimeException;
 
 class TalkService
 {
@@ -208,7 +209,7 @@ class TalkService
                 case 2://2:文件消息
                     $rows[$k]['file'] = $files[$row['id']] ?? [];
                     if ($rows[$k]['file']) {
-                        $rows[$k]['file']['file_url'] = config('image_url') . $rows[$k]['file']['save_dir'];
+                        $rows[$k]['file']['file_url'] = config('image_url') . '/' . $rows[$k]['file']['save_dir'];
                     }
                     break;
                 case 3://3:入群消息/退群消息
@@ -222,7 +223,7 @@ class TalkService
                             'users' => [],
                         ];
 
-                        if ($rows[$k]['invite']['type'] == 1 || $rows[$k]['invite']['type'] == 3) {
+                        if ($rows[$k]['invite']['type'] === 1 || $rows[$k]['invite']['type'] === 3) {
                             $rows[$k]['invite']['users'] = Users::select(['id', 'nickname'])->whereIn('id', explode(',', $invites[$row['id']]['user_ids']))->get()->toArray();
                         } else {
                             $rows[$k]['invite']['users'] = $rows[$k]['invite']['operate_user'];
@@ -263,7 +264,7 @@ class TalkService
      *
      * @return mixed
      */
-    public function getChatRecords(int $uid, int $receive_id, int $source, int $record_id, $limit = 30, $msg_type = [])
+    public function getChatRecords(int $uid, int $receive_id, int $source, int $record_id, $limit = 30, $msg_type = []): array
     {
         $fields = [
             'chat_records.id',
@@ -285,7 +286,7 @@ class TalkService
             $rowsSqlObj->where('chat_records.id', '<', $record_id);
         }
 
-        if ($source == 1) {
+        if ($source === 1) {
             $rowsSqlObj->where(function ($query) use ($uid, $receive_id) {
                 $query->where([
                     ['chat_records.user_id', '=', $uid],
@@ -320,10 +321,8 @@ class TalkService
      *
      * @param int $uid 用户ID
      * @param int $record_id 聊天记录ID
-     *
-     * @return array
      */
-    public function getForwardRecords(int $uid, int $record_id)
+    public function getForwardRecords(int $uid, int $record_id): array
     {
         /**
          * @var ChatRecords $result
@@ -379,10 +378,8 @@ class TalkService
      * @param int $source 消息来源  1:好友消息 2:群聊消息
      * @param int $receive_id 好友ID或者群聊ID
      * @param array $record_ids 聊天记录ID
-     *
-     * @return bool
      */
-    public function removeRecords(int $uid, int $source, int $receive_id, array $record_ids)
+    public function removeRecords(int $uid, int $source, int $receive_id, array $record_ids): bool
     {
         if ($source === 1) {//私聊信息
             $ids = ChatRecords::whereIn('id', $record_ids)->where(function ($query) use ($uid, $receive_id) {
@@ -458,9 +455,8 @@ class TalkService
      * @param array $receive_ids 接受者数组  例如:[['source' => 1,'id' => 3045],['source' => 1,'id' => 3046],['source' => 1,'id' => 1658]] 二维数组
      *
      * @throws \Exception
-     * @return array
      */
-    public function forwardRecords(int $uid, int $record_id, array $receive_ids)
+    public function forwardRecords(int $uid, int $record_id, array $receive_ids): array
     {
         /**
          * @var ChatRecords $result
@@ -471,26 +467,22 @@ class TalkService
         }
 
         // 根据消息类型判断用户是否有转发权限
-        if ($result->source == 1) {
-            if ($result->user_id != $uid && $result->receive_id != $uid) {
+        if ($result->source === 1) {
+            if ($result->user_id !== $uid && $result->receive_id !== $uid) {
                 return [];
             }
-        } else {
-            if ($result->source == 2) {
-                if (! UserGroup::isMember($result->receive_id, $uid)) {
-                    return [];
-                }
+        } elseif ($result->source === 2) {
+            if (! UserGroup::isMember($result->receive_id, $uid)) {
+                return [];
             }
         }
 
         $fileInfo = null;
         $codeBlock = null;
-        if ($result->msg_type == 2) {
+        if ($result->msg_type === 2) {
             $fileInfo = ChatRecordsFile::where('record_id', $record_id)->first();
-        } else {
-            if ($result->msg_type == 5) {
-                $codeBlock = ChatRecordsCode::where('record_id', $record_id)->first();
-            }
+        } elseif ($result->msg_type === 5) {
+            $codeBlock = ChatRecordsCode::where('record_id', $record_id)->first();
         }
 
         $insRecordIds = [];
@@ -507,12 +499,12 @@ class TalkService
                 ]);
 
                 if (! $res) {
-                    throw new Exception('插入消息记录失败');
+                    throw new RuntimeException('插入消息记录失败');
                 }
 
                 $insRecordIds[] = $res->id;
 
-                if ($result->msg_type == 2) {
+                if ($result->msg_type === 2) {
                     if (! ChatRecordsFile::create([
                         'record_id' => $res->id,
                         'user_id' => $fileInfo->user_id,
@@ -525,19 +517,17 @@ class TalkService
                         'save_dir' => $fileInfo->save_dir,
                         'created_at' => date('Y-m-d H:i:s'),
                     ])) {
-                        throw new \Exception('插入文件消息记录失败');
+                        throw new RuntimeException('插入文件消息记录失败');
                     }
-                } else {
-                    if ($result->msg_type == 5) {
-                        if (! ChatRecordsCode::create([
-                            'record_id' => $res->id,
-                            'user_id' => $uid,
-                            'code_lang' => $codeBlock->code_lang,
-                            'code' => $codeBlock->code,
-                            'created_at' => date('Y-m-d H:i:s'),
-                        ])) {
-                            throw new \Exception('插入代码消息记录失败');
-                        }
+                } elseif ($result->msg_type === 5) {
+                    if (! ChatRecordsCode::create([
+                        'record_id' => $res->id,
+                        'user_id' => $uid,
+                        'code_lang' => $codeBlock->code_lang,
+                        'code' => $codeBlock->code,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ])) {
+                        throw new RuntimeException('插入代码消息记录失败');
                     }
                 }
             }
@@ -559,10 +549,8 @@ class TalkService
      * @param int $source 消息来源  1:好友消息 2:群聊消息
      * @param array $records_ids 转发消息的记录ID
      * @param array $receive_ids 接受者数组  例如:[['source' => 1,'id' => 3045],['source' => 1,'id' => 3046],['source' => 1,'id' => 1658]] 二维数组
-     *
-     * @return array
      */
-    public function mergeForwardRecords(int $uid, int $receive_id, int $source, $records_ids, array $receive_ids)
+    public function mergeForwardRecords(int $uid, int $receive_id, int $source, array $records_ids, array $receive_ids): array
     {
         // 支持转发的消息类型
         $msg_type = [1, 2, 5];
@@ -570,7 +558,7 @@ class TalkService
         $sqlObj = ChatRecords::whereIn('id', $records_ids);
 
         //验证是否有权限转发
-        if ($source == 2) {//群聊消息
+        if ($source === 2) {//群聊消息
             //判断是否是群聊成员
             if (! UserGroup::isMember($receive_id, $uid)) {
                 return [];
@@ -597,7 +585,7 @@ class TalkService
         $result = $sqlObj->get();
 
         //判断消息记录是否存在
-        if (count($result) != count($records_ids)) {
+        if (count($result) !== count($records_ids)) {
             return [];
         }
 
@@ -607,25 +595,21 @@ class TalkService
 
         $jsonText = [];
         foreach ($rows as $row) {
-            if ($row->msg_type == 1) {
+            if ($row->msg_type === 1) {
                 $jsonText[] = [
                     'nickname' => $row->nickname,
                     'text' => mb_substr(str_replace(PHP_EOL, '', $row->content), 0, 30),
                 ];
-            } else {
-                if ($row->msg_type == 2) {
-                    $jsonText[] = [
-                        'nickname' => $row->nickname,
-                        'text' => '【文件消息】',
-                    ];
-                } else {
-                    if ($row->msg_type == 5) {
-                        $jsonText[] = [
-                            'nickname' => $row->nickname,
-                            'text' => '【代码消息】',
-                        ];
-                    }
-                }
+            } elseif ($row->msg_type === 2) {
+                $jsonText[] = [
+                    'nickname' => $row->nickname,
+                    'text' => '【文件消息】',
+                ];
+            } elseif ($row->msg_type === 5) {
+                $jsonText[] = [
+                    'nickname' => $row->nickname,
+                    'text' => '【代码消息】',
+                ];
             }
         }
 
@@ -656,7 +640,7 @@ class TalkService
                     'text' => $jsonText,
                     'created_at' => date('Y-m-d H:i:s'),
                 ])) {
-                    throw new Exception('插入转发消息失败');
+                    throw new RuntimeException('插入转发消息失败');
                 }
             }
 
@@ -698,7 +682,7 @@ class TalkService
         ];
 
         $rowsSqlObj = ChatRecords::select($fields)->leftJoin('users', 'users.id', '=', 'chat_records.user_id');
-        if ($source == 1) {
+        if ($source === 1) {
             $rowsSqlObj->where(function ($query) use ($uid, $receive_id) {
                 $query->where([
                     ['chat_records.user_id', '=', $uid],
@@ -722,7 +706,7 @@ class TalkService
         }
 
         $count = $rowsSqlObj->count();
-        if ($count == 0) {
+        if ($count === 0) {
             return $this->getPagingRows([], 0, $page, $page_size);
         }
 

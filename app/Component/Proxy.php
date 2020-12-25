@@ -217,7 +217,7 @@ class Proxy
             $file = ChatRecordsFile::where('record_id', $info->id)->first(['id', 'record_id', 'user_id', 'file_source', 'file_type', 'save_type', 'original_name', 'file_suffix', 'file_size', 'save_dir']);
             $file = $file ? $file->toArray() : [];
             if ($file) {
-                $file['file_url'] = config('image_url') . $file['save_dir'];
+                $file['file_url'] = config('image_url') . '/' . $file['save_dir'];
             }
         } elseif ($info->msg_type === 5) {
             $codeBlock = ChatRecordsCode::where('record_id', $info->id)->first(['record_id', 'code_lang', 'code']);

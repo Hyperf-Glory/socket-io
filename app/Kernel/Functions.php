@@ -25,7 +25,7 @@ if (! function_exists('di')) {
      *
      * @param null|string $id
      *
-     * @return mixed|\Psr\Container\ContainerInterface
+     * @return mixed
      */
     function di($id = null)
     {
