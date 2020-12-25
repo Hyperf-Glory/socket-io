@@ -162,6 +162,7 @@ class SplitUpload
 
         foreach ($files as $file) {
             file_put_contents($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']), FILE_APPEND);
+            unlink($dir . '/' . $file['save_dir']);
         }
 
         FileSplitUpload::select(['id', 'original_name', 'split_num', 'file_ext', 'file_size'])->where('user_id', $this->uid)->where('hash_name', $hash_name)->where('file_type', 1)->update(['save_dir' => $fileMerge]);

@@ -606,6 +606,7 @@ class TalkController extends AbstractController
             return $this->response->fail(303, '文件上传失败...');
         }
         fclose($stream);
+        unlink(config('file.storage.local.root') . '/' . $file->save_dir);
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
