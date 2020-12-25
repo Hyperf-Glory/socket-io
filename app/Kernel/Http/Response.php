@@ -107,4 +107,9 @@ class Response
             ->withAddedHeader('content-type', 'application/xml; charset=utf-8')
             ->withBody(new SwooleStream($xml));
     }
+
+    public function download(string $file, string $name = ''): PsrResponseInterface
+    {
+        return $this->container->get(ResponseInterface::class)->download($file, $name);
+    }
 }

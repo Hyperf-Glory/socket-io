@@ -124,7 +124,8 @@ Router::addGroup('/api/emoticon/', function () {
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-Download -------------------------- */
 Router::addGroup('/api/download/', static function () {
-    Router::get('user-chat-file', 'App\Controller\EmoticonController@userChatFile');
+    Router::get('user-chat-file', 'App\Controller\DownloadController@userChatFile');
+    Router::get('download', 'App\Controller\DownloadController@download');
 }, [
     'middleware' => [HttpAuthMiddleware::class],
 ]);
