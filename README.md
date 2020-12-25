@@ -1,27 +1,27 @@
 ## 请暂时不要用于生产环境
 项目还在开发优化中
-## Hyperf-Chat-Upgrade
+## Socket-IO
 再次升级，此版本采用hyperf2.x+Vue+Element搭建的分布式Socket-io系统,利用rpc作为注册，鉴权服务,rpc发布到注册中心.准备采用dao-cloud+docker部署目前已初步搭建完成，待完成系统业务会继续优化，写份教程供大家学习.
 此次系统的业务逻辑借鉴[lumen-im](https://github.com/gzydong/LumenIM) 的逻辑用hyperf重写，第一版本求稳定运行上线.第二版本会重新整理业务架构，代码更加优化。更加符合PHP规范化.
-# [Hyperf-Chat服务聊天系统](https://github.com/codingheping/hyperf-chat-upgrade)
+# [Socket-IO服务聊天系统](https://github.com/Hyperf-Glory/socket-io)
 <p align="center">
-    <a href="https://github.com/codingheping/hyperf-chat-upgrade" target="_blank">
+    <a href="https://github.com/Hyperf-Glory/socket-io" target="_blank">
         <img src="https://static.jayjay.cn/1496800949298.jpg"/>
     </a>
 </p>
 
 [![Php Version](https://img.shields.io/badge/php-%3E=7.2-brightgreen.svg?maxAge=2592000)](https://secure.php.net/)
 [![Swoole Version](https://img.shields.io/badge/swoole-%3E=4.5-brightgreen.svg?maxAge=2592000)](https://github.com/swoole/swoole-src)
-[![sl-im License](https://img.shields.io/github/license/hyperf/hyperf.svg?maxAge=2592000)](https://github.com/komorebi-php/hyperf-chat/blob/master/LICENSE)
+[![sl-im License](https://img.shields.io/github/license/hyperf/hyperf.svg?maxAge=2592000)](https://github.com/Hyperf-Glory/socket-io/blob/master/LICENSE)
 
 
 ## 简介
  
-[hyperf-chat-upgrade](https://im.jayjay.cn) 是基于 [Hyperf](https://hyperf.io) 微服务协程框架(Swoole)和 Vue + ElementUI 网页聊天系统 所开发出来的聊天室。
+[socket-io](https://im.jayjay.cn) 是基于 [Hyperf](https://hyperf.io) 微服务协程框架(Swoole)和 Vue + ElementUI 网页聊天系统 所开发出来的聊天室。
 
 ## 体验地址
 
-[Hyperf-Chat](https://im.jayjay.cn)
+[Socket-IO](https://im.jayjay.cn)
 
 ## 功能
 1.0
