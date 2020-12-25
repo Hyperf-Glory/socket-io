@@ -461,7 +461,6 @@ class TalkController extends AbstractController
             return $this->response->error('图片上传失败');
         }
 
-
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([
@@ -597,13 +596,16 @@ class TalkController extends AbstractController
             return $this->response->fail(302, '文件不存在...');
         }
 
-        $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
-        $save_dir = 'files/talks/' . date('Ymd') . '/' . $file_hash_name;
+        $stream = fopen(config('file.storage.local.root') . '/' . $file->save_dir, 'rb+');
 
-        if (! $fileSystem->copy($file->save_dir, $save_dir)) {
+        $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
+        $save_dir = '/files/talks/' . date('Ymd') . '/' . $file_hash_name;
+
+        if (! $fileSystem->writeStream($save_dir, $stream)) {
+            fclose($stream);
             return $this->response->fail(303, '文件上传失败...');
         }
-
+        fclose($stream);
         Db::beginTransaction();
         try {
             $insert = ChatRecords::create([

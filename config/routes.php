@@ -30,6 +30,7 @@ Router::addGroup('/api/auth/', function () {
     Router::post('register', 'App\Controller\AuthController@register');
     Router::post('login', 'App\Controller\AuthController@login');
     Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
+    Router::post('logout', 'App\Controller\AuthController@logout');
 });
 /* ----------------------  结束   ------------------------------------ */
 /* ---------------------- HTTP-User -------------------------- */
@@ -112,7 +113,7 @@ Router::addGroup('/api/upload/', function () {
     Router::post('file-subarea-upload', 'App\Controller\UploadController@fileSubareaUpload');
     Router::get('get-file-split-info', 'App\Controller\UploadController@getFileSplitInfo');
 }, [
-//    'middleware' => [HttpAuthMiddleware::class],
+    'middleware' => [HttpAuthMiddleware::class],
 ]);
 /* ----------------------  结束   ------------------------------------ */
 /* --------------------- HTTP-Emoticon -------------------------- */

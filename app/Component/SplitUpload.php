@@ -136,8 +136,6 @@ class SplitUpload
     }
 
     /**
-     * TODO 七牛合并拆分文件.
-     *
      * @return array|bool
      */
     public function fileMerge(string $hash_name)
@@ -162,13 +160,8 @@ class SplitUpload
         $dir = config('file.storage.local.root');
         $fileMerge = "tmp/{$hash_name}/{$fileInfo->original_name}.tmp";
 
-        $fileSystem = di(FilesystemFactory::class)->get('qiniu');
         foreach ($files as $file) {
-            //TODO
-            // Write Files
-            // $filesystem->write('path/to/file.txt', 'contents');
-            // 解决错误 qiniu/php-sdk/src/Qiniu/Storage/FormUploader.php(59): Qiniu\Config->getUpHost('...',
-            $fileSystem->write($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']));
+            file_put_contents($dir . '/' . $fileMerge, file_get_contents($dir . '/' . $file['save_dir']), FILE_APPEND);
         }
 
         FileSplitUpload::select(['id', 'original_name', 'split_num', 'file_ext', 'file_size'])->where('user_id', $this->uid)->where('hash_name', $hash_name)->where('file_type', 1)->update(['save_dir' => $fileMerge]);
