@@ -72,19 +72,4 @@ class DownloadController extends AbstractController
         return $this->response->error('文件不存在...');
     }
 
-    public function download(string $saveDir, string $originalName): ResponseInterface
-    {
-        $factory = di(FilesystemFactory::class)->get('qiniu');
-        if ($factory->has($saveDir)) {
-            $dir = config('file.storage.local.root');
-            $contents = $factory->read($saveDir);
-            $fileSystem = di(FilesystemFactory::class)->get('local');
-            if ($fileSystem->has($saveDir)) {
-                return $this->response->download($dir . '/' . $saveDir, $originalName);
-            }
-            $fileSystem->write($saveDir, $contents);
-            return $this->response->download($dir . '/' . $saveDir, $originalName);
-        }
-        return $this->response->error('文件不存在...');
-    }
 }
