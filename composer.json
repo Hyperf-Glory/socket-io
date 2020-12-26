@@ -20,6 +20,7 @@
         "ext-swoole": ">=4.5",
         "ext-zip": "*",
         "codedungeon/php-cli-colors": "^1.12",
+        "gemini/waiter": "^2.0",
         "hyperf/amqp": "2.0.*",
         "hyperf/async-queue": "2.0.*",
         "hyperf/cache": "2.0.*",
