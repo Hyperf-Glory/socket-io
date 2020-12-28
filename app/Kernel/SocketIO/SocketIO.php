@@ -119,7 +119,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         //获取所有好友的用户ID
         $uids = $this->userFriendService->getFriends($user['user']['id']);
         foreach ($uids as $friend) {
-            //推送好友下线通知
+            //TODO 推送好友下线通知
             $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('login_notify', [
                 'user_id' => $user['user']['id'],
                 'status' => 0,
