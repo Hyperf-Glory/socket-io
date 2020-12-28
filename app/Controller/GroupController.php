@@ -152,7 +152,7 @@ class GroupController extends AbstractController
         $rpcGroup = $this->container->get(InterfaceGroupService::class);
         $ret = $rpcGroup->dismiss($groupId, $this->uid());
         if (isset($ret['code']) && $ret['code'] === 1) {
-            // ... 推送群消息
+            // ... TODO 推送群消息
             return $this->response->success('群聊已解散成功...');
         }
         return $this->response->error('群聊解散失败...');

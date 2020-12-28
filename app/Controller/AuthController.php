@@ -64,7 +64,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * TODO 待处理logout问题
+     *
      * 退出登录.
      */
     public function logout(): ResponseInterface
