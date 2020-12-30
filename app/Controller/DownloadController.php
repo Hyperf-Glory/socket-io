@@ -20,6 +20,11 @@ use App\Model\UsersGroup;
 use Hyperf\Filesystem\FilesystemFactory;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Class DownloadController
+ * @package App\Controller
+ * @TODO 待解决下载文件不完整的问题
+ */
 class DownloadController extends AbstractController
 {
     public function userChatFile(): ResponseInterface
