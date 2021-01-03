@@ -69,7 +69,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         if ($sid) {
             //解除之前的关系
             $redis->hDel(self::HASH_UID_TO_SID_PREFIX, (string) $uid);
-            //TODO 异地登录通知
+            //TODO 异地发送消息登录通知挤下线
             $this->to($sid)->emit('leave', '您的账号在其他地方登录,请注意是否是账号信息被泄漏,请及时更改密码!');
         }
         unset($sid);
