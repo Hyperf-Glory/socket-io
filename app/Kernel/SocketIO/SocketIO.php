@@ -22,6 +22,7 @@ use Swoole\Http\Request;
 class SocketIO extends \Hyperf\SocketIOServer\SocketIO
 {
     public const HASH_UID_TO_SID_PREFIX = 'hash.socket_user.uid_sid';
+
     public const HASH_SID_TO_UID_PREFIX = 'hash.socket_user.sid_uid';
 
     protected $pingTimeout = 2000;
@@ -70,7 +71,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         if ($sid) {
             //解除之前的关系
             $redis->hDel(self::HASH_UID_TO_SID_PREFIX, (string) $uid);
-            $redis->hDel(self::HASH_SID_TO_UID_PREFIX,$sid);
+            $redis->hDel(self::HASH_SID_TO_UID_PREFIX, $sid);
             $this->to($sid)->emit('leave', '您的账号在其他地方登录,请注意是否是账号信息被泄漏,请及时更改密码!');
         }
         unset($sid);
@@ -94,8 +95,7 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
             //获取所有好友的用户ID
             $uids = $this->userFriendService->getFriends($uid);
             foreach ($uids as $friend) {
-                //TODO 推送好友上线通知需要把好友ID换成好友备注
-                $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('login_notify', ['user_id' => $uid, 'status' => 1, 'notify' => '好友上线通知...']);
+                $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('login_notify', ['user_id' => $uid, 'remark' => $friend->remark, 'status' => 1, 'notify' => '好友上线通知...']);
             }
         }
         // 绑定聊天群
@@ -116,10 +116,10 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         $sidCache = $redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $user['user']['id']);
 
-        if($sidCache === $user['sid']){
+        if ($sidCache === $user['sid']) {
             // 将fd 退出所有聊天室
             $redis->hDel(self::HASH_UID_TO_SID_PREFIX, (string) $user['user']['id']);
-            $redis->hDel(self::HASH_SID_TO_UID_PREFIX,$user['sid']);
+            $redis->hDel(self::HASH_SID_TO_UID_PREFIX, $user['sid']);
         }
 
         $this->getAdapter()->del($user['sid']);
@@ -127,9 +127,10 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         //获取所有好友的用户ID
         $uids = $this->userFriendService->getFriends($user['user']['id']);
         foreach ($uids as $friend) {
-            //TODO 推送好友下线通知
+            //TODO 好友离线通知
             $this->to($redis->hGet(self::HASH_UID_TO_SID_PREFIX, (string) $friend->uid))->emit('quit_notify', [
                 'user_id' => $user['user']['id'],
+                'remark' => $friend->remark,
                 'status' => 0,
                 'notify' => '好友离线通知...',
             ]);

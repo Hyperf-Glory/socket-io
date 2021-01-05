@@ -40,12 +40,12 @@ class UserFriendService
             $prefix = config('databases.default.prefix');
             $table = $prefix . '_users_friends';
             $sql = <<<'SQL'
-SELECT user2 as uid
+SELECT user2 as uid,user2_remark as remark
 from im_users_friends
 where user1 = ?
   and `status` = 1
 UNION all
-SELECT user1 as uid
+SELECT user1 as uid,user1_remark as remark
 from im_users_friends
 where user2 = ?
   and `status` = 1
