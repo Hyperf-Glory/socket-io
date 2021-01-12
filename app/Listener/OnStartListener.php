@@ -53,7 +53,7 @@ class OnStartListener implements ListenerInterface
             ',PHP_EOL,
         Color::RESET, PHP_EOL,
         '----------------------------------------------------------------------', PHP_EOL;
-        echo Color::YELLOW, '| 基于Hyperf2.x微服务协程框架开发的Socket-IO分布式IM系统 |', PHP_EOL,
+        echo Color::YELLOW, '| 基于Hyperf2.1微服务协程框架开发的Socket-IO分布式IM系统 |', PHP_EOL,
         '----------------------------------------------------------------------', PHP_EOL;
         $data = [
             [
