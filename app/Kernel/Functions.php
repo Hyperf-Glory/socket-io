@@ -67,7 +67,7 @@ if (! function_exists('verifyIp')) {
     }
 }
 if (! function_exists('getClientIp')) {
-    function getClientIp()
+    function getClientIp(): string
     {
         try {
             /**

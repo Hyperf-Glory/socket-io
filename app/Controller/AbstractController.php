@@ -17,6 +17,7 @@ use App\Kernel\Http\Response;
 use Hyperf\Di\Annotation\Inject;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractController
 {
@@ -34,6 +35,12 @@ abstract class AbstractController
 
     /**
      * @Inject
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @Inject
      * @var Response
      */
     protected $response;
@@ -41,7 +48,7 @@ abstract class AbstractController
     /**
      * @return int|mixed
      */
-    public function uid()
+    public function uid(): int
     {
         $user = $this->request->getAttribute('user');
         return $user['id'] ?? 0;

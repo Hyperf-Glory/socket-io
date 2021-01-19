@@ -11,6 +11,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
+use App\Listener\LoginAfterListener;
 use App\Listener\OnShutdownListener;
 use App\Listener\OnStartListener;
 use App\Listener\OnWorkerStopListener;
@@ -19,4 +20,5 @@ return [
     OnStartListener::class,
     OnWorkerStopListener::class,
     OnShutdownListener::class,
+    LoginAfterListener::class,
 ];

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Component\Sms;
+use App\Event\LoginAfterEvent;
 use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceUserService;
 use Psr\Http\Message\ResponseInterface;
@@ -55,6 +56,7 @@ class AuthController extends AbstractController
         $ret = $rpcUser->login($params['mobile'], $params['password']);
 
         if (isset($ret['code']) && $ret['code'] === 1) {
+            $this->eventDispatcher->dispatch(new LoginAfterEvent($this->uid(), getClientIp()));
             return $this->response->success('登录成功!', [
                 'authorize' => $ret['authorize'],
                 'userInfo' => $ret['user_info'],
@@ -64,7 +66,6 @@ class AuthController extends AbstractController
     }
 
     /**
-     *
      * 退出登录.
      */
     public function logout(): ResponseInterface

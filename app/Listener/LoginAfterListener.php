@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace App\Listener;
 
 use App\Event\LoginAfterEvent;
+use App\Model\UserLoginLog;
+use Carbon\Carbon;
 use Hyperf\Event\Contract\ListenerInterface;
 
 class LoginAfterListener implements ListenerInterface
@@ -25,8 +27,14 @@ class LoginAfterListener implements ListenerInterface
         ];
     }
 
-    public function process(object $event)
+    public function process(object $event): void
     {
-        // TODO: Implement process() method.
+        if ($event instanceof LoginAfterEvent) {
+            UserLoginLog::create([
+                'user_id' => $event->uid,
+                'ip' => $event->ip,
+                'created_at' => Carbon::now()->toDateTimeString(),
+            ]);
+        }
     }
 }
