@@ -30,6 +30,7 @@
         "hyperf/database": "2.1.*",
         "hyperf/db-connection": "2.1.*",
         "hyperf/elasticsearch": "2.1.*",
+        "hyperf/engine": "^1.0",
         "hyperf/filesystem": "2.1.*",
         "hyperf/framework": "2.1.*",
         "hyperf/guzzle": "2.1.*",

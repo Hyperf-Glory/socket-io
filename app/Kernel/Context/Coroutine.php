@@ -13,11 +13,13 @@ declare(strict_types=1);
  */
 namespace App\Kernel\Context;
 
+use App\Kernel\Log\AppendRequestIdProcessor;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\Formatter\FormatterInterface;
 use Hyperf\Utils;
 use Psr\Container\ContainerInterface;
-use Swoole\Coroutine as SwooleCoroutine;
+use Psr\Http\Message\ServerRequestInterface;
+use Hyperf\Engine\Coroutine as Co;
 use Throwable;
 
 class Coroutine
@@ -47,24 +49,32 @@ class Coroutine
     }
 
     /**
+     * @param callable $callable
+     *
      * @return int Returns the coroutine ID of the coroutine just created.
      *             Returns -1 when coroutine create failed.
      */
     public function create(callable $callable): int
     {
         $id = Utils\Coroutine::id();
-        $result = SwooleCoroutine::create(function () use ($callable, $id) {
+        $coroutine = Co::create(function () use ($callable, $id) {
             try {
-                Utils\Context::copy($id);
+                // Shouldn't copy all contexts to avoid socket already been bound to another coroutine.
+                Utils\Context::copy($id, [
+                    AppendRequestIdProcessor::TRACE_ID,
+                    ServerRequestInterface::class,
+                ]);
                 call($callable);
             } catch (Throwable $throwable) {
-                if ($this->formatter) {
-                    $this->logger->warning($this->formatter->format($throwable));
-                } else {
-                    $this->logger->warning((string) $throwable);
-                }
+                $this->logger->warning((string) $throwable);
             }
         });
-        return is_int($result) ? $result : -1;
+
+        try {
+            return $coroutine->getId();
+        } catch (\Throwable $throwable) {
+            $this->logger->warning((string) $throwable);
+            return -1;
+        }
     }
 }

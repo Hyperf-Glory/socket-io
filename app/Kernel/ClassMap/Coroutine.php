@@ -13,63 +13,58 @@ declare(strict_types=1);
  */
 namespace Hyperf\Utils;
 
-use App\Kernel\Context\Coroutine as BCoroutine;
-use Swoole\Coroutine as SwooleCoroutine;
+use App\Kernel\Context\Coroutine as Go;
+use Hyperf\Engine\Coroutine as Co;
+use Hyperf\Engine\Exception\CoroutineDestroyedException;
+use Hyperf\Engine\Exception\RunningInNonCoroutineException;
 
-/**
- * @method static void defer(callable $callable)
- */
 class Coroutine
 {
-    public static function __callStatic($name, $arguments)
-    {
-        if (! method_exists(SwooleCoroutine::class, $name)) {
-            throw new \BadMethodCallException(sprintf('Call to undefined method %s.', $name));
-        }
-        return SwooleCoroutine::$name(...$arguments);
-    }
-
     /**
      * Returns the current coroutine ID.
      * Returns -1 when running in non-coroutine context.
      */
     public static function id(): int
     {
-        return SwooleCoroutine::getCid();
+        return Co::id();
+    }
+
+    public static function defer(callable $callable): void
+    {
+        Co::defer($callable);
+    }
+
+    public static function sleep(float $seconds): void
+    {
+        usleep((int) ($seconds * 1000 * 1000));
     }
 
     /**
      * Returns the parent coroutine ID.
-     * Returns -1 when running in the top level coroutine.
-     * Returns null when running in non-coroutine context.
+     * Returns 0 when running in the top level coroutine.
      *
-     * @see https://github.com/swoole/swoole-src/pull/2669/files#diff-3bdf726b0ac53be7e274b60d59e6ec80R940
+     * @param null|int $coroutineId
+     *
+     * @return int
      */
-    public static function parentId(?int $coroutineId = null): ?int
+    public static function parentId(?int $coroutineId = null): int
     {
-        if ($coroutineId) {
-            $cid = SwooleCoroutine::getPcid($coroutineId);
-        } else {
-            $cid = SwooleCoroutine::getPcid();
-        }
-        if ($cid === false) {
-            return null;
-        }
-
-        return $cid;
+        return Co::pid($coroutineId);
     }
 
     /**
+     * @param callable $callable
+     *
      * @return int Returns the coroutine ID of the coroutine just created.
      *             Returns -1 when coroutine create failed.
      */
     public static function create(callable $callable): int
     {
-        return di()->get(BCoroutine::class)->create($callable);
+        return di()->get(Go::class)->create($callable);
     }
 
     public static function inCoroutine(): bool
     {
-        return Coroutine::id() > 0;
+        return Co::id() > 0;
     }
 }
