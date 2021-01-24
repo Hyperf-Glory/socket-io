@@ -56,6 +56,7 @@ class AuthController extends AbstractController
         $ret = $rpcUser->login($params['mobile'], $params['password']);
 
         if (isset($ret['code']) && $ret['code'] === 1) {
+            //user login log
             $this->eventDispatcher->dispatch(new LoginAfterEvent($this->uid(), getClientIp()));
             return $this->response->success('登录成功!', [
                 'authorize' => $ret['authorize'],
