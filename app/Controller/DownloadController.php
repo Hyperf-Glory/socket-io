@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -18,21 +18,23 @@ use App\Model\ChatRecords;
 use App\Model\ChatRecordsFile;
 use App\Model\UsersGroup;
 use Hyperf\Filesystem\FilesystemFactory;
+use League\Flysystem\FileExistsException;
+use League\Flysystem\FileNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class DownloadController
  * @package App\Controller
- * @TODO 待解决下载文件不完整的问题
+ * @TODO    待解决下载文件不完整的问题
  */
 class DownloadController extends AbstractController
 {
-    public function userChatFile(): ResponseInterface
+    public function userChatFile() : ResponseInterface
     {
-        $crId = (int) $this->request->input('cr_id', 0);
-        $uid = $this->uid();
+        $crId = (int)$this->request->input('cr_id', 0);
+        $uid  = $this->uid();
 
-        if (! ValidateHelper::isInteger($crId)) {
+        if (!ValidateHelper::isInteger($crId)) {
             return $this->response->error('文件下载失败...');
         }
 
@@ -40,7 +42,7 @@ class DownloadController extends AbstractController
          * @var ChatRecords $recordsInfo
          */
         $recordsInfo = ChatRecords::select(['msg_type', 'source', 'user_id', 'receive_id'])->where('id', $crId)->first();
-        if (! $recordsInfo) {
+        if (!$recordsInfo) {
             return $this->response->error('文件不存在...');
         }
 
@@ -50,7 +52,7 @@ class DownloadController extends AbstractController
                 if ($recordsInfo->receive_id !== $uid) {
                     return $this->response->error('非法请求...');
                 }
-            } elseif (! UsersGroup::isMember($recordsInfo->receive_id, $uid)) {
+            } elseif (!UsersGroup::isMember($recordsInfo->receive_id, $uid)) {
                 return $this->response->error('非法请求...');
             }
         }
@@ -59,20 +61,26 @@ class DownloadController extends AbstractController
          * @var ChatRecordsFile $fileInfo
          */
         $fileInfo = ChatRecordsFile::select(['save_dir', 'original_name'])->where('record_id', $crId)->first();
-        if (! $fileInfo) {
+        if (!$fileInfo) {
             return $this->response->error('文件不存在或没有下载权限...');
         }
 
         $factory = di(FilesystemFactory::class)->get('qiniu');
         if ($factory->has($fileInfo->save_dir)) {
             $dir = config('file.storage.local.root');
-            $contents = $factory->read($fileInfo->save_dir);
+
             $fileSystem = di(FilesystemFactory::class)->get('local');
-            if ($fileSystem->has($fileInfo->save_dir)) {
+
+            try {
+                if ($fileSystem->has($fileInfo->save_dir)) {
+                    return $this->response->download($dir . '/' . $fileInfo->save_dir, $fileInfo->original_name);
+                }
+                $contents = $factory->read($fileInfo->save_dir);
+                $fileSystem->write($fileInfo->save_dir, $contents);
                 return $this->response->download($dir . '/' . $fileInfo->save_dir, $fileInfo->original_name);
+            } catch (FileNotFoundException | FileExistsException $e) {
+                return $this->response->error('文件不存在...');
             }
-            $fileSystem->write($fileInfo->save_dir, $contents);
-            return $this->response->download($dir . '/' . $fileInfo->save_dir, $fileInfo->original_name);
         }
         return $this->response->error('文件不存在...');
     }
