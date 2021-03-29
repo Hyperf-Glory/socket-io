@@ -1,7 +1,5 @@
 # v2着手开始重构...期待中...
 
-## 服务器马上到期,demo预览不了。后续会补上.谢谢各位的star
-
 ## 请暂时不要用于生产环境
 项目还在开发优化中
 ## Socket-IO
@@ -28,7 +26,7 @@
 [Socket-IO](https://im.jayjay.cn)
 
 ## 功能
-1.0
+2.0
 - 基于Swoole Socket-io服务做消息即时推送
 - 支持私聊及群聊
 - 支持聊天消息类型有文本、代码块、图片及其它类型文件，并支持文件下载
@@ -38,22 +36,13 @@
 - Nsq分布式消息中间件
 - Mysql提供数据存储功能
 - Redis存储聊天关系映射
-### 问题
-Json-Rpc 业务架构比较混乱和Service层架构冲突。下个版本着重优化，把HTTP和Rpc部分业务分到Service层.
-代码规范不符合现代化.有重复的代码使用.socket-io服务单独重构独立成为分布式服务
-也许它存在很多问题,但是也请大家多一份耐心，毕竟一个人的开发精力有限。项目我会一直维持下去。
-也希望证明php也是可以做分布式的。恢复php荣光,我辈义不容辞.
-
-2.0
-- 重新架构
-- 代码更符合PHP标准化
 
 ## Requirement
 
-- [PHP 7.2+](https://github.com/php/php-src/releases)
-- [Swoole 4.5+](https://github.com/swoole/swoole-src/releases)
+- [PHP 7.4+](https://github.com/php/php-src/releases)
+- [Swoole 4.6+](https://github.com/swoole/swoole-src/releases)
 - [Composer](https://getcomposer.org/)
-- [Hyperf >= 2.x](https://github.com/hyperf/hyperf/releases)
+- [Hyperf >= 2.1.x](https://github.com/hyperf/hyperf/releases)
 
 
 
