@@ -72,4 +72,20 @@ class TestOneController extends AbstractController
         $mail = di(Mail::class);
         dump($mail->send(Mail::CHANGE_EMAIL, '绑定邮箱', '213213@qq.com'));
     }
+
+    /**
+     * @RequestMapping(path="waiter")
+     */
+    public function waiter(){
+        // 读取用户信息
+        $user = wait(function() {
+            return Users::query()->find(1);
+        });
+
+        // 请求第三方接口
+        $client->request($user);
+
+        // 保存用户信息
+        $user->save();
+    }
 }
