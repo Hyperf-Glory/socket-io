@@ -25,6 +25,14 @@
 
 [Socket-IO](https://im.jayjay.cn)
 
+## 待优化
+- SocketIO事件
+- rpc服务
+- http业务服务分层
+- docker直接部署
+- 功能完善
+## 新增
+- 笔记管理
 ## 功能
 2.0
 - 基于Swoole Socket-io服务做消息即时推送
