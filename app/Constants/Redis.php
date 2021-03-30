@@ -22,15 +22,15 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class Redis extends AbstractConstants
 {
-    const FD_TO_USER = 'fdToUser';
+    public const FD_TO_USER = 'fdToUser';
 
-    const USER_TO_FD = 'userToFd';
+    public const USER_TO_FD = 'userToFd';
 
-    const SUBJECT_USER_TO_FD = 'subjectUserToFd';
+    public const SUBJECT_USER_TO_FD = 'subjectUserToFd';
 
-    const SUBJECT_FD_TO_USER = 'subjectFdToUser';
+    public const SUBJECT_FD_TO_USER = 'subjectFdToUser';
 
-    const SUBJECT_TO_USER = 'subjectToUser';
+    public const SUBJECT_TO_USER = 'subjectToUser';
 
-    const USER_TO_SUBJECT = 'userToSubject';
+    public const USER_TO_SUBJECT = 'userToSubject';
 }

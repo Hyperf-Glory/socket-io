@@ -22,5 +22,5 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class Atomic extends AbstractConstants
 {
-    const NAME = 'atomic';
+    public const NAME = 'atomic';
 }

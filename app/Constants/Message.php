@@ -21,7 +21,7 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class Message
 {
-    const TITLE = <<<'TITLE'
+    public const TITLE = <<<'TITLE'
 
       ___                                       ___           ___                                      ___     
      /  /\          __            ___          /  /\         /  /\          ___            ___        /  /\    

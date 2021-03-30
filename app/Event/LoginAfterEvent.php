@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -18,16 +18,16 @@ class LoginAfterEvent
     /**
      * @var int
      */
-    public $uid;
+    public int $uid = 0;
 
     /**
      * @var string
      */
-    public $ip;
+    public string $ip = '';
 
     public function __construct(int $uid, string $ip)
     {
         $this->uid = $uid;
-        $this->ip = $ip;
+        $this->ip  = $ip;
     }
 }

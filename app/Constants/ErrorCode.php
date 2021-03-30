@@ -23,70 +23,70 @@ use Hyperf\Constants\Annotation\Constants;
 class ErrorCode extends AbstractConstants
 {
     //基本错误码 0～1000
-    const AUTH_ERROR = 401;
+    public const AUTH_ERROR = 401;
 
     //用户错误码 3000～3999
 
-    const USER_NOT_FOUND = 3001;
+    public const USER_NOT_FOUND = 3001;
 
-    const USER_ID_INVALID = 3002;
+    public  const USER_ID_INVALID = 3002;
 
-    const USER_EMAIL_ALREADY_USE = 3003;
+    public const USER_EMAIL_ALREADY_USE = 3003;
 
-    const USER_PASSWORD_ERROR = 3004;
+    public const USER_PASSWORD_ERROR = 3004;
 
-    const USER_CREATE_APPLICATION_FAIL = 3005;
+    public const USER_CREATE_APPLICATION_FAIL = 3005;
 
-    const USER_APPLICATION_SET_READ_FAIL = 3006;
+    public  const USER_APPLICATION_SET_READ_FAIL = 3006;
 
-    const USER_INFO_MODIFY_FAIL = 3007;
+    public  const USER_INFO_MODIFY_FAIL = 3007;
 
-    const USER_APPLICATION_NOT_FOUND = 3008;
+    public const USER_APPLICATION_NOT_FOUND = 3008;
 
-    const USER_APPLICATION_PROCESSED = 3009;
+    public const USER_APPLICATION_PROCESSED = 3009;
 
-    const USER_APPLICATION_TYPE_WRONG = 3010;
+    public const USER_APPLICATION_TYPE_WRONG = 3010;
 
-    const USER_IN_VIDEO_CALL = 3011;
+    public  const USER_IN_VIDEO_CALL = 3011;
 
-    const FRIEND_GROUP_CREATE_FAIL = 4001;
+    public const FRIEND_GROUP_CREATE_FAIL = 4001;
 
-    const FRIEND_GROUP_NOT_FOUND = 4002;
+    public  const FRIEND_GROUP_NOT_FOUND = 4002;
 
-    const FRIEND_NOT_FOUND = 4003;
+    public   const FRIEND_NOT_FOUND = 4003;
 
-    const FRIEND_NOT_ADD_SELF = 4004;
+    public  const FRIEND_NOT_ADD_SELF = 4004;
 
-    const FRIEND_RELATION_ALREADY = 4005;
+    public  const FRIEND_RELATION_ALREADY = 4005;
 
-    const FRIEND_CALL_IN_PROGRESS = 4006;
+    public  const FRIEND_CALL_IN_PROGRESS = 4006;
 
-    const GROUP_CREATE_FAIL = 5001;
+    public  const GROUP_CREATE_FAIL = 5001;
 
-    const GROUP_NOT_FOUND = 5002;
+    public  const GROUP_NOT_FOUND = 5002;
 
-    const GROUP_RELATION_CREATE_FAIL = 5010;
+    public  const GROUP_RELATION_CREATE_FAIL = 5010;
 
-    const GROUP_RELATION_ALREADY = 5011;
+    public const GROUP_RELATION_ALREADY = 5011;
 
-    const GROUP_FULL = 5012;
+    public const GROUP_FULL = 5012;
 
-    const GROUP_NOT_MEMBER = 5013;
+    public  const GROUP_NOT_MEMBER = 5013;
 
     // ext 9000~9999
-    const JWT_PRIVATE_KEY_EMPTY = 9001;
+    public  const JWT_PRIVATE_KEY_EMPTY = 9001;
 
-    const JWT_PUBLIC_KEY_EMPTY = 9002;
+    public  const JWT_PUBLIC_KEY_EMPTY = 9002;
 
-    const JWT_ALG_EMPTY = 9003;
+    public  const JWT_ALG_EMPTY = 9003;
 
-    const NO_PERMISSION_PROCESS = 9004;
+    public  const NO_PERMISSION_PROCESS = 9004;
 
-    const CONFIG_NOT_FOUND = 9005;
+    public  const CONFIG_NOT_FOUND = 9005;
 
-    const FILE_DOES_NOT_EXIST = 9006;
+    public  const FILE_DOES_NOT_EXIST = 9006;
 
-    public static $errorMessages = [
+    public static array $errorMessages = [
         self::AUTH_ERROR => 'Authorization has been denied for this request !',
 
         self::USER_NOT_FOUND => 'User not found!',

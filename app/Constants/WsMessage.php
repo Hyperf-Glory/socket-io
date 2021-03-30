@@ -22,19 +22,19 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class WsMessage extends AbstractConstants
 {
-    const WS_MESSAGE_CMD_EVENT = 'system.event';
+    public const WS_MESSAGE_CMD_EVENT = 'system.event';
 
-    const WS_MESSAGE_CMD_ERROR = 'system.error';
+    public const WS_MESSAGE_CMD_ERROR = 'system.error';
 
-    const EVENT_USER_STATUS = 'setUserStatus';
+    public const EVENT_USER_STATUS = 'setUserStatus';
 
-    const EVENT_GET_MESSAGE = 'getMessage';
+    public const EVENT_GET_MESSAGE = 'getMessage';
 
-    const EVENT_GET_UNREAD_APPLICATION_COUNT = 'getUnreadApplicationCount';
+    public const EVENT_GET_UNREAD_APPLICATION_COUNT = 'getUnreadApplicationCount';
 
-    const EVENT_FRIEND_AGREE_APPLY = 'friendAgreeApply';
+    public const EVENT_FRIEND_AGREE_APPLY = 'friendAgreeApply';
 
-    const EVENT_GROUP_AGREE_APPLY = 'groupAgreeApply';
+    public const EVENT_GROUP_AGREE_APPLY = 'groupAgreeApply';
 
-    const EVENT_FRIEND_VIDEO_ROOM = 'friendVideoRoom';
+    public const EVENT_FRIEND_VIDEO_ROOM = 'friendVideoRoom';
 }

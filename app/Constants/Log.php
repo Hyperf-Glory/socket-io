@@ -22,5 +22,5 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class Log extends AbstractConstants
 {
-    const CONTEXT_KEY = 'log.context.key';
+    public const CONTEXT_KEY = 'log.context.key';
 }

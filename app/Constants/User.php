@@ -22,11 +22,11 @@ use Hyperf\Constants\Annotation\Constants;
  */
 class User extends AbstractConstants
 {
-    const REGISTER = 'user_register';
+    public const REGISTER = 'user_register';
 
-    const CHANGE_MOBILE = 'change_mobile';
+    public const CHANGE_MOBILE = 'change_mobile';
 
-    const FORGET_PASSWORD = 'forget_password';
+    public const FORGET_PASSWORD = 'forget_password';
 
-    const CHANGE_PASSWORD = 'change_password';
+    public const CHANGE_PASSWORD = 'change_password';
 }
