@@ -18,65 +18,65 @@ class CliTable
     /**
      * Table Data.
      *
-     * @var object
+     * @var
      */
-    protected $injectedData;
+    protected array $injectedData;
 
     /**
      * Table Item name.
      *
      * @var string
      */
-    protected $itemName = 'Row';
+    protected string $itemName = 'Row';
 
     /**
      * Table fields.
      *
      * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * Show column headers?
      *
      * @var bool
      */
-    protected $showHeaders = true;
+    protected bool $showHeaders = true;
 
     /**
      * Use colors?
      *
      * @var bool
      */
-    protected $useColors = true;
+    protected bool $useColors = true;
 
     /**
      * Table Border Color.
      *
      * @var string
      */
-    protected $tableColor = 'reset';
+    protected string $tableColor = 'reset';
 
     /**
      * Header Color.
      *
      * @var string
      */
-    protected $headerColor = 'reset';
+    protected string $headerColor = 'reset';
 
     /**
      * Colors, will be populated after instantiation.
      *
      * @var array
      */
-    protected $colors = [];
+    protected array $colors = [];
 
     /**
      * Border Characters.
      *
      * @var array
      */
-    protected $chars = [
+    protected array $chars = [
         'top' => '═',
         'top-mid' => '╤',
         'top-left' => '╔',
@@ -112,7 +112,7 @@ class CliTable
      *
      * @param bool $bool
      */
-    public function setUseColors($bool)
+    public function setUseColors(bool $bool) : void
     {
         $this->useColors = (bool) $bool;
     }
@@ -122,7 +122,7 @@ class CliTable
      *
      * @return bool
      */
-    public function getUseColors()
+    public function getUseColors() : bool
     {
         return $this->useColors;
     }
@@ -132,7 +132,7 @@ class CliTable
      *
      * @param string $color
      */
-    public function setTableColor($color)
+    public function setTableColor(string $color) : void
     {
         $this->tableColor = $color;
     }
@@ -142,7 +142,7 @@ class CliTable
      *
      * @return string
      */
-    public function getTableColor()
+    public function getTableColor() : string
     {
         return $this->tableColor;
     }
@@ -152,7 +152,7 @@ class CliTable
      *
      * @param array $chars
      */
-    public function setChars($chars)
+    public function setChars($chars) : void
     {
         $this->chars = $chars;
     }
@@ -162,7 +162,7 @@ class CliTable
      *
      * @param string $color
      */
-    public function setHeaderColor($color)
+    public function setHeaderColor(string $color) : void
     {
         $this->headerColor = $color;
     }
@@ -172,7 +172,7 @@ class CliTable
      *
      * @return string
      */
-    public function getHeaderColor()
+    public function getHeaderColor() : string
     {
         return $this->headerColor;
     }
@@ -182,7 +182,7 @@ class CliTable
      *
      * @param string $name
      */
-    public function setItemName($name)
+    public function setItemName(string $name) : void
     {
         $this->itemName = $name;
     }
@@ -192,7 +192,7 @@ class CliTable
      *
      * @return string
      */
-    public function getItemName()
+    public function getItemName() : string
     {
         return $this->itemName;
     }
@@ -202,7 +202,7 @@ class CliTable
      *
      * @param array $data
      */
-    public function injectData($data)
+    public function injectData(array $data) : void
     {
         $this->injectedData = $data;
     }
@@ -212,7 +212,7 @@ class CliTable
      *
      * @param bool $bool
      */
-    public function setShowHeaders($bool)
+    public function setShowHeaders(bool $bool) : void
     {
         $this->showHeaders = $bool;
     }
@@ -222,7 +222,7 @@ class CliTable
      *
      * @return bool
      */
-    public function getShowHeaders()
+    public function getShowHeaders() : bool
     {
         return $this->showHeaders;
     }
@@ -230,12 +230,12 @@ class CliTable
     /**
      * addField.
      *
-     * @param string $fieldName
-     * @param string $fieldKey
+     * @param string      $fieldName
+     * @param string      $fieldKey
      * @param bool|object $manipulator
-     * @param string $color
+     * @param string      $color
      */
-    public function addField($fieldName, $fieldKey, $manipulator = false, $color = 'reset')
+    public function addField(string $fieldName, string $fieldKey, $manipulator = false, $color = 'reset') : void
     {
         $this->fields[$fieldKey] = [
             'name' => $fieldName,
@@ -250,7 +250,7 @@ class CliTable
      *
      * @return string
      */
-    public function get()
+    public function get() : string
     {
         $rowCount = 0;
         $columnLengths = [];
@@ -321,7 +321,7 @@ class CliTable
     /**
      * display.
      */
-    public function display()
+    public function display() : void
     {
         echo $this->get();
     }
@@ -333,15 +333,15 @@ class CliTable
      */
     protected function getPluralItemName()
     {
-        if (count($this->injectedData) == 1) {
+        if (count($this->injectedData) === 1) {
             return $this->getItemName();
         }
         $lastChar = strtolower(substr($this->getItemName(), strlen($this->getItemName()) - 1, 1));
-        if ($lastChar == 's') {
+        if ($lastChar === 's') {
             return $this->getItemName() . 'es';
         }
-        if ($lastChar == 'y') {
-            return substr($this->getItemName(), 0, strlen($this->getItemName()) - 1) . 'ies';
+        if ($lastChar === 'y') {
+            return substr($this->getItemName(), 0, -1) . 'ies';
         }
         return $this->getItemName() . 's';
     }
@@ -351,10 +351,11 @@ class CliTable
      *
      * @param array $rowData
      * @param array $columnLengths
-     * @param bool $header
+     * @param bool  $header
+     *
      * @return string
      */
-    protected function getFormattedRow($rowData, $columnLengths, $header = false)
+    protected function getFormattedRow(array $rowData, array $columnLengths, $header = false) : string
     {
         $response = $this->getChar('left');
 
@@ -382,9 +383,10 @@ class CliTable
      * getTableTop.
      *
      * @param array $columnLengths
+     *
      * @return string
      */
-    protected function getTableTop($columnLengths)
+    protected function getTableTop(array $columnLengths) : string
     {
         $response = $this->getChar('top-left');
         foreach ($columnLengths as $length) {
@@ -398,9 +400,10 @@ class CliTable
      * getTableBottom.
      *
      * @param array $columnLengths
+     *
      * @return string
      */
-    protected function getTableBottom($columnLengths)
+    protected function getTableBottom(array $columnLengths) : string
     {
         $response = $this->getChar('bottom-left');
         foreach ($columnLengths as $length) {
@@ -414,9 +417,10 @@ class CliTable
      * getTableSeperator.
      *
      * @param array $columnLengths
+     *
      * @return string
      */
-    protected function getTableSeperator($columnLengths)
+    protected function getTableSeperator(array $columnLengths) : string
     {
         $response = $this->getChar('left-mid');
         foreach ($columnLengths as $length) {
@@ -433,7 +437,7 @@ class CliTable
      * @param int $length
      * @return string
      */
-    protected function getChar($type, $length = 1)
+    protected function getChar($type, $length = 1) : string
     {
         $response = '';
         if (isset($this->chars[$type])) {
@@ -441,9 +445,7 @@ class CliTable
                 $response .= $this->getColorFromName($this->getTableColor());
             }
             $char = trim($this->chars[$type]);
-            for ($x = 0; $x < $length; ++$x) {
-                $response .= $char;
-            }
+            $response .= str_repeat($char, $length);
         }
         return $response;
     }
@@ -451,7 +453,7 @@ class CliTable
     /**
      * defineColors.
      */
-    protected function defineColors()
+    protected function defineColors() : void
     {
         $this->colors = [
             'blue' => chr(27) . '[1;34m',
@@ -471,13 +473,11 @@ class CliTable
      * getColorFromName.
      *
      * @param string $colorName
+     *
      * @return string
      */
-    protected function getColorFromName($colorName)
+    protected function getColorFromName(string $colorName) : string
     {
-        if (isset($this->colors[$colorName])) {
-            return $this->colors[$colorName];
-        }
-        return $this->colors['reset'];
+        return $this->colors[$colorName] ?? $this->colors['reset'];
     }
 }

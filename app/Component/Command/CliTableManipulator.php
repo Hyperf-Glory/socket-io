@@ -20,14 +20,14 @@ class CliTableManipulator
      *
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * Constructor.
      *
      * @param string $type
      */
-    public function __construct($type)
+    public function __construct(string $type)
     {
         $this->type = $type;
     }
@@ -41,7 +41,7 @@ class CliTableManipulator
      * @param string $fieldName
      * @return string
      */
-    public function manipulate($value, $row = [], $fieldName = '')
+    public function manipulate($value, $row = [], $fieldName = '') : string
     {
         $type = $this->type;
         if ($type && is_callable([$this, $type])) {
@@ -68,7 +68,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function date($value)
+    protected function date($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -83,7 +83,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function datelong($value)
+    protected function datelong($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -98,7 +98,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function time($value)
+    protected function time($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -113,7 +113,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function datetime($value)
+    protected function datetime($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -130,7 +130,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function nicetime($value)
+    protected function nicetime($value) : string
     {
         if (! $value) {
             return '';
@@ -150,7 +150,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function duetime($value)
+    protected function duetime($value) : string
     {
         if (! $value) {
             return '';
@@ -194,7 +194,7 @@ class CliTableManipulator
      * @param int $value
      * @return string
      */
-    protected function nicenumber($value)
+    protected function nicenumber($value) : string
     {
         return number_format($value, 0);
     }
@@ -206,7 +206,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function month($value)
+    protected function month($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -221,7 +221,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function year($value)
+    protected function year($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -236,7 +236,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function monthyear($value)
+    protected function monthyear($value) : string
     {
         if (! $value) {
             return 'Not Recorded';
@@ -251,9 +251,9 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function percent($value)
+    protected function percent($value) : string
     {
-        return intval($value) . '%';
+        return (int)$value . '%';
     }
 
     /**
@@ -263,7 +263,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function yesno($value)
+    protected function yesno($value) : string
     {
         return $value ? 'Yes' : 'No';
     }
@@ -275,7 +275,7 @@ class CliTableManipulator
      * @param mixed $value
      * @return string
      */
-    protected function text($value)
+    protected function text($value) : string
     {
         return strip_tags($value);
     }
