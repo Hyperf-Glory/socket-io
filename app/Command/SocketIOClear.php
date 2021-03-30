@@ -20,9 +20,9 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class SocketIOClear extends Command
 {
-    protected $redisPrefix = 'ws';
+    protected string $redisPrefix = 'ws';
 
-    protected $connection = 'default';
+    protected string $connection = 'default';
 
     /**
      * @var \Redis|Redis
@@ -55,7 +55,7 @@ class SocketIOClear extends Command
     {
         return [
             ['namespace', InputArgument::REQUIRED, 'The namespace to be cleaned up.'],
-            ['serverId', InputArgument::REQUIRED, 'The  self SokcetIO Server to be cleaned up.'],
+            ['serverId', InputArgument::REQUIRED, 'The  self SocketIO Server to be cleaned up.'],
         ];
     }
 }

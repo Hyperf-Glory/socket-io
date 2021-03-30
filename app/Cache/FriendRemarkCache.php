@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -19,7 +19,7 @@ use Hyperf\Redis\RedisProxy;
 /**
  * Class FriendRemarkCache.
  */
-class FriendRemarkCache
+class FriendRemarkCache extends AbstractCache
 {
     public const KEY = 'hash:user:friend:remark:cache';
 
@@ -28,30 +28,23 @@ class FriendRemarkCache
      *
      * @param string $remark 好友备注
      */
-    public static function set(int $uid, int $fid, string $remark, ?RedisProxy $redis = null)
+    public function set(int $uid, int $fid, string $remark)
     {
-        if (is_null($redis)) {
-            $redis = self::redis();
-        }
-        $redis->hSet(self::KEY, "{$uid}_{$fid}", $remark);
+        return wait(function () use ($uid, $fid, $remark)
+        {
+            $this->redis()->hSet(self::KEY, "{$uid}_{$fid}", $remark);
+        }, $this->waitTimeOut);
     }
 
     /**
      * 获取好友备注.
      */
-    public static function get(int $uid, int $fid, ?RedisProxy $redis = null): string
+    public function get(int $uid, int $fid, ) : string
     {
-        if (is_null($redis)) {
-            $redis = self::redis();
-        }
-        return $redis->hGet(self::KEY, "{$uid}_{$fid}") ?: '';
+        return wait(function () use ($uid, $fid)
+        {
+            return $this->redis()->hGet(self::KEY, "{$uid}_{$fid}") ? : '';
+        }, $this->waitTimeOut);
     }
 
-    /**
-     * 获取Redis连接.
-     */
-    private static function redis(): RedisProxy
-    {
-        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-    }
 }
