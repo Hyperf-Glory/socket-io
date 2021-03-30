@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -13,18 +13,18 @@ declare(strict_types=1);
  */
 namespace App\Component;
 
-use Crypto\HashException;
+use RuntimeException;
 
 class Hash
 {
     /**
      * Make a hash from the given plain data.
      */
-    public static function make(string $plain): string
+    public static function make(string $plain) : string
     {
         $result = password_hash($plain, PASSWORD_BCRYPT);
         if ($result === false) {
-            throw new HashException();
+            throw new RuntimeException(sprintf('plain hash [%s] failed.', $plain));
         }
 
         return $result;
@@ -33,7 +33,7 @@ class Hash
     /**
      * Verify the given plain with the given hashed value.
      */
-    public static function verify(string $plain, string $hashed): bool
+    public static function verify(string $plain, string $hashed) : bool
     {
         return password_verify($plain, $hashed);
     }

@@ -331,7 +331,7 @@ class CliTable
      *
      * @return string
      */
-    protected function getPluralItemName()
+    protected function getPluralItemName() : string
     {
         if (count($this->injectedData) === 1) {
             return $this->getItemName();
