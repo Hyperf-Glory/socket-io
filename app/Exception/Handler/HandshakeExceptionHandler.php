@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -22,23 +22,23 @@ use Throwable;
 
 class HandshakeExceptionHandler extends ExceptionHandler
 {
-    private $logger;
+    private StdoutLoggerInterface $logger;
 
     public function __construct(StdoutLoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-    public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
+    public function handle(Throwable $throwable, ResponseInterface $response) : ResponseInterface
     {
         if ($throwable instanceof HandshakeException) {
             $this->logger->error(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
             $this->logger->error($throwable->getTraceAsString());
-            return $response->withHeader('Server', 'Cloud')->withStatus(401)->withBody(new SwooleStream($throwable->getMessage()));
+            return $response->withHeader('Server', 'SocketIO')->withStatus(401)->withBody(new SwooleStream($throwable->getMessage()));
         }
     }
 
-    public function isValid(Throwable $throwable): bool
+    public function isValid(Throwable $throwable) : bool
     {
         return true;
     }

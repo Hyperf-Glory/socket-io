@@ -34,12 +34,12 @@ class UserService implements InterfaceUserService
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var \Phper666\JWTAuth\JWT
      */
-    protected $jwt;
+    protected JWT $jwt;
 
     /**
      * @var \Psr\Log\LoggerInterface
@@ -49,7 +49,7 @@ class UserService implements InterfaceUserService
     /**
      * @var \App\Service\UserService
      */
-    private $userService;
+    private UserSer $userService;
 
     public function __construct(ContainerInterface $container, UserSer $userService, JWT $jwt)
     {

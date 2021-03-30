@@ -27,7 +27,7 @@ class Coroutine
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var StdoutLoggerInterface

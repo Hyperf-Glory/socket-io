@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -15,6 +15,7 @@ namespace App\Component;
 
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Redis\RedisProxy;
+use Hyperf\Utils\ApplicationContext;
 
 /**
  * 好友未读消息服务
@@ -23,7 +24,9 @@ use Hyperf\Redis\RedisProxy;
  */
 class UnreadTalk
 {
-    const KEY = 'hash:unread_talk';
+    public float $waitTimeOut = 5.0;
+
+    public const KEY = 'hash:unread_talk';
 
     /**
      * 设置用户未读消息(自增加1).
@@ -31,14 +34,13 @@ class UnreadTalk
      * @param int $uid 用户ID
      * @param int $fid 好友ID
      */
-    public function setInc(int $uid, int $fid, ?RedisProxy $redis = null): bool
+    public function setInc(int $uid, int $fid) : bool
     {
-        if (is_null($redis)) {
-            $redis = $this->redis();
-        }
-        $num = $this->get($uid, $uid) + 1;
-
-        return (bool) $redis->hset($this->_key($uid), (string) $fid, $num);
+        return wait(function () use ($uid, $fid)
+        {
+            $num = $this->get($uid, $uid) + 1;
+            return (bool)$this->redis()->hset($this->_key($uid), (string)$fid, $num);
+        }, $this->waitTimeOut);
     }
 
     /**
@@ -47,13 +49,12 @@ class UnreadTalk
      * @param int $uid 用户ID
      * @param int $fid 好友ID
      */
-    public function get(int $uid, int $fid, ?RedisProxy $redis = null): int
+    public function get(int $uid, int $fid) : int
     {
-        if (is_null($redis)) {
-            $redis = $this->redis();
-        }
-
-        return (int) $redis->hget($this->_key($uid), (string) $fid);
+        return wait(function () use ($uid, $fid)
+        {
+            return (int)$this->redis()->hget($this->_key($uid), (string)$fid);
+        }, $this->waitTimeOut);
     }
 
     /**
@@ -65,11 +66,10 @@ class UnreadTalk
      */
     public function getAll(int $uid, ?RedisProxy $redis = null)
     {
-        if (is_null($redis)) {
-            $redis = $this->redis();
-        }
-
-        return $redis->hgetall($this->_key($uid));
+        return wait(function () use ($uid)
+        {
+            return $this->redis()->hgetall($this->_key($uid));
+        }, $this->waitTimeOut);
     }
 
     /**
@@ -78,24 +78,23 @@ class UnreadTalk
      * @param int $uid 用户ID
      * @param int $fid 好友ID
      */
-    public function del(int $uid, int $fid, ?RedisProxy $redis = null): bool
+    public function del(int $uid, int $fid) : bool
     {
-        if (is_null($redis)) {
-            $redis = $this->redis();
-        }
-        return (bool) $redis->hdel($this->_key($uid), (string) $fid);
+        return wait(function () use ($uid, $fid)
+        {
+            return (bool)$this->redis()->hdel($this->_key($uid), (string)$fid);
+        }, $this->waitTimeOut);
     }
 
     /**
      * 清除用户所有好友未读数.
      */
-    public function delAll(int $uid, ?RedisProxy $redis = null): bool
+    public function delAll(int $uid, ?RedisProxy $redis = null) : bool
     {
-        if (is_null($redis)) {
-            $redis = $this->redis();
-        }
-
-        return (bool) $redis->del($this->_key($uid));
+        return wait(function () use ($uid)
+        {
+            return (bool)$this->redis()->del($this->_key($uid));
+        }, $this->waitTimeOut);
     }
 
     /**
@@ -103,7 +102,7 @@ class UnreadTalk
      *
      * @param int $uid 用户ID
      */
-    private function _key(int $uid, ?RedisProxy $redis = null): string
+    private function _key(int $uid) : string
     {
         return self::KEY . ":{$uid}";
     }
@@ -111,8 +110,8 @@ class UnreadTalk
     /**
      * 获取Redis连接.
      */
-    private function redis(): RedisProxy
+    private function redis() : RedisProxy
     {
-        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        return ApplicationContext::getContainer()->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
     }
 }

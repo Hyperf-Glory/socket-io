@@ -48,7 +48,7 @@ class LastMsgCache extends AbstractCache
         return wait(function () use ($receive, $sender)
         {
             $data = $this->redis()->hGet($this->_name($sender), $this->_key($receive, $sender));
-            return $data ? MessageParser::unserialize($data) : null;
+            return $data ? MessageParser::unserializable($data) : null;
         }, $this->waitTimeOut);
     }
 

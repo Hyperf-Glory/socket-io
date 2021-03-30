@@ -26,7 +26,7 @@ class Response
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @var ResponseInterface

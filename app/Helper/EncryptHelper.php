@@ -104,7 +104,7 @@ class EncryptHelper
         }
         if (strlen($res) > 26) {
             $expTime = (int) substr($res, 0, 10);
-            if (($expTime === 0 || $expTime - $now > 0) && substr($res, 10, 16) === substr(md5(substr($res, 26) . $keyb), 0, 16)) {
+            if (($expTime === 0 || $expTime - $now > 0) && strpos(md5(substr($res, 26) . $keyb), substr($res, 10, 16)) === 0) {
                 return [substr($res, 26), $expTime];
             }
         }
@@ -234,7 +234,7 @@ class EncryptHelper
         $h1 ^= ($h1 >= 0 ? $h1 >> 16 : (($h1 & 0x7fffffff) >> 16) | 0x8000);
 
         if ($unsign) {
-            $h1 = ($h1 >= 0) ? bcadd('1' . str_repeat('0', 10), $h1) : abs($h1);
+            $h1 = ($h1 >= 0) ? bcadd('1' . str_repeat('0', 10), (string)$h1) : abs($h1);
         }
 
         return $h1;

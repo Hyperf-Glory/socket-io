@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -19,17 +19,16 @@ class DateHelper
      * 智能时间格式.
      *
      * @param int|string $datetime 时间戳或日期字符串
-     * @param string $format 格式化
+     * @param string     $format   格式化
      */
-    public static function smartDatetime($datetime, string $format = 'Y-n-j G:i'): string
+    public static function smartDatetime($datetime, string $format = 'Y-n-j G:i') : string
     {
         $time = is_numeric($datetime) ? $datetime : strtotime($datetime);
-        $sec = time() - intval($time);
+        $sec  = time() - (int)$time;
         $hour = floor($sec / 3600);
-
-        if ($hour === 0) {
+        if ((int)$hour === 0) {
             $min = floor($sec / 60);
-            if ($min === 0) {
+            if ((int)$min === 0) {
                 $res = '刚刚';
             } else {
                 $res = $min . '分钟前';
@@ -37,9 +36,9 @@ class DateHelper
         } elseif ($hour < 24) {
             $res = $hour . '小时前';
         } elseif ($hour < (24 * 30)) {
-            $res = intval($hour / 24) . '天前';
+            $res = (int)($hour / 24) . '天前';
         } elseif ($hour < (24 * 30 * 6)) {
-            $res = intval($hour / (24 * 30)) . '月前';
+            $res = (int)($hour / (24 * 30)) . '月前';
         } else {
             $res = date($format, $time);
         }
@@ -51,19 +50,11 @@ class DateHelper
      * 获取指定月份的天数.
      *
      * @param int $month 月份
-     * @param int $year 年份
+     * @param int $year  年份
      */
-    public static function getMonthDays(int $month = 0, int $year = 0): int
+    public static function getMonthDays(int $month = 0, int $year = 0) : int
     {
         $monthsMap = [1 => 31, 3 => 31, 4 => 30, 5 => 31, 6 => 30, 7 => 31, 8 => 31, 9 => 30, 10 => 31, 11 => 30, 12 => 31];
-
-        if ($month <= 0) {
-            $month = date('n');
-        }
-
-        if ($year <= 0) {
-            $year = date('Y');
-        }
 
         if (array_key_exists($month, $monthsMap)) {
             return $monthsMap[$month];
@@ -90,19 +81,19 @@ class DateHelper
      * 120 将转换为 02:00，
      * 3601 将转换为 01:00:01.
      */
-    public static function second2time(int $second = 0): string
+    public static function second2time(int $second = 0) : string
     {
         if ($second <= 0) {
             return '';
         }
 
-        $hours = floor($second / 3600);
-        $hours = $hours ? str_pad($hours, 2, '0', STR_PAD_LEFT) : 0;
-        $second %= 3600;
+        $hours   = floor($second / 3600);
+        $hours   = $hours ? str_pad((string)$hours, 2, '0', STR_PAD_LEFT) : 0;
+        $second  %= 3600;
         $minutes = floor($second / 60);
-        $minutes = str_pad($minutes, 2, '0', STR_PAD_LEFT);
+        $minutes = str_pad((string)$minutes, 2, '0', STR_PAD_LEFT);
         $seconds = $second % 60;
-        $seconds = str_pad($seconds, 2, '0', STR_PAD_LEFT);
+        $seconds = str_pad((string)$seconds, 2, '0', STR_PAD_LEFT);
 
         return implode(':', $hours ? compact('hours', 'minutes', 'seconds') : compact('minutes', 'seconds'));
     }
@@ -110,19 +101,19 @@ class DateHelper
     /**
      * 获取时间戳的微秒部分,单位/微秒.
      */
-    public static function getMicrosecond(): float
+    public static function getMicrosecond() : float
     {
-        [$usec,] = explode(' ', microtime());
-        return (float) $usec * (10 ** 6);
+        [$use,] = explode(' ', microtime());
+        return (float)$use * (10 ** 6);
     }
 
     /**
      * 获取时间戳,单位/毫秒.
      */
-    public static function getMillitime(): float
+    public static function getMillitime() : float
     {
         [$t1, $t2] = explode(' ', microtime());
-        return (float) sprintf('%.0f', (floatval($t1) + floatval($t2)) * 1000);
+        return (float)sprintf('%.0f', (floatval($t1) + floatval($t2)) * 1000);
     }
 
     /**
@@ -130,21 +121,21 @@ class DateHelper
      *
      * @param int|string $datetime 时间戳或Y-m-d格式日期
      */
-    public static function getXingZuo($datetime): string
+    public static function getXingZuo($datetime) : string
     {
         $res = '';
         if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = (string) $datetime;
+            $datetime = (string)$datetime;
         }
 
-        if (! ValidateHelper::isDate2time($datetime)) {
+        if (!ValidateHelper::isDate2time($datetime)) {
             return $res;
         }
 
         $month = substr($datetime, 5, 2); //取出月份
-        $day = (int) substr($datetime, 8, 2); //取出日期
+        $day   = (int)substr($datetime, 8, 2); //取出日期
         switch ($month) {
             case '01':
                 if ($day < 21) {
@@ -240,22 +231,22 @@ class DateHelper
      *
      * @param int|string $datetime 时间戳或Y-m-d格式日期
      */
-    public static function getShengXiao($datetime): string
+    public static function getShengXiao($datetime) : string
     {
         $res = '';
         if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = (string) $datetime;
+            $datetime = (string)$datetime;
         }
 
-        if (! ValidateHelper::isDate2time($datetime)) {
+        if (!ValidateHelper::isDate2time($datetime)) {
             return $res;
         }
 
         $startYear = 1901;
-        $endYear = intval(substr($datetime, 0, 4));
-        $x = ($startYear - $endYear) % 12;
+        $endYear   = (int)substr($datetime, 0, 4);
+        $x         = ($startYear - $endYear) % 12;
 
         switch ($x) {
             case 1:
@@ -315,16 +306,16 @@ class DateHelper
      *
      * @param int|string $datetime 时间戳或Y-m-d格式日期
      */
-    public static function getLunarYear($datetime): string
+    public static function getLunarYear($datetime) : string
     {
         $res = '';
         if (is_numeric($datetime) && strlen($datetime) === 10) {
             $datetime = date('Y-m-d H:i:s', $datetime);
         } else {
-            $datetime = (string) $datetime;
+            $datetime = (string)$datetime;
         }
 
-        if (! ValidateHelper::isDate2time($datetime)) {
+        if (!ValidateHelper::isDate2time($datetime)) {
             return $res;
         }
 
@@ -333,35 +324,35 @@ class DateHelper
         //地支
         $earth = ['申', '酉', '戌', '亥', '子', '丑', '寅', '卯', '辰', '巳', '午', '未'];
 
-        $year = (int) substr($datetime, 0, 4);
+        $year = (int)substr($datetime, 0, 4);
         $diff = $year - 1900 + 40;
         return $sky[$diff % 10] . $earth[$diff % 12];
     }
 
-    public static function createDate(string $beginDate, string $endDate, string $format = 'Ymd'): array
+    public static function createDate(string $beginDate, string $endDate, string $format = 'Ymd') : array
     {
-        $i = 0;
-        $arr = [];
+        $i         = 0;
+        $arr       = [];
         $beginTime = strtotime($beginDate);
-        $endTime = strtotime($endDate);
+        $endTime   = strtotime($endDate);
         while ($beginTime <= $endTime) {
-            $arr[$i] = date($format, $beginTime);
+            $arr[$i]   = date($format, $beginTime);
             $beginTime = strtotime('+1 day', $beginTime);
             ++$i;
         }
         return $arr;
     }
 
-    public static function getChineseWeek(string $key = null): ?string
+    public static function getChineseWeek(string $key = null) : ?string
     {
         $array = [
-            'Sunday' => '周日',
-            'Monday' => '周一',
-            'Tuesday' => '周二',
+            'Sunday'    => '周日',
+            'Monday'    => '周一',
+            'Tuesday'   => '周二',
             'Wednesday' => '周三',
-            'Thursday' => '周四',
-            'Friday' => '周五',
-            'Saturday' => '周六',
+            'Thursday'  => '周四',
+            'Friday'    => '周五',
+            'Saturday'  => '周六',
         ];
         return $array[$key] ?? null;
     }

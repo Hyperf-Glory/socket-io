@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -13,7 +13,10 @@ declare(strict_types=1);
  */
 namespace App\Component;
 
+use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\Redis\RedisFactory;
+use Hyperf\Utils\ApplicationContext;
+use Throwable;
 
 class Sms
 {
@@ -29,32 +32,34 @@ class Sms
     /**
      * 检测验证码是否正确.
      *
-     * @param string $type 发送类型
+     * @param string $type   发送类型
      * @param string $mobile 手机号
-     * @param string $code 验证码
+     * @param string $code   验证码
      */
-    public function check(string $type, string $mobile, string $code): bool
+    public function check(string $type, string $mobile, string $code) : bool
     {
-        $smsCode = $this->redis()->get($this->getKey($type, $mobile));
-
-        return $smsCode === $code;
+        return wait(function () use ($type, $mobile, $code)
+        {
+            $smsCode = $this->redis()->get($this->getKey($type, $mobile));
+            return $smsCode === $code;
+        });
     }
 
     /**
      * 发送验证码
      *
-     * @param string $usage 验证码用途
+     * @param string $usage  验证码用途
      * @param string $mobile 手机号
      *
      * @return array|bool
      */
     public function send(string $usage, string $mobile)
     {
-        if (! $this->isUsages($usage)) {
+        if (!$this->isUsages($usage)) {
             return [
                 false,
                 [
-                    'msg' => "[{$usage}]：此类短信验证码不支持发送",
+                    'msg'  => "[{$usage}]：此类短信验证码不支持发送",
                     'data' => [],
                 ],
             ];
@@ -64,23 +69,34 @@ class Sms
 
         // 为防止刷短信行为，此处可进行过滤处理
         [$isTrue, $data] = $this->filter($usage, $mobile);
-        if (! $isTrue) {
+        if (!$isTrue) {
             return [false, $data];
         }
 
-        if (! $smsCode = $this->getCode($key)) {
-            $smsCode = random_int(100000, 999999);
+        if (!$smsCode = $this->getCode($key)) {
+            try {
+                $smsCode = random_int(100000, 999999);
+            } catch (Throwable $e) {
+                ApplicationContext::getContainer()->get(StdoutLoggerInterface::class)->error(sprintf('Failed to generate mobile verification code.Mobile:[%s]', $mobile));
+                return [
+                    false,
+                    [
+                        'msg'  => sprintf('手机号为%s的验证码发送失败.', $mobile),
+                        'data' => [],
+                    ]
+                ];
+            }
         }
 
         // 设置短信验证码
-        $this->setCode($key, (string) $smsCode);
+        $this->setCode($key, (string)$smsCode);
 
         // ... 调取短信接口，建议异步任务执行 (暂无短信接口，省略处理)
 
         return [
             true,
             [
-                'msg' => 'success',
+                'msg'  => 'success',
                 'data' => ['type' => $usage, 'code' => $smsCode],
             ],
         ];
@@ -99,13 +115,13 @@ class Sms
     /**
      * 设置验证码缓存.
      *
-     * @param string $key 缓存key
-     * @param string $sms_code 验证码
-     * @param float|int $exp 过期时间（默认15分钟）
+     * @param string    $key      缓存key
+     * @param string    $sms_code 验证码
+     * @param float|int $exp      过期时间（默认15分钟）
      *
-     * @return mixed
+     * @return bool
      */
-    public function setCode(string $key, string $sms_code, $exp = 60 * 15)
+    public function setCode(string $key, string $sms_code, $exp = 60 * 15) : bool
     {
         return $this->redis()->setex($key, $exp, $sms_code);
     }
@@ -113,12 +129,12 @@ class Sms
     /**
      * 删除验证码缓存.
      *
-     * @param string $usage 验证码用途
+     * @param string $usage  验证码用途
      * @param string $mobile 手机号
      *
-     * @return mixed
+     * @return int
      */
-    public function delCode(string $usage, string $mobile)
+    public function delCode(string $usage, string $mobile) : int
     {
         return $this->redis()->del($this->getKey($usage, $mobile));
     }
@@ -126,15 +142,15 @@ class Sms
     /**
      * 短信发送过滤验证
      *
-     * @param string $usage 验证码用途
+     * @param string $usage  验证码用途
      * @param string $mobile 手机号
      */
-    public function filter(string $usage, string $mobile): array
+    public function filter(string $usage, string $mobile) : array
     {
         return [
             true,
             [
-                'msg' => 'ok',
+                'msg'  => 'ok',
                 'data' => [],
             ],
         ];
@@ -143,7 +159,7 @@ class Sms
     /**
      * 判断验证码用途渠道是否注册.
      */
-    public function isUsages(string $usage): bool
+    public function isUsages(string $usage) : bool
     {
         return in_array($usage, self::SMS_USAGE);
     }
@@ -153,16 +169,16 @@ class Sms
      */
     private function redis()
     {
-        return di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        return ApplicationContext::getContainer()->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
     }
 
     /**
      * 获取缓存key.
      *
-     * @param string $type 短信用途
+     * @param string $type   短信用途
      * @param string $mobile 手机号
      */
-    private function getKey(string $type, string $mobile): string
+    private function getKey(string $type, string $mobile) : string
     {
         return "sms_code:{$type}:{$mobile}";
     }
