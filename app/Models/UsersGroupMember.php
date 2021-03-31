@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-namespace App\Model;
+namespace App\Models;
 
 /**
  * @property int $id

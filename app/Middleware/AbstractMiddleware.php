@@ -7,7 +7,6 @@ use App\JsonRpc\Contract\InterfaceUserService;
 use App\Kernel\Http\Response;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
-use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ServerRequestInterface;
 use function Han\Utils\app;

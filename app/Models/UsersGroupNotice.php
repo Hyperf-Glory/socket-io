@@ -11,41 +11,39 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-namespace App\Model;
+namespace App\Models;
 
 /**
- * @property int            $id
- * @property string         $mobile
- * @property string         $nickname
- * @property string         $avatar
- * @property int            $gender
- * @property string         $password
- * @property string         $invite_code
- * @property string         $motto
- * @property string         $email
+ * @property int $id
+ * @property int $group_id
+ * @property int $user_id
+ * @property string $title
+ * @property string $content
+ * @property int $is_delete
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
+ * @property string $deleted_at
  */
-class Users extends Model
+class UsersGroupNotice extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'users';
+    protected $table = 'users_group_notice';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['id', 'mobile', 'nickname', 'avatar', 'gender', 'password', 'invite_code', 'motto', 'email', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'group_id', 'user_id', 'title', 'content', 'is_delete', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'gender' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = ['id' => 'integer', 'group_id' => 'integer', 'user_id' => 'integer', 'is_delete' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

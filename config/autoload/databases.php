@@ -11,6 +11,9 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
+
+use App\Kernel\Visitor\ModelUpdateVisitor;
+
 return [
     'default' => [
         'driver' => env('DB_DRIVER', 'mysql'),
@@ -40,6 +43,9 @@ return [
         ],
         'commands' => [
             'gen:model' => [
+//                'visitors' => [
+//                    ModelUpdateVisitor::class
+//                ],
                 'path' => 'app/Model',
                 'force_casts' => true,
                 'inheritance' => 'Model',

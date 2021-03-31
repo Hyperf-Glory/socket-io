@@ -11,19 +11,16 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-namespace App\Model;
+namespace App\Models;
 
 /**
  * @property int $id
- * @property int $source
- * @property int $msg_type
- * @property int $user_id
- * @property int $receive_id
- * @property string $content
- * @property int $is_revoke
- * @property \Carbon\Carbon $created_at
+ * @property int $record_id
+ * @property int $type
+ * @property int $operate_user_id
+ * @property string $user_ids
  */
-class ChatRecords extends Model
+class ChatRecordsInvite extends Model
 {
     public $timestamps = false;
 
@@ -32,19 +29,19 @@ class ChatRecords extends Model
      *
      * @var string
      */
-    protected $table = 'chat_records';
+    protected $table = 'chat_records_invite';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['id', 'source', 'msg_type', 'user_id', 'receive_id', 'content', 'is_revoke', 'created_at'];
+    protected $fillable = ['id', 'record_id', 'type', 'operate_user_id', 'user_ids'];
 
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'source' => 'integer', 'msg_type' => 'integer', 'user_id' => 'integer', 'receive_id' => 'integer', 'is_revoke' => 'integer', 'created_at' => 'datetime'];
+    protected $casts = ['id' => 'integer', 'record_id' => 'integer', 'type' => 'integer', 'operate_user_id' => 'integer'];
 }

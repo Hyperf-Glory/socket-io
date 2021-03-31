@@ -1,22 +1,14 @@
 <?php
 
-declare(strict_types=1);
-/**
- *
- * This is my open source code, please do not use it for commercial applications.
- *
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code
- *
- * @author CodingHePing<847050412@qq.com>
- * @link   https://github.com/Hyperf-Glory/socket-io
- */
+declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id
- * @property int $user_id
- * @property string $emoticon_ids
+ * @property int $id 
+ * @property int $user_id 
+ * @property string $emoticon_ids 
+ * @property \Carbon\Carbon $created_at 
+ * @property \Carbon\Carbon $updated_at 
  */
 class UsersEmoticon extends Model
 {
@@ -26,18 +18,16 @@ class UsersEmoticon extends Model
      * @var string
      */
     protected $table = 'users_emoticon';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['id', 'user_id', 'emoticon_ids'];
-
+    protected $fillable = ['id', 'user_id', 'emoticon_ids', 'created_at', 'updated_at'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer'];
+    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 }

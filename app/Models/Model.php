@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -11,7 +11,7 @@ declare(strict_types = 1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-namespace App\Model;
+namespace App\Models;
 
 use Hyperf\DbConnection\Model\Model as BaseModel;
 use Hyperf\ModelCache\Cacheable;
