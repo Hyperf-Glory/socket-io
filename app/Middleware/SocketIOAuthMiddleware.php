@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -20,39 +20,30 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function Han\Utils\app;
 
-class SocketIOAuthMiddleware implements MiddlewareInterface
+class SocketIOAuthMiddleware extends AbstractMiddleware implements MiddlewareInterface
 {
-    protected $prefix = 'Bearer';
 
-    private $stdoutLogger;
-
-    private $response;
-
-    public function __construct(StdoutLoggerInterface $logger, \Hyperf\HttpServer\Contract\ResponseInterface $response)
-    {
-        $this->stdoutLogger = $logger;
-        $this->response = $response;
-    }
-
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {
         //通过 isAuth 方法拦截握手请求并实现权限检查
-        if (! $this->isAuth($request)) {
+        if (!$this->isAuth($request)) {
             return $this->response->raw('Forbidden');
         }
+        $request = $this->setRequestContext($request->getQueryParams()['token'] ?? '');
         return $handler->handle($request);
     }
 
-    protected function isAuth(ServerRequestInterface $request): bool
+    protected function isAuth(ServerRequestInterface $request) : bool
     {
         try {
             $isValidToken = false;
-            $token = $request->getQueryParams()['token'] ?? '';
-            if (($token !== '') && di(InterfaceUserService::class)->checkToken($token)) {
+            $token        = $request->getQueryParams()['token'] ?? '';
+            if (($token !== '') && app(InterfaceUserService::class)->checkToken($token)) {
                 return true;
             }
-            if (! $isValidToken) {
+            if (!$isValidToken) {
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
         } catch (\Throwable $throwable) {
