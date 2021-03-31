@@ -14,7 +14,6 @@ declare(strict_types = 1);
 namespace App\Middleware;
 
 use App\JsonRpc\Contract\InterfaceUserService;
-use Hyperf\Contract\StdoutLoggerInterface;
 use Phper666\JWTAuth\Exception\TokenValidException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

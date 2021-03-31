@@ -7,6 +7,7 @@ use App\JsonRpc\Contract\InterfaceUserService;
 use App\Kernel\Http\Response;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
+use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Context;
 use Psr\Http\Message\ServerRequestInterface;
 use function Han\Utils\app;
@@ -30,6 +31,9 @@ abstract class AbstractMiddleware
 
     protected function setRequestContext(string $token) : ServerRequestInterface
     {
+        /**
+         * @var InterfaceUserService $rpcService
+         */
         $rpcService = app(InterfaceUserService::class);
         $userData   = $rpcService->decodeToken($token);
         $uid        = $userData['cloud_uid'] ?? 0;
