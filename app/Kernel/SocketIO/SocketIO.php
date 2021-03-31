@@ -80,7 +80,6 @@ class SocketIO extends \Hyperf\SocketIOServer\SocketIO
         $redis->hSet(self::HASH_UID_TO_SID_PREFIX, (string) $uid, $sid);
         $redis->hSet(self::HASH_SID_TO_UID_PREFIX, $sid, $uid);
         $redis->exec();
-
         // 绑定聊天群
         $groups = $this->userService->getUserGroupIds($uid);
         if ($groups) {
