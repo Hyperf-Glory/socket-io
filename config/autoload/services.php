@@ -11,7 +11,6 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-use App\JsonRpc\Contract\InterfaceGroupService;
 use App\JsonRpc\Contract\InterfaceUserService;
 
 return [
@@ -21,7 +20,6 @@ return [
         // 下面的 FooServiceInterface 和 BarServiceInterface 仅示例多服务，并不是在文档示例中真实存在的
         $services = [
             'UserService' => InterfaceUserService::class,
-            'GroupService' => InterfaceGroupService::class,
         ];
         foreach ($services as $name => $interface) {
             $consumers[] = [

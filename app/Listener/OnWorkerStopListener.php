@@ -32,10 +32,10 @@ class OnWorkerStopListener implements ListenerInterface
         if ($event instanceof OnWorkerStop) {
             if ($event->server->taskworker) {
                 echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
-                "TaskWorker#{$event->workerId} stoped.",PHP_EOL;
+                "TaskWorker#{$event->workerId} stopped.",PHP_EOL;
             } else {
                 echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
-                "Worker#{$event->workerId} stoped.",PHP_EOL;
+                "Worker#{$event->workerId} stopped.",PHP_EOL;
             }
         }
     }

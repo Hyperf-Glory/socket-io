@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class OnShutdownListener implements ListenerInterface
 {
-    protected $redisPrefix = 'ws';
+    protected string $redisPrefix = 'ws';
 
     public function listen(): array
     {
@@ -56,7 +56,11 @@ class OnShutdownListener implements ListenerInterface
 |/ \___/    \_/   (_______/  |/ \___/    \_/   (_______/
 
 ',PHP_EOL;
-            $this->socketIoClearCommand();
+            try {
+                $this->socketIoClearCommand();
+            } catch (\Exception $e) {
+
+            }
             echo Color::GREEN,'Clean Up Success!';
         }
     }

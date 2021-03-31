@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -23,14 +23,14 @@ use Hyperf\Framework\Event\BeforeMainServerStart;
 
 class OnStartListener implements ListenerInterface
 {
-    public function listen(): array
+    public function listen() : array
     {
         return [
             BeforeMainServerStart::class,
         ];
     }
 
-    public function process(object $event): void
+    public function process(object $event) : void
     {
         echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
         PHP_EOL,
@@ -40,8 +40,8 @@ class OnStartListener implements ListenerInterface
         PHP_EOL,
         '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',
         PHP_EOL,
-            Color::YELLOW,
-            '
+        Color::YELLOW,
+        '
         _______  _        _______  _______  _______  _______ 
 |\     /|(  ____ \( \      (  ____ \(  ___  )(       )(  ____ \
 | )   ( || (    \/| (      | (    \/| (   ) || () () || (    \/
@@ -50,17 +50,18 @@ class OnStartListener implements ListenerInterface
 | || || || (      | |      | |      | |   | || |   | || (      
 | () () || (____/\| (____/\| (____/\| (___) || )   ( || (____/\
 (_______)(_______/(_______/(_______/(_______)|/     \|(_______/
-            ',PHP_EOL,
+            ', PHP_EOL,
         Color::RESET, PHP_EOL,
         '----------------------------------------------------------------------', PHP_EOL;
         echo Color::YELLOW, '| 基于Hyperf2.1微服务协程框架开发的Socket-IO分布式IM系统 |', PHP_EOL,
         '----------------------------------------------------------------------', PHP_EOL;
-        $data = [
+        $data  = [
             [
-                'php-version' => PHP_VERSION,
+                'php-version'    => PHP_VERSION,
                 'swoole-version' => SWOOLE_VERSION,
-                'app-name' => env('APP_NAME'),
-                'date-time' => Carbon::now()->timestamp,
+                'app-name'       => env('APP_NAME'),
+                'date-time'      => Carbon::now()->timestamp,
+                'os'             => PHP_OS
             ],
         ];
         $table = new CliTable();

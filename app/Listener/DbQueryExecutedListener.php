@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -37,18 +37,18 @@ class DbQueryExecutedListener implements ListenerInterface
         $this->logger = $container->get(LoggerFactory::class)->get('sql', 'sql');
     }
 
-    public function listen(): array
+    public function listen() : array
     {
         return [
             QueryExecuted::class,
         ];
     }
 
-    public function process(object $event)
+    public function process(object $event) : void
     {
         if ($event instanceof QueryExecuted) {
             $sql = $event->sql;
-            if (! Arr::isAssoc($event->bindings)) {
+            if (!Arr::isAssoc($event->bindings)) {
                 foreach ($event->bindings as $key => $value) {
                     $sql = Str::replaceFirst('?', "'{$value}'", $sql);
                 }
