@@ -13,6 +13,7 @@
     "license": "Apache-2.0",
     "require": {
         "php": ">=7.4",
+        "ext-bcmath": "*",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-pdo": "*",
@@ -54,10 +55,10 @@
         "hyperf/view-engine": "2.1.*",
         "hyperf/websocket-client": "2.1.*",
         "hyperf/websocket-server": "2.1.*",
+        "limingxinleo/hyperf-utils": "^3.0",
         "overtrue/flysystem-qiniu": "^1.0",
         "phper666/jwt-auth": "^3.0",
-        "phpmailer/phpmailer": "^6.1",
-      "ext-bcmath": "*"
+        "phpmailer/phpmailer": "^6.1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

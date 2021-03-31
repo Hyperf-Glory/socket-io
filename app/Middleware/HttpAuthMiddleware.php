@@ -28,9 +28,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class HttpAuthMiddleware implements MiddlewareInterface
 {
-    protected $prefix = 'Bearer';
+    protected string $prefix = 'Bearer';
 
-    private $response;
+    private Response $response;
 
     public function __construct(StdoutLoggerInterface $logger, Response $response)
     {
@@ -57,17 +57,17 @@ class HttpAuthMiddleware implements MiddlewareInterface
                 throw new TokenValidException('Token authentication does not pass', 401);
             }
         } catch (TokenValidException | JWTException $throwable) {
-            return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
+            return $this->response->response()->withHeader('Server', 'SocketIO')->withStatus(401)->withBody(new SwooleStream('Token authentication does not pass'));
         } catch (\Throwable $exception) {
             if (env('APP_ENV') === 'dev') {
-                return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream(MessageParser::encode([
+                return $this->response->response()->withHeader('Server', 'SocketIO')->withStatus(500)->withBody(new SwooleStream(MessageParser::encode([
                     'msg' => $exception->getMessage(),
                     'trace' => $exception->getTrace(),
                     'line' => $exception->getLine(),
                     'file' => $exception->getFile(),
                 ])));
             }
-            return $this->response->response()->withHeader('Server', 'Hyperf')->withStatus(500)->withBody(new SwooleStream('服务端错误!'));
+            return $this->response->response()->withHeader('Server', 'SocketIO')->withStatus(500)->withBody(new SwooleStream('服务端错误!'));
         }
     }
 

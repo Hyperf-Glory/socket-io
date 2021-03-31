@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -11,11 +12,14 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
+
 use App\Middleware\CorsMiddleware;
 use App\Middleware\SocketIOAuthMiddleware;
+use Han\Utils\Middleware\DebugMiddleware;
 
 return [
-    'http' => [
+    'http'      => [
+        DebugMiddleware::class,
         CorsMiddleware::class,
     ],
     'socket-io' => [
