@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -11,7 +12,8 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-use App\Kernel\SocketIO\SocketIO as KernelSocketIO;
+
+use App\SocketIO\SocketIO as KernelSocketIO;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\SocketIOServer\Room\AdapterInterface;
@@ -21,8 +23,8 @@ use Hyperf\Utils\Serializer\Serializer;
 use Hyperf\Utils\Serializer\SerializerFactory;
 
 return [
-    AdapterInterface::class => RedisNsqAdapter::class,
-    SocketIO::class => KernelSocketIO::class,
-    JsonRpcTransporter::class => JsonRpcPoolTransporter::class,
+    AdapterInterface::class                    => RedisNsqAdapter::class,
+    SocketIO::class                            => KernelSocketIO::class,
+    JsonRpcTransporter::class                  => JsonRpcPoolTransporter::class,
     Hyperf\Contract\NormalizerInterface::class => new SerializerFactory(Serializer::class),
 ];
