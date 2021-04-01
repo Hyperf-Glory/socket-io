@@ -21,6 +21,7 @@
         "ext-swoole": ">=4.6",
         "ext-zip": "*",
         "codedungeon/php-cli-colors": "^1.12",
+        "gemini/hyperf-router": "^0.2.1",
         "hyperf/amqp": "2.1.*",
         "hyperf/async-queue": "2.1.*",
         "hyperf/cache": "2.1.*",
