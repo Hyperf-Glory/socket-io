@@ -34,8 +34,10 @@ class HandshakeExceptionHandler extends ExceptionHandler
         if ($throwable instanceof HandshakeException) {
             $this->logger->error(sprintf('%s[%s] in %s', $throwable->getMessage(), $throwable->getLine(), $throwable->getFile()));
             $this->logger->error($throwable->getTraceAsString());
+            $this->stopPropagation();
             return $response->withHeader('Server', 'SocketIO')->withStatus(401)->withBody(new SwooleStream($throwable->getMessage()));
         }
+        return $response;
     }
 
     public function isValid(Throwable $throwable) : bool
