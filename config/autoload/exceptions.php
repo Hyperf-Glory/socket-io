@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -11,11 +12,24 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
+
+use App\Exception\Handler\Http\HttpExceptionHandler;
+use App\Exception\Handler\Http\ParameterExceptionHandler;
+use App\Exception\Handler\Rpc\RpcExceptionHandler;
+use App\Exception\Handler\SocketIO\HandshakeExceptionHandler;
+
 return [
     'handler' => [
-        'http' => [
-            Hyperf\HttpServer\Exception\Handler\HttpExceptionHandler::class,
+        'http'      => [
+            ParameterExceptionHandler::class,
+            HttpExceptionHandler::class,
             App\Exception\Handler\AppExceptionHandler::class,
         ],
+        'socket-io' => [
+            HandshakeExceptionHandler::class
+        ],
+        'jsonrpc'   => [
+            RpcExceptionHandler::class
+        ]
     ],
 ];
