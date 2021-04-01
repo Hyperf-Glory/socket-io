@@ -44,6 +44,7 @@
         "hyperf/process": "2.1.*",
         "hyperf/rate-limit": "2.1.*",
         "hyperf/redis": "2.1.*",
+        "hyperf/resource": "^2.1",
         "hyperf/rpc": "2.1.*",
         "hyperf/rpc-client": "2.1.*",
         "hyperf/rpc-server": "2.1.*",

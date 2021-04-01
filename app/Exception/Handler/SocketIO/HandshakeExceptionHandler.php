@@ -11,7 +11,7 @@ declare(strict_types = 1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
-namespace App\Exception\Handler;
+namespace App\Exception\Handler\SocketIO;
 
 use App\Exception\HandshakeException;
 use Hyperf\Contract\StdoutLoggerInterface;

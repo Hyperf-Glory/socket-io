@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -24,18 +24,18 @@ use Hyperf\Utils\ApplicationContext;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-class OnShutdownListener implements ListenerInterface
+class OnShutdownListener extends AbstractProcessListener implements ListenerInterface
 {
     protected string $redisPrefix = 'ws';
 
-    public function listen(): array
+    public function listen() : array
     {
         return [
             OnShutdown::class,
         ];
     }
 
-    public function process(object $event): void
+    public function process(object $event) : void
     {
         if ($event instanceof OnShutdown) {
             echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
@@ -44,7 +44,7 @@ class OnShutdownListener implements ListenerInterface
             PHP_EOL,
             Server::LOGO,
             PHP_EOL,
-            '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<',PHP_EOL;
+            '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<', PHP_EOL;
             echo '          
  ______            _______    ______            _______ 
 (  ___ \ |\     /|(  ____ \  (  ___ \ |\     /|(  ____ \
@@ -55,13 +55,13 @@ class OnShutdownListener implements ListenerInterface
 | )___) )   | |   | (____/\  | )___) )   | |   | (____/\
 |/ \___/    \_/   (_______/  |/ \___/    \_/   (_______/
 
-',PHP_EOL;
+', PHP_EOL;
             try {
                 $this->socketIoClearCommand();
             } catch (\Exception $e) {
 
             }
-            echo Color::GREEN,'Clean Up Success!';
+            echo Color::GREEN, 'Clean Up Success!';
         }
     }
 
@@ -69,14 +69,14 @@ class OnShutdownListener implements ListenerInterface
      * 清除全部socket-io.
      * @throws \Exception
      */
-    private function socketIoClearCommand(): void
+    private function socketIoClearCommand() : void
     {
         $command = 'socketio-self:clear';
 
         $params = ['command' => $command, 'namespace' => '/', 'serverId' => SocketIO::$serverId];
 
         // 可以根据自己的需求, 选择使用的 input/output
-        $input = new ArrayInput($params);
+        $input  = new ArrayInput($params);
         $output = new NullOutput();
 
         $container = ApplicationContext::getContainer();
@@ -88,7 +88,7 @@ class OnShutdownListener implements ListenerInterface
         try {
             $exitCode = $application->find($command)->run($input, $output);
         } catch (\Throwable $throwable) {
-            echo Color::CYAN,$throwable->getMessage();
+            echo Color::CYAN, $throwable->getMessage();
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -18,24 +18,24 @@ use Codedungeon\PHPCliColors\Color;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\OnWorkerStop;
 
-class OnWorkerStopListener implements ListenerInterface
+class OnWorkerStopListener extends AbstractProcessListener implements ListenerInterface
 {
-    public function listen(): array
+    public function listen() : array
     {
         return [
             OnWorkerStop::class,
         ];
     }
 
-    public function process(object $event): void
+    public function process(object $event) : void
     {
         if ($event instanceof OnWorkerStop) {
             if ($event->server->taskworker) {
                 echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
-                "TaskWorker#{$event->workerId} stopped.",PHP_EOL;
+                "TaskWorker#{$event->workerId} stopped.", PHP_EOL;
             } else {
                 echo Color::GREEN, sprintf('[%s]', Carbon::now()->toDateTimeString()), ' ', Color::CYAN,
-                "Worker#{$event->workerId} stopped.",PHP_EOL;
+                "Worker#{$event->workerId} stopped.", PHP_EOL;
             }
         }
     }

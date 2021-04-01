@@ -21,7 +21,7 @@ use Codedungeon\PHPCliColors\Color;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Framework\Event\BeforeMainServerStart;
 
-class OnStartListener implements ListenerInterface
+class OnStartListener extends AbstractProcessListener implements ListenerInterface
 {
     public function listen() : array
     {
