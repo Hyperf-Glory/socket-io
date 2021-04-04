@@ -180,6 +180,9 @@ class UserService implements InterfaceUserService
     public function get(int $uid) : ?array
     {
         try {
+            /**
+             * @var userModel $user
+             */
             $user = $this->userService->get($uid);
             if ($user) {
                 return Response::success([
