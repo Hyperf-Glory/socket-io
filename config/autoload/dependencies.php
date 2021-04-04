@@ -14,6 +14,7 @@ declare(strict_types = 1);
  */
 
 use App\SocketIO\SocketIO as KernelSocketIO;
+use Hyperf\Database\Commands\Ast\ModelUpdateVisitor;
 use Hyperf\JsonRpc\JsonRpcPoolTransporter;
 use Hyperf\JsonRpc\JsonRpcTransporter;
 use Hyperf\SocketIOServer\Room\AdapterInterface;
@@ -23,6 +24,7 @@ use Hyperf\Utils\Serializer\Serializer;
 use Hyperf\Utils\Serializer\SerializerFactory;
 
 return [
+    ModelUpdateVisitor::class                  => \App\Kernel\Visitor\ModelUpdateVisitor::class,
     AdapterInterface::class                    => RedisNsqAdapter::class,
     SocketIO::class                            => KernelSocketIO::class,
     JsonRpcTransporter::class                  => JsonRpcPoolTransporter::class,

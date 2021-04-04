@@ -17,10 +17,12 @@ use App\Exception\Handler\Http\HttpExceptionHandler;
 use App\Exception\Handler\Http\ParameterExceptionHandler;
 use App\Exception\Handler\Rpc\RpcExceptionHandler;
 use App\Exception\Handler\SocketIO\HandshakeExceptionHandler;
+use Hyperf\ExceptionHandler\Handler\WhoopsExceptionHandler;
 
 return [
     'handler' => [
         'http'      => [
+            WhoopsExceptionHandler::class,
             ParameterExceptionHandler::class,
             HttpExceptionHandler::class,
             App\Exception\Handler\AppExceptionHandler::class,

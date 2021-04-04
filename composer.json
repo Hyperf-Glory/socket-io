@@ -53,6 +53,7 @@
         "hyperf/socketio-server": "2.1.*",
         "hyperf/task": "2.1.*",
         "hyperf/tracer": "2.1.*",
+        "hyperf/validation": "^2.1",
         "hyperf/view": "2.1.*",
         "hyperf/view-engine": "2.1.*",
         "hyperf/websocket-client": "2.1.*",
@@ -63,13 +64,14 @@
         "phpmailer/phpmailer": "^6.1"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
-        "swoole/ide-helper": "^4.5",
+        "filp/whoops": "^2.12",
         "friendsofphp/php-cs-fixer": "^2.14",
-        "mockery/mockery": "^1.0",
-        "phpstan/phpstan": "^0.12",
         "hyperf/devtool": "2.1.*",
         "hyperf/testing": "2.1.*",
+        "mockery/mockery": "^1.0",
+        "phpstan/phpstan": "^0.12",
+        "roave/security-advisories": "dev-master",
+        "swoole/ide-helper": "^4.5",
         "symfony/var-dumper": "^5.1"
     },
     "suggest": {

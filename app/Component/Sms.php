@@ -20,13 +20,17 @@ use Throwable;
 
 class Sms
 {
+    public const USER_REGISTER = 'user_register';
+    public const FORGET_PASSWORD = 'forget_password';
+    public const CHANGE_MOBILE = 'change_mobile';
+
     /**
      * 短信验证码用途渠道.
      */
     public const SMS_USAGE = [
-        'user_register',     // 注册账号
-        'forget_password',   // 找回密码验
-        'change_mobile',     // 修改手机
+        self::USER_REGISTER,     // 注册账号
+        self::FORGET_PASSWORD,   // 找回密码验
+        self::CHANGE_MOBILE,     // 修改手机
     ];
 
     /**
