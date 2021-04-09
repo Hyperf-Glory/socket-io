@@ -15,7 +15,7 @@ class AuthController extends AbstractController
 
     public function login() : ResponseInterface
     {
-
+        $params =  $this->request->all();
     }
 
     public function logout() : ResponseInterface
