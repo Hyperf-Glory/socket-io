@@ -3,6 +3,7 @@ declare(strict_types = 1);
 namespace App\Controller\Http;
 
 use App\Controller\AbstractController;
+use App\Request\LoginRequest;
 use Psr\Http\Message\ResponseInterface;
 
 class AuthController extends AbstractController
@@ -13,9 +14,9 @@ class AuthController extends AbstractController
 
     }
 
-    public function login() : ResponseInterface
+    public function login(LoginRequest $loginRequest) : ResponseInterface
     {
-        $params =  $this->request->all();
+        $validated = $loginRequest->validated();
     }
 
     public function logout() : ResponseInterface
