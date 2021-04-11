@@ -18,14 +18,14 @@ use Hyperf\SocketIOServer\Collector\SocketIORouter;
 
 Router::addRoute(['GET', 'POST', 'HEAD'], '/', 'App\Controller\IndexController@index');
 //
-///* ---------------------- HTTP-Auth -------------------------- */
-//Router::addGroup('/api/auth/', function () {
-//    // ------- 鉴权 ----------//
-//    Router::post('register', 'App\Controller\AuthController@register');
-//    Router::post('login', 'App\Controller\AuthController@login');
-//    Router::post('send-verify-code', 'App\Controller\AuthController@sendVerifyCode');
-//    Router::post('logout', 'App\Controller\AuthController@logout');
-//});
+/* ---------------------- HTTP-Auth -------------------------- */
+Router::addGroup('/api/auth/', function () {
+    // ------- 鉴权 ----------//
+    Router::post('register', 'App\Controller\Http\AuthController@register');
+    Router::post('login', 'App\Controller\Http\AuthController@login');
+    Router::post('send-verify-code', 'App\Controller\Http\AuthController@sendVerifyCode');
+    Router::post('logout', 'App\Controller\Http\AuthController@logout');
+});
 ///* ----------------------  结束   ------------------------------------ */
 ///* ---------------------- HTTP-User -------------------------- */
 //Router::addGroup('/api/user/', function () {

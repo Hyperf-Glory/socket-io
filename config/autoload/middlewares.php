@@ -16,9 +16,11 @@ declare(strict_types = 1);
 use App\Middleware\CorsMiddleware;
 use App\Middleware\SocketIOAuthMiddleware;
 use Han\Utils\Middleware\DebugMiddleware;
+use Hyperf\Validation\Middleware\ValidationMiddleware;
 
 return [
     'http'      => [
+        ValidationMiddleware::class,
         DebugMiddleware::class,
         CorsMiddleware::class,
     ],

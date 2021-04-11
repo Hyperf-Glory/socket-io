@@ -4,6 +4,7 @@ namespace App\Exception\Handler\Http;
 
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class HttpExceptionHandler extends ExceptionHandler
@@ -16,13 +17,13 @@ class HttpExceptionHandler extends ExceptionHandler
         $this->logger = $logger;
     }
 
-    public function handle(Throwable $throwable, \Psr\Http\Message\ResponseInterface $response)
+    public function handle(Throwable $throwable, ResponseInterface $response) : ResponseInterface
     {
-        // TODO: Implement handle() method.
+        return $response;
     }
 
     public function isValid(Throwable $throwable) : bool
     {
-        // TODO: Implement isValid() method.
+        return true;
     }
 }

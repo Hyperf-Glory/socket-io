@@ -24,6 +24,6 @@ class RpcExceptionHandler extends ExceptionHandler
 
     public function isValid(Throwable $throwable) : bool
     {
-        // TODO: Implement isValid() method.
+        return true;
     }
 }

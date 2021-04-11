@@ -13,19 +13,22 @@ declare(strict_types = 1);
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
 
+use App\Exception\Handler\AppExceptionHandler;
+use App\Exception\Handler\BusinessExceptionHandler;
 use App\Exception\Handler\Http\HttpExceptionHandler;
-use App\Exception\Handler\Http\ParameterExceptionHandler;
 use App\Exception\Handler\Rpc\RpcExceptionHandler;
 use App\Exception\Handler\SocketIO\HandshakeExceptionHandler;
 use Hyperf\ExceptionHandler\Handler\WhoopsExceptionHandler;
+use Hyperf\Validation\ValidationExceptionHandler;
 
 return [
     'handler' => [
         'http'      => [
+            ValidationExceptionHandler::class,
+            BusinessExceptionHandler::class,
             WhoopsExceptionHandler::class,
-            ParameterExceptionHandler::class,
             HttpExceptionHandler::class,
-            App\Exception\Handler\AppExceptionHandler::class,
+            AppExceptionHandler::class,
         ],
         'socket-io' => [
             HandshakeExceptionHandler::class
