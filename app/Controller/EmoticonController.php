@@ -21,6 +21,7 @@ use League\Flysystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 
 /**
+ * @deprecated
  * Class EmoticonController.
  */
 class EmoticonController extends AbstractController

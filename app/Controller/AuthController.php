@@ -19,6 +19,11 @@ use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceUserService;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Class AuthController
+ * @package App\Controller
+ * @deprecated
+ */
 class AuthController extends AbstractController
 {
     /**

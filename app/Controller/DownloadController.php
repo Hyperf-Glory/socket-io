@@ -25,6 +25,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Class DownloadController
  * @package App\Controller
+ * @deprecated
  * @TODO    待解决下载文件不完整的问题
  */
 class DownloadController extends AbstractController

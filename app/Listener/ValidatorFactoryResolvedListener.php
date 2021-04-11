@@ -11,6 +11,7 @@ declare(strict_types = 1);
  */
 namespace App\Listener;
 
+use App\Helper\ValidateHelper;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
 use Hyperf\Utils\Str;
@@ -45,7 +46,7 @@ class ValidatorFactoryResolvedListener implements ListenerInterface
         $validatorFactory = $event->validatorFactory;
         $validatorFactory->extend('mobile', function ($attribute, $value, $parameters, $validator)
         {
-            return is_numeric($value) && Str::startsWith((string)$value, '1');
+            return ValidateHelper::isPhone($value);
         });
     }
 }

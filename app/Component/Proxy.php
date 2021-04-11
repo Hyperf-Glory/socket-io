@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -26,7 +26,7 @@ use RuntimeException;
 
 /**
  * Class Proxy.一定要注意该组件不能推送给自己,推送给自己请用$socketio->emit()即可.
- * //TODO
+ * //TODO 待优化
  */
 class Proxy
 {
@@ -35,7 +35,7 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function groupNotify(int $record): void
+    public function groupNotify(int $record) : void
     {
         /**
          * @var ChatRecords $recordInfo
@@ -48,7 +48,7 @@ class Proxy
             'created_at',
         ]);
 
-        if (! $recordInfo) {
+        if (!$recordInfo) {
             throw new RuntimeException('fail');
         }
         /**
@@ -61,7 +61,7 @@ class Proxy
             'user_ids',
         ]);
 
-        if (! $notifyInfo) {
+        if (!$notifyInfo) {
             throw new RuntimeException('fail');
         }
 
@@ -75,19 +75,19 @@ class Proxy
         $io = di(SocketIO::class);
         //推送群聊消息
         $io->to('room' . $recordInfo->receive_id)->emit('chat_message', [
-            'send_user' => 0,
+            'send_user'    => 0,
             'receive_user' => $recordInfo->receive_id,
-            'source_type' => 2,
-            'data' => MessageParser::formatTalkMsg([
-                'id' => $recordInfo->id,
-                'source' => 2,
-                'msg_type' => 3,
-                'user_id' => 0,
+            'source_type'  => 2,
+            'data'         => MessageParser::formatTalkMsg([
+                'id'         => $recordInfo->id,
+                'source'     => 2,
+                'msg_type'   => 3,
+                'user_id'    => 0,
                 'receive_id' => $recordInfo->receive_id,
-                'invite' => [
-                    'type' => $notifyInfo->type,
+                'invite'     => [
+                    'type'         => $notifyInfo->type,
                     'operate_user' => ['id' => $userInfo->id, 'nickname' => $userInfo->nickname],
-                    'users' => Users::select(['id', 'nickname'])->whereIn('id', $membersIds)->get()->toArray(),
+                    'users'        => Users::select(['id', 'nickname'])->whereIn('id', $membersIds)->get()->toArray(),
                 ],
                 'created_at' => $recordInfo->created_at,
             ]),
@@ -99,57 +99,57 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function revokeRecords(int $record): void
+    public function revokeRecords(int $record) : void
     {
         /**
          * @var ChatRecords $records
          */
         $records = ChatRecords::where('id', $record)->first(['id', 'source', 'user_id', 'receive_id']);
-        if (! $records) {
+        if (!$records) {
             throw new RuntimeException('数据不存在...');
         }
-        $io = di(SocketIO::class);
-        $data = [
-            'record_id' => $records->id,
-            'source' => $records->source,
-            'user_id' => $records->user_id,
+        $io    = di(SocketIO::class);
+        $data  = [
+            'record_id'  => $records->id,
+            'source'     => $records->source,
+            'user_id'    => $records->user_id,
             'receive_id' => $records->receive_id,
         ];
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         if ($records->source === 1) {
             //好友推送
-            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $records->receive_id);
+            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$records->receive_id);
         } else {
             $client = 'room' . $records->receive_id;
             //群聊推送
         }
         $io->to($client)->emit('revoke_records', $data);
-        $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->user_id))->emit('chat_message', $data);
+        $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$record->user_id))->emit('chat_message', $data);
     }
 
     /**
      * 推送聊天记录转发消息.
      */
-    public function forwardChatRecords(array $records): void
+    public function forwardChatRecords(array $records) : void
     {
-        $rows = ChatRecordsForward::leftJoin('users', 'users.id', '=', 'chat_records_forward.user_id')
-            ->leftJoin('chat_records', 'chat_records.id', '=', 'chat_records_forward.record_id')
-            ->whereIn('chat_records_forward.record_id', $records)
-            ->get([
-                'chat_records.id',
-                'chat_records.source',
-                'chat_records.msg_type',
-                'chat_records.user_id',
-                'chat_records.receive_id',
-                'chat_records.content',
-                'chat_records.is_revoke',
-                'chat_records.created_at',
-                'users.nickname',
-                'users.avatar as avatar',
-                'chat_records_forward.records_id',
-                'chat_records_forward.text',
-            ]);
-        $io = di(SocketIO::class);
+        $rows  = ChatRecordsForward::leftJoin('users', 'users.id', '=', 'chat_records_forward.user_id')
+                                   ->leftJoin('chat_records', 'chat_records.id', '=', 'chat_records_forward.record_id')
+                                   ->whereIn('chat_records_forward.record_id', $records)
+                                   ->get([
+                                       'chat_records.id',
+                                       'chat_records.source',
+                                       'chat_records.msg_type',
+                                       'chat_records.user_id',
+                                       'chat_records.receive_id',
+                                       'chat_records.content',
+                                       'chat_records.is_revoke',
+                                       'chat_records.created_at',
+                                       'users.nickname',
+                                       'users.avatar as avatar',
+                                       'chat_records_forward.records_id',
+                                       'chat_records_forward.text',
+                                   ]);
+        $io    = di(SocketIO::class);
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         /**
          * @var ChatRecords|ChatRecordsForward|Users $record
@@ -157,32 +157,32 @@ class Proxy
         foreach ($rows as $record) {
             if ($records->source === 1) {
                 //好友推送
-                $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->receive_id);
+                $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$record->receive_id);
             } else {
                 //群聊推送
                 $client = 'room' . $record->receive_id;
             }
             $data = [
-                'send_user' => $record->user_id,
+                'send_user'    => $record->user_id,
                 'receive_user' => $record->receive_id,
-                'source_type' => $record->source,
-                'data' => PushMessageHelper::formatTalkMsg([
-                    'id' => $record->id,
-                    'msg_type' => $record->msg_type,
-                    'source' => $record->source,
-                    'avatar' => $record->avatar,
-                    'nickname' => $record->nickname,
-                    'user_id' => $record->user_id,
+                'source_type'  => $record->source,
+                'data'         => PushMessageHelper::formatTalkMsg([
+                    'id'         => $record->id,
+                    'msg_type'   => $record->msg_type,
+                    'source'     => $record->source,
+                    'avatar'     => $record->avatar,
+                    'nickname'   => $record->nickname,
+                    'user_id'    => $record->user_id,
                     'receive_id' => $record->receive_id,
                     'created_at' => $record->created_at,
-                    'forward' => [
-                        'num' => substr_count($record->records_id, ',') + 1,
+                    'forward'    => [
+                        'num'  => substr_count($record->records_id, ',') + 1,
                         'list' => MessageParser::decode($record->text) ?? [],
                     ],
                 ]),
             ];
             $io->to($client)->emit('revoke_records', $data);
-            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $record->user_id))->emit('chat_message', $data);
+            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$record->user_id))->emit('chat_message', $data);
         }
     }
 
@@ -191,7 +191,7 @@ class Proxy
      *
      * @throws \Exception
      */
-    public function pushTalkMessage(int $record): void
+    public function pushTalkMessage(int $record) : void
     {
         /**
          * @var ChatRecords| Users $info
@@ -208,11 +208,11 @@ class Proxy
             'users.nickname',
             'users.avatar as avatar',
         ]);
-        if (! $info) {
+        if (!$info) {
             throw new RuntimeException('fail');
         }
-        $io = di(SocketIO::class);
-        $file = [];
+        $io        = di(SocketIO::class);
+        $file      = [];
         $codeBlock = [];
         if ($info->msg_type === 2) {
             $file = ChatRecordsFile::where('record_id', $info->id)->first(['id', 'record_id', 'user_id', 'file_source', 'file_type', 'save_type', 'original_name', 'file_suffix', 'file_size', 'save_dir']);
@@ -226,27 +226,27 @@ class Proxy
         }
 
         $data = [
-            'send_user' => $info->user_id,
+            'send_user'    => $info->user_id,
             'receive_user' => $info->receive_id,
-            'source_type' => $info->source,
-            'data' => MessageParser::formatTalkMsg([
-                'id' => $info->id,
-                'msg_type' => $info->msg_type,
-                'source' => $info->source,
-                'avatar' => $info->avatar,
-                'nickname' => $info->nickname,
-                'user_id' => $info->user_id,
+            'source_type'  => $info->source,
+            'data'         => MessageParser::formatTalkMsg([
+                'id'         => $info->id,
+                'msg_type'   => $info->msg_type,
+                'source'     => $info->source,
+                'avatar'     => $info->avatar,
+                'nickname'   => $info->nickname,
+                'user_id'    => $info->user_id,
                 'receive_id' => $info->receive_id,
                 'created_at' => $info->created_at->toDateTimeString(),
-                'file' => $file,
+                'file'       => $file,
                 'code_block' => $codeBlock,
             ]),
         ];
         if ($info->source === 1) {
             //好友推送
-            $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->receive_id);
-            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string) $info->user_id))->emit('chat_message', $data);
+            $redis  = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+            $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$info->receive_id);
+            $io->to($redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$info->user_id))->emit('chat_message', $data);
         } else {
             $client = 'room' . $info->receive_id;
         }

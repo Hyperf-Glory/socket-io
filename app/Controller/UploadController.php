@@ -17,6 +17,11 @@ use App\Component\SplitUpload;
 use Hyperf\Filesystem\FilesystemFactory;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Class UploadController
+ * @package App\Controller
+ * @deprecated
+ */
 class UploadController extends AbstractController
 {
     public function fileStream(FilesystemFactory $factory): ResponseInterface

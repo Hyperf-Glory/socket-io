@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -25,6 +25,11 @@ use Hyperf\SocketIOServer\Annotation\Event;
 use Hyperf\SocketIOServer\BaseNamespace;
 use Hyperf\SocketIOServer\Socket;
 
+/**
+ * Class SocketIOController
+ * @package App\Controller
+ * @deprecated
+ */
 class SocketIOController extends BaseNamespace
 {
     /**
@@ -36,30 +41,30 @@ class SocketIOController extends BaseNamespace
      * @example {"event":"event_talk","data":{"send_user":4166,"receive_user":"4168","source_type":"1","text_message":"1"}}
      * @Event("event_talk")
      */
-    public function onEventTalk(Socket $socket, $data): bool
+    public function onEventTalk(Socket $socket, $data) : bool
     {
         $data = [
-            'send_user' => (int) $data['send_user'],
-            'receive_user' => (int) $data['receive_user'],
-            'source_type' => (int) $data['source_type'],
+            'send_user'    => (int)$data['send_user'],
+            'receive_user' => (int)$data['receive_user'],
+            'source_type'  => (int)$data['source_type'],
             'text_message' => $data['text_message'],
         ];
 
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) ($data['receive_user'] ?? 0)) === $socket->getSid()) {
+        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string)($data['receive_user'] ?? 0)) === $socket->getSid()) {
             $socket->emit('notify', [
                 'notify' => '非法操作!!!',
             ]);
             return true;
         }
         //验证消息类型 私聊|群聊
-        if (! in_array($data['source_type'], [1, 2], true)) {
+        if (!in_array($data['source_type'], [1, 2], true)) {
             return true;
         }
         //验证发送消息用户与接受消息用户之间是否存在好友或群聊关系
         if ($data['source_type'] === 1) {//私信
             //判断发送者和接受者是否是好友关系
-            if (! UsersFriends::isFriend($data['send_user'], $data['receive_user'])) {
+            if (!UsersFriends::isFriend($data['send_user'], $data['receive_user'])) {
                 $socket->emit('notify', [
                     'notify' => '温馨提示:您当前与对方尚未成功好友！',
                 ]);
@@ -67,7 +72,7 @@ class SocketIOController extends BaseNamespace
             }
         } elseif ($data['source_type'] === 2) {//群聊
             //判断是否属于群成员
-            if (! UsersGroup::isMember($data['receive_user'], $data['send_user'])) {
+            if (!UsersGroup::isMember($data['receive_user'], $data['send_user'])) {
                 $socket->emit('notify', [
                     'notify' => '温馨提示:您还没有加入该聊天群！',
                 ]);
@@ -76,15 +81,15 @@ class SocketIOController extends BaseNamespace
         }
 
         $result = ChatRecords::create([
-            'source' => $data['source_type'],
-            'msg_type' => 1,
-            'user_id' => $data['send_user'],
+            'source'     => $data['source_type'],
+            'msg_type'   => 1,
+            'user_id'    => $data['send_user'],
             'receive_id' => $data['receive_user'],
-            'content' => htmlspecialchars($data['text_message']),
+            'content'    => htmlspecialchars($data['text_message']),
             'created_at' => date('Y-m-d H:i:s'),
         ]);
 
-        if (! $result) {
+        if (!$result) {
             return false;
         }
         if ($result->content) {
@@ -92,16 +97,16 @@ class SocketIOController extends BaseNamespace
         }
 
         $msg = ([
-            'send_user' => $data['send_user'],
+            'send_user'    => $data['send_user'],
             'receive_user' => $data['receive_user'],
-            'source_type' => $data['source_type'],
-            'data' => MessageParser::formatTalkMsg([
-                'id' => $result->id,
-                'source' => $result->source,
-                'msg_type' => 1,
-                'user_id' => $result->user_id,
+            'source_type'  => $data['source_type'],
+            'data'         => MessageParser::formatTalkMsg([
+                'id'         => $result->id,
+                'source'     => $result->source,
+                'msg_type'   => 1,
+                'user_id'    => $result->user_id,
                 'receive_id' => $result->receive_id,
-                'content' => $result->content,
+                'content'    => $result->content,
                 'created_at' => $result->created_at->toDateTimeString(),
             ]),
         ]);
@@ -109,13 +114,13 @@ class SocketIOController extends BaseNamespace
             $msg_text = mb_substr($result->content, 0, 30);
 
             LastMsgCache::set([
-                'text' => $msg_text,
+                'text'       => $msg_text,
                 'created_at' => $result->created_at,
             ], $data['receive_user'], $data['send_user']);
 
             di(UnreadTalk::class)->setInc($result->receive_id, $result->user_id, $redis);
 
-            $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $data['receive_user']))->emit('chat_message', $msg);
+            $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string)$data['receive_user']))->emit('chat_message', $msg);
 
             $socket->emit('chat_message', $msg);
 
@@ -127,7 +132,7 @@ class SocketIOController extends BaseNamespace
             $socket->emit('chat_message', $msg);
 
             LastMsgCache::set([
-                'text' => $result->content,
+                'text'       => $result->content,
                 'created_at' => $result->created_at,
             ], $data['receive_user'], 0);
 
@@ -145,9 +150,9 @@ class SocketIOController extends BaseNamespace
      *
      * @example {"event":"event_keyboard","data":{"send_user":4166,"receive_user":"4168"}}
      */
-    public function onEventKeyboard(Socket $socket, $data): void
+    public function onEventKeyboard(Socket $socket, $data) : void
     {
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string) $data['receive_user']))->emit('input_tip', $data);
+        $socket->to($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string)$data['receive_user']))->emit('input_tip', $data);
     }
 }

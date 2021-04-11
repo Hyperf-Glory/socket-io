@@ -18,7 +18,8 @@ use App\Constants\User;
 use App\Exception\RpcException;
 use App\Helper\ValidateHelper;
 use App\JsonRpc\Contract\InterfaceUserService;
-use App\Kernel\JsonRpc\Response;
+use App\Kernel\JsonRpc\ResponseHelper;
+use App\Kernel\JsonRpc\RpcResponse;
 use App\Model\User as UserModel;
 use App\Service\UserService as UserSer;
 use Hyperf\Logger\LoggerFactory;
@@ -62,42 +63,42 @@ class UserService implements InterfaceUserService
         $this->jwt         = $jwt;
     }
 
-    public function register(string $mobile, string $password, string $smsCode, string $nickname) : array
+    public function register(string $mobile, string $password, string $smsCode, string $nickname) : RpcResponse
     {
         if (!ValidateHelper::isPhone($mobile)) {
-            return Response::fail(null, '手机号格式不正确...');
+            return ResponseHelper::fail(null, '手机号格式不正确...');
         }
         if (!app(Sms::class)->check('user_register', $mobile, $smsCode)) {
-            return Response::fail(null, '验证码填写错误...');
+            return ResponseHelper::fail(null, '验证码填写错误...');
         }
         $bool = $this->userService->register($mobile, $password, $nickname);
         if ($bool) {
             app(Sms::class)->delCode('user_register', $mobile);
-            return Response::success(null, '账号注册成功...');
+            return ResponseHelper::success(null, '账号注册成功...');
         }
-        return Response::fail(null, '账号注册失败,手机号已被其他(她)人使用...');
+        return ResponseHelper::fail(null, '账号注册失败,手机号已被其他(她)人使用...');
     }
 
     /**
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function login(string $mobile, string $password) : array
+    public function login(string $mobile, string $password) : RpcResponse
     {
         /**
          * @var UserModel $user
          */
 
         if (!($user = UserModel::query()->where('mobile', $mobile)->first())) {
-            return Response::fail(null, '登录账号不存在...');
+            return ResponseHelper::fail(null, '登录账号不存在...');
         }
         if (!$this->userService->checkPassword($password, $user->password)) {
-            return Response::fail(null, '登录密码错误...');
+            return ResponseHelper::fail(null, '登录密码错误...');
         }
         $token = $this->jwt->setScene('cloud')->getToken([
             'cloud_uid' => $user->id,
             'nickname'  => $user->nickname,
         ]);
-        return Response::success([
+        return ResponseHelper::success([
             'authorize' => [
                 'access_token' => $token,
                 'expires_in'   => $this->jwt->getTTL(),
@@ -124,48 +125,48 @@ class UserService implements InterfaceUserService
         }
     }
 
-    public function sendVerifyCode(string $mobile, string $type = User::REGISTER) : array
+    public function sendVerifyCode(string $mobile, string $type = User::REGISTER) : RpcResponse
     {
         if (!app(Sms::class)->isUsages($type)) {
-            return Response::fail(null, '验证码发送失败...');
+            return ResponseHelper::fail(null, '验证码发送失败...');
         }
         if (!ValidateHelper::isPhone($mobile)) {
-            return Response::fail(null, '手机号格式不正确...');
+            return ResponseHelper::fail(null, '手机号格式不正确...');
         }
         if ($type === Sms::FORGET_PASSWORD) {
             if (!UserModel::query()->where('mobile', $mobile)->value('id')) {
-                return Response::fail(null, '手机号未被注册使用...');
+                return ResponseHelper::fail(null, '手机号未被注册使用...');
             }
         } elseif ($type === Sms::CHANGE_MOBILE || $type === Sms::USER_REGISTER) {
             if (UserModel::query()->where('mobile', $mobile)->value('id')) {
-                return Response::fail(null, '手机号已被他(她)人注册...');
+                return ResponseHelper::fail(null, '手机号已被他(她)人注册...');
             }
         }
         [$isTrue, $result] = app(Sms::class)->send($type, $mobile);
         if ($isTrue) {
-            return Response::success(['sms_code' => $result['data']['code']], null);
+            return ResponseHelper::success(['sms_code' => $result['data']['code']], null);
         }
 
-        return Response::fail(null, '发送失败...');
+        return ResponseHelper::fail(null, '发送失败...');
     }
 
-    public function forgetPassword(string $mobile, string $smsCode, string $password) : array
+    public function forgetPassword(string $mobile, string $smsCode, string $password) : RpcResponse
     {
         if (empty($smsCode) || empty($password) || !ValidateHelper::isPhone($mobile)) {
-            return Response::fail(null, '参数错误...');
+            return ResponseHelper::fail(null, '参数错误...');
         }
         if (!ValidateHelper::checkPassword($password)) {
-            return Response::fail(null, '密码格式不正确...');
+            return ResponseHelper::fail(null, '密码格式不正确...');
         }
         if (!di(Sms::class)->check('forget_password', $mobile, $smsCode)) {
-            return Response::fail(null, '验证码填写错误...');
+            return ResponseHelper::fail(null, '验证码填写错误...');
         }
         try {
             $bool = $this->userService->resetPassword($mobile, $password);
             if ($bool) {
                 app(Sms::class)->delCode('forget_password', $mobile);
             }
-            return $bool ? Response::success(null, '重置密码成功...') : Response::success(null, '重置密码失败...');
+            return $bool ? ResponseHelper::success(null, '重置密码成功...') : ResponseHelper::success(null, '重置密码失败...');
         } catch (Throwable $throwable) {
             $this->logger->error(sprintf('json-rpc forgetPassword fail [%s] [%s]', $mobile, $throwable->getMessage()));
             return ['code' => 0, 'msg' => '重置密码失败...'];
@@ -185,7 +186,7 @@ class UserService implements InterfaceUserService
              */
             $user = $this->userService->get($uid);
             if ($user) {
-                return Response::success([
+                return ResponseHelper::success([
                     'id'       => $user->id,
                     'nickname' => $user->nickname,
                     'avatar'   => $user->avatar,
@@ -195,7 +196,7 @@ class UserService implements InterfaceUserService
         } catch (Throwable $throwable) {
             $this->logger->error(sprintf('json-rpc UserService Error getting user[%s] information', $uid));
         }
-        return Response::fail(null, null);
+        return ResponseHelper::fail(null, null);
     }
 
     /**

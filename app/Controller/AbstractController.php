@@ -25,25 +25,25 @@ abstract class AbstractController
      * @Inject
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * @Inject
      * @var RequestInterface
      */
-    protected $request;
+    protected RequestInterface $request;
 
     /**
      * @Inject
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     /**
      * @Inject
      * @var Response
      */
-    protected $response;
+    protected Response $response;
 
     /**
      * @return int|mixed

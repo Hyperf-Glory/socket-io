@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -15,9 +15,14 @@ namespace App\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Class HealthController
+ * @package App\Controller
+ * @deprecated
+ */
 class HealthController extends AbstractController
 {
-    public function health(): ResponseInterface
+    public function health() : ResponseInterface
     {
         return $this->response->success('ok');
     }

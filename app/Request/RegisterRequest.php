@@ -6,7 +6,7 @@ namespace App\Request;
 
 use Hyperf\Validation\Request\FormRequest;
 
-class LoginRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,9 @@ class LoginRequest extends FormRequest
     public function rules() : array
     {
         return [
-            'mobile'   => 'required|max:12|mobile',
+            'mobile'    => 'required|max:12|mobile',
             'password' => 'required',
+            'sms_code' => 'required',
         ];
     }
 
@@ -33,9 +34,10 @@ class LoginRequest extends FormRequest
     public function messages() : array
     {
         return [
-            'mobile.required'   => '手机号必须填写!',
-            'mobile.mobile'     => '无效的手机号码!',
+            'mobile.required'    => '手机号必须填写!',
+            'mobile.mobile'      => '无效的手机号码!',
             'password.required' => '密码不能为空!',
+            'sms_code.required' => '验证码不能为空!',
         ];
     }
 }

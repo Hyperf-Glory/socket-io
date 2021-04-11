@@ -55,9 +55,9 @@ class Sms
      * @param string $usage  验证码用途
      * @param string $mobile 手机号
      *
-     * @return array|bool
+     * @return array
      */
-    public function send(string $usage, string $mobile)
+    public function send(string $usage, string $mobile) : array
     {
         if (!$this->isUsages($usage)) {
             return [
