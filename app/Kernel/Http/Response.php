@@ -90,7 +90,7 @@ class Response
     public function handleException(HttpException $throwable) : PsrResponseInterface
     {
         return $this->response()
-                    ->withAddedHeader('Server', 'Hyperf')
+                    ->withAddedHeader('Server', 'SocketIO')
                     ->withStatus($throwable->getStatusCode())
                     ->withBody(new SwooleStream($throwable->getMessage()));
     }

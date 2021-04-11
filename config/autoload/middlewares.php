@@ -20,9 +20,9 @@ use Hyperf\Validation\Middleware\ValidationMiddleware;
 
 return [
     'http'      => [
-        ValidationMiddleware::class,
         DebugMiddleware::class,
         CorsMiddleware::class,
+        ValidationMiddleware::class,
     ],
     'socket-io' => [
         SocketIOAuthMiddleware::class,

@@ -24,7 +24,7 @@ use Hyperf\Validation\ValidationExceptionHandler;
 return [
     'handler' => [
         'http'      => [
-            ValidationExceptionHandler::class,
+            //            ValidationExceptionHandler::class,
             BusinessExceptionHandler::class,
             WhoopsExceptionHandler::class,
             HttpExceptionHandler::class,

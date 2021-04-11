@@ -4,7 +4,6 @@ namespace App\Controller\Http;
 
 use App\Controller\AbstractController;
 use App\Request\LoginRequest;
-use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 
 class AuthController extends AbstractController
@@ -18,7 +17,7 @@ class AuthController extends AbstractController
     public function login(LoginRequest $loginRequest) : ResponseInterface
     {
         $validated = $loginRequest->validated();
-        return '1';
+        return $this->response->success('响应成功!');
     }
 
     public function logout() : ResponseInterface
