@@ -14,10 +14,9 @@ class AuthController extends AbstractController
 
     }
 
-    public function login(LoginRequest $loginRequest) : ResponseInterface
+    public function login(LoginRequest $request) : ResponseInterface
     {
-        $validated = $loginRequest->validated();
-        return $this->response->success('响应成功!');
+        return $this->response->success($request->post('phone'));
     }
 
     public function logout() : ResponseInterface

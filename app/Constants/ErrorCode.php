@@ -24,6 +24,10 @@ class ErrorCode extends AbstractConstants
 {
     //基本错误码 0～1000
     public const AUTH_ERROR = 401;
+    /**
+     * @Message("Server Error")
+     */
+    public const SERVER_ERROR = 500;
 
     //用户错误码 3000～3999
 

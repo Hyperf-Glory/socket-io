@@ -22,7 +22,7 @@ class LoginRequest extends FormRequest
     public function rules() : array
     {
         return [
-            'phone'    => 'required|max:12',
+            'phone'    => 'required|max:12|mobile',
             'password' => 'required',
         ];
     }
@@ -33,8 +33,9 @@ class LoginRequest extends FormRequest
     public function messages() : array
     {
         return [
-            'phone.required'    => 'phone is required',
-            'password.required' => 'password is required',
+            'phone.required'    => '手机号必须填写!',
+            'phone.mobile'    => '无效的手机号码!',
+            'password.required' => '密码不能为空!',
         ];
     }
 }

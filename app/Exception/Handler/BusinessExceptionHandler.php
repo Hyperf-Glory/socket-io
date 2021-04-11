@@ -17,6 +17,7 @@ use App\Kernel\Http\Response;
 use Hyperf\Contract\StdoutLoggerInterface;
 use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Exception\HttpException;
+use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\Validation\ValidationException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -49,7 +50,9 @@ class BusinessExceptionHandler extends ExceptionHandler
 
     public function handle(Throwable $throwable, ResponseInterface $response)
     {
+
         if ($throwable instanceof HttpException) {
+            $this->stopPropagation();
             return $this->response->handleException($throwable);
         }
 
@@ -69,7 +72,7 @@ class BusinessExceptionHandler extends ExceptionHandler
 
         $this->logger->error(format_throwable($throwable));
 
-        return $this->response->fail(ErrorCode::SERVER_ERROR, 'Server Error');
+        return $response->withHeader('Server', 'SocketIO')->withStatus(500)->withBody(new SwooleStream('Internal Server Error.'));
     }
 
     public function isValid(Throwable $throwable) : bool
