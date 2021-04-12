@@ -50,6 +50,8 @@
         "hyperf/rpc-client": "2.1.*",
         "hyperf/rpc-server": "2.1.*",
         "hyperf/service-governance": "2.1.*",
+        "hyperf/signal": "^2.1",
+        "hyperf/snowflake": "^2.1",
         "hyperf/socketio-server": "2.1.*",
         "hyperf/task": "2.1.*",
         "hyperf/tracer": "2.1.*",

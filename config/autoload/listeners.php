@@ -15,8 +15,10 @@ use App\Listener\LoginAfterListener;
 use App\Listener\OnShutdownListener;
 use App\Listener\OnStartListener;
 use App\Listener\OnWorkerStopListener;
+use Hyperf\ExceptionHandler\Listener\ErrorExceptionHandler;
 
 return [
+    ErrorExceptionHandler::class,
     OnStartListener::class,
     OnWorkerStopListener::class,
     OnShutdownListener::class,

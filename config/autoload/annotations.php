@@ -1,6 +1,7 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
+
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -11,19 +12,21 @@ declare(strict_types=1);
  * @author CodingHePing<847050412@qq.com>
  * @link   https://github.com/Hyperf-Glory/socket-io
  */
+
 use Hyperf\Utils\Coroutine;
 
 return [
     'scan' => [
-        'paths' => [
+        'paths'              => [
             BASE_PATH . '/app',
         ],
         'ignore_annotations' => [
             'mixin',
         ],
-        'class_map' => [
+        'class_map'          => [
             // 需要映射的类名 => 类所在的文件地址
-            Coroutine::class => BASE_PATH . '/app/Kernel/ClassMap/Coroutine.php',
+            Coroutine::class                             => BASE_PATH . '/app/Kernel/ClassMap/Coroutine.php',
+            Hyperf\Di\Resolver\ResolverDispatcher::class => BASE_PATH . '/app/Kernel/ClassMap/ResolverDispatcher.php',
         ],
     ],
 ];

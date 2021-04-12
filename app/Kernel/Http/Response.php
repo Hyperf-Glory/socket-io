@@ -80,7 +80,7 @@ class Response
                     ->withStatus($status);
     }
 
-    public function cookie(Cookie $cookie)
+    public function cookie(Cookie $cookie) : Response
     {
         $response = $this->response()->withCookie($cookie);
         Context::set(PsrResponseInterface::class, $response);
