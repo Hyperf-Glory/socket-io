@@ -30,7 +30,6 @@ class ValidatorFactoryResolvedListener implements ListenerInterface
 
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     public function listen() : array
