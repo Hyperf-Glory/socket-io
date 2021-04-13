@@ -60,21 +60,25 @@ class Mail
     }
 
     /**
-     * @throws \Exception
+     * @param string $type
+     * @param string $title
+     * @param string $email
+     *
+     * @return bool
      */
     public function send(string $type, string $title, string $email) : bool
     {
-        $key = $this->getKey($type, $email);
-
-        if (!$smsCode = $this->getCode($key)) {
-            $smsCode = random_int(100000, 999999);
-        }
-
-        $this->setCode($key, (string)$smsCode);
         try {
+
+            $key = $this->getKey($type, $email);
+
+            if (!$smsCode = $this->getCode($key)) {
+                $smsCode = random_int(100000, 999999);
+            }
+            $this->setCode($key, (string)$smsCode);
             $view = $this->view(config('view.engine'), ['service_name' => $title, 'sms_code' => $smsCode, 'domain' => config('config.domain.web_url')]);
             return $this->mail($email, $title, $view);
-        } catch (RuntimeException $e) {
+        } catch (\Exception $e) {
             $this->logger->error(sprintf('Failed to send email verification code.Email:{%s}', $email));
             return false;
         }
