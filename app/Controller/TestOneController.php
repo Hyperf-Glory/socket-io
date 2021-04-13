@@ -22,6 +22,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 
 /**
+ * @deprecated
  * Class TestController.
  * @Controller(prefix="test")
  */

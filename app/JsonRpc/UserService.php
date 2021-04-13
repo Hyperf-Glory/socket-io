@@ -27,7 +27,6 @@ use Hyperf\RpcServer\Annotation\RpcService;
 use Phper666\JWTAuth\JWT;
 use Psr\Container\ContainerInterface;
 use Throwable;
-use function Han\Utils\app;
 
 /**
  * Class Cloud.
@@ -68,12 +67,12 @@ class UserService implements InterfaceUserService
         if (!ValidateHelper::isPhone($mobile)) {
             return ResponseHelper::fail(null, '手机号格式不正确...');
         }
-        if (!app(Sms::class)->check('user_register', $mobile, $smsCode)) {
+        if (!$this->container->get(Sms::class)->check('user_register', $mobile, $smsCode)) {
             return ResponseHelper::fail(null, '验证码填写错误...');
         }
         $bool = $this->userService->register($mobile, $password, $nickname);
         if ($bool) {
-            app(Sms::class)->delCode('user_register', $mobile);
+            $this->container->get(Sms::class)->delCode('user_register', $mobile);
             return ResponseHelper::success(null, '账号注册成功...');
         }
         return ResponseHelper::fail(null, '账号注册失败,手机号已被其他(她)人使用...');
@@ -127,7 +126,7 @@ class UserService implements InterfaceUserService
 
     public function sendVerifyCode(string $mobile, string $type = User::REGISTER) : RpcResponse
     {
-        if (!app(Sms::class)->isUsages($type)) {
+        if (!$this->container->get(Sms::class)->isUsages($type)) {
             return ResponseHelper::fail(null, '验证码发送失败...');
         }
         if (!ValidateHelper::isPhone($mobile)) {
@@ -142,7 +141,7 @@ class UserService implements InterfaceUserService
                 return ResponseHelper::fail(null, '手机号已被他(她)人注册...');
             }
         }
-        [$isTrue, $result] = app(Sms::class)->send($type, $mobile);
+        [$isTrue, $result] = $this->container->get(Sms::class)->send($type, $mobile);
         if ($isTrue) {
             return ResponseHelper::success(['sms_code' => $result['data']['code']], null);
         }
@@ -164,12 +163,12 @@ class UserService implements InterfaceUserService
         try {
             $bool = $this->userService->resetPassword($mobile, $password);
             if ($bool) {
-                app(Sms::class)->delCode('forget_password', $mobile);
+                $this->container->get(Sms::class)->delCode('forget_password', $mobile);
             }
             return $bool ? ResponseHelper::success(null, '重置密码成功...') : ResponseHelper::success(null, '重置密码失败...');
         } catch (Throwable $throwable) {
             $this->logger->error(sprintf('json-rpc forgetPassword fail [%s] [%s]', $mobile, $throwable->getMessage()));
-            return ['code' => 0, 'msg' => '重置密码失败...'];
+            return ResponseHelper::fail(null, '重置密码失败...');
         }
     }
 

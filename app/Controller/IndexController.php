@@ -30,6 +30,7 @@ use Hyperf\WebSocketClient\ClientFactory;
 use Hyperf\WebSocketClient\Frame;
 
 /**
+ * @deprecated
  * @Controller(prefix="index")
  */
 class IndexController extends AbstractController
