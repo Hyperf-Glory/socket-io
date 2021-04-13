@@ -61,6 +61,6 @@ class Group extends Model
      */
     public static function isMember(int $groupId, int $uid) : bool
     {
-        return GroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('status', 0)->exists();
+        return GroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('leader', 0)->exists();
     }
 }

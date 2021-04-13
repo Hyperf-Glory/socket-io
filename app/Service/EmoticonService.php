@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -13,9 +13,10 @@ declare(strict_types=1);
  */
 namespace App\Service;
 
-use App\Model\ChatRecords;
 use App\Model\ChatRecordsFile;
 use App\Model\EmoticonDetail;
+use App\Model\Group;
+use App\Model\GroupMember;
 use App\Model\UsersEmoticon;
 use App\Model\UsersGroup;
 
@@ -29,19 +30,19 @@ class EmoticonService
     /**
      * 安装系统表情包.
      *
-     * @param int $uid 用户ID
+     * @param int $uid         用户ID
      * @param int $emoticon_id 表情包ID
      *
-     * @return mixed
+     * @return bool
      */
-    public function installSysEmoticon(int $uid, int $emoticon_id)
+    public function installSysEmoticon(int $uid, int $emoticon_id) : bool
     {
         /**
          * @var UsersEmoticon $info
          */
         $info = UsersEmoticon::select(['id', 'user_id', 'emoticon_ids'])->where('user_id', $uid)->first();
-        if (! $info) {
-            return UserEmoticon::create(['user_id' => $uid, 'emoticon_ids' => $emoticon_id]) ? true : false;
+        if (!$info) {
+            return (bool)UsersEmoticon::create(['user_id' => $uid, 'emoticon_ids' => $emoticon_id]);
         }
 
         $emoticon_ids = $info->emoticon_ids;
@@ -49,23 +50,23 @@ class EmoticonService
             return true;
         }
 
-        $emoticon_ids = (array) $emoticon_id;
-        return UserEmoticon::where('user_id', $uid)->update(['emoticon_ids' => implode(',', $emoticon_ids)]) ? true : false;
+        $emoticon_ids = (array)$emoticon_id;
+        return (bool)UsersEmoticon::where('user_id', $uid)->update(['emoticon_ids' => implode(',', $emoticon_ids)]);
     }
 
     /**
      * 移除已安装的系统表情包.
      *
-     * @param int $uid 用户ID
+     * @param int $uid         用户ID
      * @param int $emoticon_id 表情包ID
      */
-    public function removeSysEmoticon(int $uid, int $emoticon_id): bool
+    public function removeSysEmoticon(int $uid, int $emoticon_id) : bool
     {
         /**
          * @var UsersEmoticon $info
          */
         $info = UsersEmoticon::select(['id', 'user_id', 'emoticon_ids'])->where('user_id', $uid)->first();
-        if (! $info || ! in_array($emoticon_id, $info->emoticon_ids, true)) {
+        if (!$info || !in_array($emoticon_id, $info->emoticon_ids, true)) {
             return false;
         }
 
@@ -80,7 +81,7 @@ class EmoticonService
             return false;
         }
 
-        return UsersEmoticon::where('user_id', $uid)->update(['emoticon_ids' => implode(',', $emoticon_ids)]) ? true : false;
+        return (bool)UsersEmoticon::where('user_id', $uid)->update(['emoticon_ids' => implode(',', $emoticon_ids)]);
     }
 
     /**
@@ -88,7 +89,7 @@ class EmoticonService
      *
      * @param int $uid 用户ID
      */
-    public function getInstallIds(int $uid): array
+    public function getInstallIds(int $uid) : array
     {
         return UsersEmoticon::where('user_id', $uid)->value('emoticon_ids') ?? [];
     }
@@ -96,13 +97,13 @@ class EmoticonService
     /**
      * 收藏聊天图片.
      *
-     * @param int $uid 用户ID
+     * @param int $uid       用户ID
      * @param int $record_id 聊天消息ID
      */
-    public function collect(int $uid, int $record_id): array
+    public function collect(int $uid, int $record_id) : array
     {
         /**
-         * @var ChatRecords $result
+         * @var \App\Model\ChatRecord $result
          */
         $result = ChatRecords::where([
             ['id', '=', $record_id],
@@ -110,7 +111,7 @@ class EmoticonService
             ['is_revoke', '=', 0],
         ])->first(['id', 'source', 'msg_type', 'user_id', 'receive_id', 'is_revoke']);
 
-        if (! $result) {
+        if (!$result) {
             return [false, []];
         }
 
@@ -118,10 +119,8 @@ class EmoticonService
             if ($result->user_id !== $uid && $result->receive_id !== $uid) {
                 return [false, []];
             }
-        } else {
-            if (! UsersGroup::isMember($result->receive_id, $uid)) {
-                return [false, []];
-            }
+        } elseif (!Group::isMember($result->receive_id, $uid)) {
+            return [false, []];
         }
 
         /**
@@ -133,7 +132,7 @@ class EmoticonService
             'save_dir',
         ]);
 
-        if (! $fileInfo) {
+        if (!$fileInfo) {
             return [false, []];
         }
 
@@ -143,11 +142,11 @@ class EmoticonService
         }
 
         $res = EmoticonDetail::create([
-            'user_id' => $uid,
-            'url' => $fileInfo->save_dir,
+            'user_id'     => $uid,
+            'url'         => $fileInfo->save_dir,
             'file_suffix' => $fileInfo->file_suffix,
-            'file_size' => $fileInfo->file_size,
-            'created_at' => time(),
+            'file_size'   => $fileInfo->file_size,
+            'created_at'  => time(),
         ]);
 
         return $res ? [true, ['media_id' => $res->id, 'src' => get_media_url($res->url)]] : [false, []];
@@ -156,10 +155,13 @@ class EmoticonService
     /**
      * 移除收藏的表情包.
      *
-     * @param int $uid 用户ID
+     * @param int   $uid 用户ID
      * @param array $ids 表情包详情ID
+     *
+     * @return int
+     * @throws \Exception
      */
-    public function deleteCollect(int $uid, array $ids): int
+    public function deleteCollect(int $uid, array $ids) : int
     {
         return EmoticonDetail::whereIn('id', $ids)->where('user_id', $uid)->delete();
     }
@@ -167,9 +169,11 @@ class EmoticonService
     /**
      * 获取表情包列表.
      *
-     * @return mixed
+     * @param array $where
+     *
+     * @return array
      */
-    public function getDetailsAll(array $where = [])
+    public function getDetailsAll(array $where = []) : array
     {
         $list = EmoticonDetail::where($where)->get(['id as media_id', 'url as src'])->toArray();
 

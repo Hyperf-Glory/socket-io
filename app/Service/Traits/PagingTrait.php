@@ -26,9 +26,9 @@ trait PagingTrait
      *
      * @return int 分页总数
      */
-    protected function getPagingTotal(int $total, int $page_size)
+    protected function getPagingTotal(int $total, int $page_size) : int
     {
-        return ($total === 0) ? 0 : (int) ceil((int) $total / (int) $page_size);
+        return ($total === 0) ? 0 : (int) ceil($total / $page_size);
     }
 
     /**
@@ -42,13 +42,13 @@ trait PagingTrait
      *
      * @return array
      */
-    protected function getPagingRows(array $rows, int $total, int $page, int $page_size, array $params = [])
+    protected function getPagingRows(array $rows, int $total, int $page, int $page_size, array $params = []) : array
     {
         return array_merge([
             'rows' => $rows,
             'page' => $page,
             'page_size' => $page_size,
-            'page_total' => ($page_size == 0) ? 1 : $this->getPagingTotal($total, $page_size),
+            'page_total' => ($page_size === 0) ? 1 : $this->getPagingTotal($total, $page_size),
             'total' => $total,
         ], $params);
     }

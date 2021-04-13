@@ -1,19 +1,19 @@
 <?php
 
-declare (strict_types=1);
+declare (strict_types = 1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $group_id 
- * @property int $user_id 
- * @property int $leader 
- * @property int $is_mute 
- * @property int $is_quit 
- * @property string $user_card 
- * @property string $deleted_at 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int            $id
+ * @property int            $group_id
+ * @property int            $user_id
+ * @property int            $leader
+ * @property int            $is_mute
+ * @property int            $is_quit
+ * @property string         $user_card
+ * @property string         $deleted_at
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
  */
 class GroupMember extends Model
 {
