@@ -4,18 +4,18 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $group_id 
- * @property int $creator_id 
- * @property string $title 
- * @property string $content 
- * @property int $is_top 
- * @property int $is_delete 
- * @property int $is_confirm 
- * @property string $confirm_users 
- * @property string $deleted_at 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 群公告ID
+ * @property int $group_id 群组ID
+ * @property int $creator_id 创建者用户ID
+ * @property string $title 公告标题
+ * @property string $content 公告内容
+ * @property int $is_top 是否置顶[0:否;1:是;]
+ * @property int $is_delete 是否删除[0:否;1:是;]
+ * @property int $is_confirm 是否需群成员确认公告[0:否;1:是;]
+ * @property string $confirm_users 已确认成员
+ * @property string $deleted_at 删除时间
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UsersGroupNotice extends Model
 {

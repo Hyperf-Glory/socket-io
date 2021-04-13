@@ -4,18 +4,17 @@ declare (strict_types=1);
 namespace App\Model;
 
 use Hyperf\DbConnection\Db;
-
 /**
- * @property int $id
- * @property int $user1
- * @property int $user2
- * @property string $user1_remark
- * @property string $user2_remark
- * @property int $active
- * @property int $status
- * @property string $agree_time
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $id 关系ID
+ * @property int $user1 用户1(user1 一定比 user2 小)
+ * @property int $user2 用户2(user1 一定比 user2 小)
+ * @property string $user1_remark 好友备注
+ * @property string $user2_remark 好友备注
+ * @property int $active 主动邀请方[1:user1;2:user2]
+ * @property int $status 好友状态[0:已解除好友关系;1:好友状态]
+ * @property string $agree_time 成为好友时间
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UsersFriend extends Model
 {
@@ -55,16 +54,12 @@ class UsersFriend extends Model
               SELECT id as rid,user1 as uid,user2_remark as friend_remark from im_users_friends where user2 = {$uid} and `status` = 1
             ) tmp_table on tmp_table.uid = users.id  order by tmp_table.rid desc
 SQL;
-
         $rows = Db::select($sql);
-
         array_walk($rows, static function (&$item) {
             $item = (array) $item;
         });
-
         return $rows;
     }
-
     /**
      * 判断用户之间是否存在好友关系.
      *
@@ -79,10 +74,8 @@ SQL;
         if ($uid1 > $uid2) {
             [$uid1, $uid2] = [$uid2, $uid1];
         }
-
         return self::where('user1', $uid1)->where('user2', $uid2)->where('status', 1)->exists();
     }
-
     /**
      * 获取指定用户的所有朋友的用户ID.
      *

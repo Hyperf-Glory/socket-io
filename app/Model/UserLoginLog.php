@@ -4,11 +4,11 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $user_id 
- * @property string $ip 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 登录日志ID
+ * @property int $user_id 用户ID
+ * @property string $ip 登录地址IP
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UserLoginLog extends Model
 {

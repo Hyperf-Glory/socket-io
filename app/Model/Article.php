@@ -4,18 +4,18 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $uid 
- * @property int $class_id 
- * @property string $tags_id 
- * @property string $title 
- * @property string $abstract 
- * @property string $image 
- * @property int $is_asterisk 
- * @property int $status 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
- * @property string $deleted_at 
+ * @property int $id 笔记ID
+ * @property int $uid 用户ID
+ * @property int $class_id 分类ID
+ * @property string $tags_id 笔记关联标签
+ * @property string $title 笔记标题
+ * @property string $abstract 笔记摘要
+ * @property string $image 笔记首图
+ * @property int $is_asterisk 是否星标笔记[0:否;1:是]
+ * @property int $status 笔记状态[1:正常;2:已删除]
+ * @property Carbon\Carbon $created_at 添加时间
+ * @property Carbon\Carbon $updated_at 最后一次更新时间
+ * @property string $deleted_at 笔记删除时间
  */
 class Article extends Model
 {

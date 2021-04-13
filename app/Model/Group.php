@@ -1,21 +1,21 @@
 <?php
 
-declare (strict_types = 1);
+declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int            $id
- * @property int            $creator_id
- * @property string         $group_name
- * @property string         $profile
- * @property string         $avatar
- * @property int            $max_num
- * @property int            $is_overt
- * @property int            $is_mute
- * @property int            $is_dismiss
- * @property string         $dismissed_at
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $id 群ID
+ * @property int $creator_id 创建者ID(群主ID)
+ * @property string $group_name 群名称
+ * @property string $profile 群介绍
+ * @property string $avatar 群头像
+ * @property int $max_num 最大群成员数量
+ * @property int $is_overt 是否公开可见[0:否;1:是;]
+ * @property int $is_mute 是否全员禁言 [0:否;1:是;]，提示:不包含群主或管理员
+ * @property int $is_dismiss 是否已解散[0:否;1:是;]
+ * @property string $dismissed_at 解散时间
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class Group extends Model
 {
@@ -37,7 +37,6 @@ class Group extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'creator_id' => 'integer', 'max_num' => 'integer', 'is_overt' => 'integer', 'is_mute' => 'integer', 'is_dismiss' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
-
     /**
      * 判断用户是否是管理员.
      *
@@ -50,7 +49,6 @@ class Group extends Model
     {
         return self::where('id', $groupId)->where('user_id', $uid)->exists();
     }
-
     /**
      * 判断用户是否是群成员.
      *

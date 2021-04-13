@@ -4,11 +4,11 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $user_id 
- * @property string $emoticon_ids 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 表情包收藏ID
+ * @property int $user_id 用户ID
+ * @property string $emoticon_ids 表情包ID
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UsersEmoticon extends Model
 {

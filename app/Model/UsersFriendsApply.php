@@ -4,13 +4,13 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $user_id 
- * @property int $friend_id 
- * @property int $status 
- * @property string $remarks 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 申请ID
+ * @property int $user_id 申请人ID
+ * @property int $friend_id 被申请人
+ * @property int $status 申请状态[0:等待处理;1:已同意]
+ * @property string $remarks 申请人备注信息
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UsersFriendsApply extends Model
 {

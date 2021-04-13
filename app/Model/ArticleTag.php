@@ -4,12 +4,12 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $uid 
- * @property string $tag_name 
- * @property int $sort 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 笔记标签ID
+ * @property int $uid 用户ID
+ * @property string $tag_name 标签名
+ * @property int $sort 排序
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ArticleTag extends Model
 {

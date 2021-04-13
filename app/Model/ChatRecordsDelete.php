@@ -4,11 +4,11 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $record_id 
- * @property int $user_id 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 聊天删除记录ID
+ * @property int $record_id 聊天记录ID
+ * @property int $user_id 用户ID
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ChatRecordsDelete extends Model
 {

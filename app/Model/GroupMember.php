@@ -1,19 +1,19 @@
 <?php
 
-declare (strict_types = 1);
+declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int            $id
- * @property int            $group_id
- * @property int            $user_id
- * @property int            $leader
- * @property int            $is_mute
- * @property int            $is_quit
- * @property string         $user_card
- * @property string         $deleted_at
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $id 群成员ID
+ * @property int $group_id 群ID
+ * @property int $user_id 用户ID
+ * @property int $leader 成员属性[0:普通成员;1:管理员;2:群主;]
+ * @property int $is_mute 是否禁言[0:否;1:是;]
+ * @property int $is_quit 是否退群[0:否;1:是;]
+ * @property string $user_card 群名片
+ * @property string $deleted_at 退群时间
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class GroupMember extends Model
 {

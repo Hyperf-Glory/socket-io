@@ -1,19 +1,19 @@
 <?php
 
-declare (strict_types = 1);
+declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int            $id
- * @property int            $type
- * @property int            $uid
- * @property int            $friend_id
- * @property int            $group_id
- * @property int            $status
- * @property int            $is_top
- * @property int            $not_disturb
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property int $id 聊天列表ID
+ * @property int $type 聊天类型[1:好友;2:群聊]
+ * @property int $uid 用户ID
+ * @property int $friend_id 朋友的用户ID
+ * @property int $group_id 聊天分组ID
+ * @property int $status 状态[0:已删除;1:正常]
+ * @property int $is_top 是否置顶[0:否;1:是]
+ * @property int $not_disturb 是否消息免打扰[0:否;1:是]
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class UsersChatList extends Model
 {
@@ -35,7 +35,6 @@ class UsersChatList extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'type' => 'integer', 'uid' => 'integer', 'friend_id' => 'integer', 'group_id' => 'integer', 'status' => 'integer', 'is_top' => 'integer', 'not_disturb' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
-
     /**
      * 删除聊天列表.
      *
@@ -46,14 +45,13 @@ class UsersChatList extends Model
     public static function delItem(int $uid, int $id, $type = 1) : bool
     {
         if ($type === 1) {
-            return (bool)self::where('id', $id)->where('uid', $uid)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return (bool) self::where('id', $id)->where('uid', $uid)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
         }
         if ($type === 2) {
-            return (bool)self::where('uid', $uid)->where('friend_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+            return (bool) self::where('uid', $uid)->where('friend_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
         }
-        return (bool)self::where('uid', $uid)->where('group_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
+        return (bool) self::where('uid', $uid)->where('group_id', $id)->update(['status' => 0, 'updated_at' => date('Y-m-d H:i:s')]);
     }
-
     /**
      * 创建聊天列表记录.
      *
@@ -68,7 +66,7 @@ class UsersChatList extends Model
          */
         $result = self::where('uid', $user_id)->where('type', $type)->where($type === 1 ? 'friend_id' : 'group_id', $receive_id)->first();
         if ($result) {
-            $result->status     = 1;
+            $result->status = 1;
             $result->updated_at = date('Y-m-d H:i:s');
             $result->save();
             return ['id' => $result->id, 'type' => $result->type, 'friend_id' => $result->friend_id, 'group_id' => $result->group_id];
@@ -78,7 +76,6 @@ class UsersChatList extends Model
         }
         return ['id' => $result->id, 'type' => $result->type, 'friend_id' => $result->friend_id, 'group_id' => $result->group_id];
     }
-
     /**
      * 聊天对话列表置顶操作.
      *
@@ -88,9 +85,8 @@ class UsersChatList extends Model
      */
     public static function topItem(int $user_id, int $list_id, $is_top = true) : bool
     {
-        return (bool)self::where('id', $list_id)->where('uid', $user_id)->update(['is_top' => $is_top ? 1 : 0, 'updated_at' => date('Y-m-d H:i:s')]);
+        return (bool) self::where('id', $list_id)->where('uid', $user_id)->update(['is_top' => $is_top ? 1 : 0, 'updated_at' => date('Y-m-d H:i:s')]);
     }
-
     /**
      * 设置消息免打扰.
      *
@@ -105,10 +101,9 @@ class UsersChatList extends Model
          * @var self $result
          */
         $result = self::where('uid', $user_id)->where($type === 1 ? 'friend_id' : 'group_id', $receive_id)->where('status', 1)->first(['id', 'not_disturb']);
-
         if (!$result || $not_disturb === $result->not_disturb) {
             return false;
         }
-        return (bool)self::where('id', $result->id)->update(['not_disturb' => $not_disturb]);
+        return (bool) self::where('id', $result->id)->update(['not_disturb' => $not_disturb]);
     }
 }

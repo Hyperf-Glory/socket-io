@@ -4,13 +4,13 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $record_id 
- * @property int $user_id 
- * @property string $records_id 
- * @property string $text 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 合并转发ID
+ * @property int $record_id 消息记录ID
+ * @property int $user_id 转发用户ID
+ * @property string $records_id 转发的聊天记录ID，多个用','分割
+ * @property string $text 记录快照
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ChatRecordsForward extends Model
 {

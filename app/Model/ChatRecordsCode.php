@@ -4,13 +4,13 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $record_id 
- * @property int $user_id 
- * @property string $code_lang 
- * @property string $code 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 入群或退群通知ID
+ * @property int $record_id 消息记录ID
+ * @property int $user_id 上传文件的用户ID
+ * @property string $code_lang 代码片段类型(如：php,java,python)
+ * @property string $code 代码片段内容
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ChatRecordsCode extends Model
 {

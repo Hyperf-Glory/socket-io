@@ -4,19 +4,19 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $record_id 
- * @property int $user_id 
- * @property int $file_source 
- * @property int $file_type 
- * @property int $save_type 
- * @property string $original_name 
- * @property string $file_suffix 
- * @property int $file_size 
- * @property string $save_dir 
- * @property int $is_delete 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 文件ID
+ * @property int $record_id 消息记录ID
+ * @property int $user_id 上传文件的用户ID
+ * @property int $file_source 文件来源[1:用户上传;2:表情包]
+ * @property int $file_type 消息类型[1:图片;2:视频;3:文件]
+ * @property int $save_type 文件保存方式（0:本地 1:第三方[阿里OOS、七牛云] ）
+ * @property string $original_name 原文件名
+ * @property string $file_suffix 文件后缀名
+ * @property int $file_size 文件大小（单位字节）
+ * @property string $save_dir 文件保存地址（相对地址/第三方网络地址）
+ * @property int $is_delete 文件是否已删除[0:否;1:已删除]
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ChatRecordsFile extends Model
 {

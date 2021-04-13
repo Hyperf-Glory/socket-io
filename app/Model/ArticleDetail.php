@@ -4,12 +4,12 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $article_id 
- * @property string $md_content 
- * @property string $content 
- * @property \Carbon\Carbon $created_at 
- * @property \Carbon\Carbon $updated_at 
+ * @property int $id 笔记详情ID
+ * @property int $article_id 笔记ID
+ * @property string $md_content Markdown 内容
+ * @property string $content Markdown 解析HTML内容
+ * @property Carbon\Carbon $created_at 
+ * @property Carbon\Carbon $updated_at 
  */
 class ArticleDetail extends Model
 {

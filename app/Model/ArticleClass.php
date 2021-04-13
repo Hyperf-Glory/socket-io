@@ -4,12 +4,12 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $uid 
- * @property string $class_name 
- * @property int $sort 
- * @property int $is_default 
- * @property \Carbon\Carbon $created_at 
+ * @property int $id 笔记分类ID
+ * @property int $uid 用户ID
+ * @property string $class_name 分类名
+ * @property int $sort 排序
+ * @property int $is_default 默认分类[1:是;0:不是]
+ * @property Carbon\Carbon $created_at 创建时间
  */
 class ArticleClass extends Model
 {

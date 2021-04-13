@@ -4,16 +4,16 @@ declare (strict_types=1);
 namespace App\Model;
 
 /**
- * @property int $id 
- * @property int $uid 
- * @property int $article_id 
- * @property string $file_suffix 
- * @property int $file_size 
- * @property string $save_dir 
- * @property string $original_name 
- * @property int $status 
- * @property \Carbon\Carbon $created_at 
- * @property string $deleted_at 
+ * @property int $id 文件ID
+ * @property int $uid 上传文件的用户ID
+ * @property int $article_id 笔记ID
+ * @property string $file_suffix 文件后缀名
+ * @property int $file_size 文件大小（单位字节）
+ * @property string $save_dir 文件保存地址（相对地址）
+ * @property string $original_name 原文件名
+ * @property int $status 附件状态[1:正常;2:已删除]
+ * @property Carbon\Carbon $created_at 附件上传时间
+ * @property string $deleted_at 附件删除时间
  */
 class ArticleAnnex extends Model
 {
