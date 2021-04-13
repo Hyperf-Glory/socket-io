@@ -4,6 +4,11 @@ namespace App\Resource;
 
 use Hyperf\Resource\Json\ResourceCollection;
 
+/**
+ * Class Users
+ * @package App\Resource
+ * @mixin \App\Model\User
+ */
 class Users extends ResourceCollection
 {
     /**
@@ -11,8 +16,12 @@ class Users extends ResourceCollection
      *
      * @return array
      */
-    public function toArray(): array
+    public function toArray() : array
     {
-        return parent::toArray();
+        return [
+            'id'       => $this->id,
+            'nickname' => $this->nickname,
+            'avatar'   => $this->avatar,
+        ];
     }
 }

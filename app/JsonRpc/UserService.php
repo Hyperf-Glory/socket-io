@@ -21,6 +21,7 @@ use App\JsonRpc\Contract\InterfaceUserService;
 use App\Kernel\JsonRpc\ResponseHelper;
 use App\Kernel\JsonRpc\RpcResponse;
 use App\Model\User as UserModel;
+use App\Resource\Users;
 use App\Service\UserService as UserSer;
 use Hyperf\Logger\LoggerFactory;
 use Hyperf\RpcServer\Annotation\RpcService;
@@ -185,11 +186,9 @@ class UserService implements InterfaceUserService
              */
             $user = $this->userService->get($uid);
             if ($user) {
-                return ResponseHelper::success([
-                    'id'       => $user->id,
-                    'nickname' => $user->nickname,
-                    'avatar'   => $user->avatar,
-                ], null);
+                return ResponseHelper::success((array)new Users(
+                    $user)
+                    , null);
             }
             return null;
         } catch (Throwable $throwable) {
