@@ -20,6 +20,7 @@ use App\Component\MessageParser;
  */
 class LastMsgCache extends AbstractCache
 {
+
     /**
      * 设置好友之间或群聊中发送的最后一条消息缓存.
      *
@@ -72,7 +73,7 @@ class LastMsgCache extends AbstractCache
      */
     private function _key(int $receive, int $sender) : string
     {
-        return $receive < $sender ? "{$receive}_{$sender}" : "{$sender}_{$receive}";
+        return $receive < $sender ? "{$receive}_$sender" : "{$sender}_$receive";
     }
 
 }

@@ -13,10 +13,6 @@ declare(strict_types = 1);
  */
 namespace App\Cache;
 
-use Hyperf\Redis\RedisFactory;
-use Hyperf\Redis\RedisProxy;
-use Hyperf\Utils\ApplicationContext;
-
 /**
  * Class ApplyNumCache.
  */

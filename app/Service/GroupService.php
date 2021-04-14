@@ -19,14 +19,47 @@ use App\Model\ChatRecordsInvite;
 use App\Model\Group;
 use App\Model\GroupMember;
 use App\Model\UsersChatList;
-use App\Model\UsersGroup;
-use App\Model\UsersGroupMember;
 use Exception;
 use Hyperf\DbConnection\Db;
-use RuntimeException;
 
 class GroupService
 {
+
+    /**
+     * 获取用户所在的群聊
+     *
+     * @param int $user_id 用户ID
+     *
+     * @return array
+     */
+    public function getGroups(int $user_id) : array
+    {
+        $items = GroupMember::join(Group::newModelInstance()->getTable(), 'group.id', '=', 'group_member.group_id')
+                            ->where([
+                                ['group_member.user_id', '=', $user_id],
+                                ['group_member.is_quit', '=', 0]
+                            ])
+                            ->orderBy('id', 'desc')
+                            ->get([
+                                'group.id',
+                                'group.group_name',
+                                'group.avatar',
+                                'group.profile',
+                                'group_member.leader',
+                            ])->toArray();
+
+        $arr = UsersChatList::where([
+            ['uid', '=', $user_id],
+            ['type', '=', 2],
+        ])->get(['group_id', 'not_disturb'])->keyBy('group_id')->toArray();
+
+        foreach ($items as $key => $item) {
+            $items[$key]['not_disturb'] = isset($arr[$item['id']]) ? $arr[$item['id']]['not_disturb'] : 0;
+        }
+
+        return $items;
+    }
+
     public function getGroupUid(int $groupId) : array
     {
         return GroupMember::query()->where('group_id', $groupId)->get('user_id')->toArray();
@@ -43,70 +76,75 @@ class GroupService
      */
     public function create(int $uid, array $groupInfo, $friendIds = []) : ?array
     {
-        $friendIds[] = $uid;
-        $groupMember = [];
-        $chatList    = [];
+        $invite_ids   = implode(',', $friendIds);
+        $friend_ids[] = $uid;
+        $groupMember  = [];
+        $chatList     = [];
+
         Db::beginTransaction();
         try {
-            $group = Group::create([
-                'user_id'       => $uid,
-                'group_name'    => $groupInfo['name'],
-                'avatar'        => $groupInfo['avatar'],
-                'group_profile' => $groupInfo['profile'],
-                'status'        => 0,
-                'created_at'    => date('Y-m-d H:i:s'),
+            $insRes = Group::create([
+                'creator_id' => $uid,
+                'group_name' => $groupInfo['name'],
+                'avatar'     => $groupInfo['avatar'],
+                'profile'    => $groupInfo['profile'],
+                'max_num'    => Group::MAX_MEMBER_NUM,
+                'is_overt'   => 0,
+                'is_mute'    => 0,
+                'is_dismiss' => 0,
+                'created_at' => date('Y-m-d H:i:s')
             ]);
-            if (!$group) {
-                throw new RuntimeException('创建群失败!');
-            }
 
-            foreach ($friendIds as $k => $_uid) {
+            foreach ($friend_ids as $fid) {
                 $groupMember[] = [
-                    'group_id'    => $group->id,
-                    'user_id'     => $_uid,
-                    'group_owner' => ($k === 0) ? 1 : 0,
-                    'status'      => 0,
-                    'created_at'  => date('Y-m-d H:i:s'),
+                    'group_id'   => $insRes->id,
+                    'user_id'    => $fid,
+                    'leader'     => $fid === $uid ? 2 : 0,
+                    'is_mute'    => 0,
+                    'is_quit'    => 0,
+                    'user_card'  => '',
+                    'created_at' => date('Y-m-d H:i:s'),
                 ];
 
                 $chatList[] = [
                     'type'       => 2,
-                    'uid'        => $_uid,
+                    'uid'        => $fid,
                     'friend_id'  => 0,
-                    'group_id'   => $group->id,
+                    'group_id'   => $insRes->id,
                     'status'     => 1,
                     'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
                 ];
             }
-            if (!Db::table(GroupMember::newModelInstance()->getTable())->insert($groupMember)) {
-                throw new RuntimeException('创建群成员信息失败');
+
+            if (!Db::table('group_member')->insert($groupMember)) {
+                throw new Exception('创建群成员信息失败');
             }
-            if (!Db::table(UsersChatList::newModelInstance()->getTable())->insert($chatList)) {
-                throw new RuntimeException('创建群成员的聊天列表失败');
+
+            if (!Db::table('users_chat_list')->insert($chatList)) {
+                throw new Exception('创建群成员的聊天列表失败');
             }
 
             $result = ChatRecord::create([
                 'msg_type'   => 3,
                 'source'     => 2,
                 'user_id'    => 0,
-                'receive_id' => $group->id,
-                'created_at' => date('Y-m-d H:i:s'),
+                'receive_id' => $insRes->id,
+                'created_at' => date('Y-m-d H:i:s')
             ]);
 
-            if (!$result) {
-                throw new RuntimeException('创建群成员的聊天列表失败');
-            }
-            ChatRecordsInvite::insert([
+            ChatRecordsInvite::create([
                 'record_id'       => $result->id,
                 'type'            => 1,
                 'operate_user_id' => $uid,
-                'user_ids'        => implode(',', $friendIds),
+                'user_ids'        => $invite_ids
             ]);
+
             Db::commit();
-            LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $group->id, 0);
-            return [true, ['record_id' => $result->id, 'group_id' => $group->id]];
-        } catch (\Throwable $throwable) {
+            // 设置群聊消息缓存
+            make(LastMsgCache::class)->set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $insRes->id);
+            return [true, ['record_id' => $result->id, 'group_id' => $insRes->id]];
+        } catch (Exception $e) {
             Db::rollBack();
             return [false, 0];
         }
@@ -115,27 +153,30 @@ class GroupService
     /**
      * 解散群组.
      *
+     * @param int $groupId
+     * @param int $uid
+     *
      * @return bool
      */
     public function dismiss(int $groupId, int $uid) : bool
     {
-        if (!Group::where('id', $groupId)->where('status', 0)->exists()) {
+        $group = Group::where('id', $groupId)->first(['creator_id', 'is_dismiss']);
+        if (!$group || $group->creator_id !== $uid || $group->is_dismiss === 1) {
             return false;
         }
 
-        //判断执行者是否属于群主
-        if (!UsersGroup::isManager($uid, $groupId)) {
-            return false;
-        }
-        DB::beginTransaction();
-        try {
-            UsersGroup::where('id', $groupId)->update(['status' => 1]);
-            UsersGroupMember::where('group_id', $groupId)->update(['status' => 1]);
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            return false;
-        }
+        DB::transaction(function () use ($groupId, $uid)
+        {
+            Group::where('id', $groupId)->where('creator_id', $uid)->update([
+                'is_dismiss'   => 1,
+                'dismissed_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            GroupMember::where('group_id', $groupId)->update([
+                'is_quit'    => 1,
+                'deleted_at' => date('Y-m-d H:i:s'),
+            ]);
+        }, 2);
 
         return true;
     }
@@ -149,77 +190,98 @@ class GroupService
      */
     public function invite(int $uid, int $groupId, $friendIds = []) : ?array
     {
-        /**
-         * @var GroupMember $info
-         */
-        $info = GroupMember::select(['id', 'status'])->where('group_id', $groupId)->where('user_id', $uid)->first();
-
-        //判断主动邀请方是否属于聊天群成员
-        if (!$info && $info->leader === 1) {
+        if (!$friendIds) {
             return [false, 0];
         }
 
-        if (empty($friendIds)) {
+        $info = GroupMember::where('group_id', $groupId)->where('user_id', $uid)->first(['id', 'is_quit']);
+
+        // 判断主动邀请方是否属于聊天群成员
+        if (!$info && $info->is_quit === 1) {
             return [false, 0];
         }
 
         $updateArr = $insertArr = $updateArr1 = $insertArr1 = [];
 
-        $members = GroupMember::where('group_id', $groupId)->whereIn('user_id', $friendIds)->get(['id', 'user_id', 'leader'])->keyBy('user_id')->toArray();
+        $members = GroupMember::where('group_id', $groupId)->whereIn('user_id', $friendIds)->get(['id', 'user_id', 'is_quit'])->keyBy('user_id')->toArray();
         $chatArr = UsersChatList::where('group_id', $groupId)->whereIn('uid', $friendIds)->get(['id', 'uid', 'status'])->keyBy('uid')->toArray();
 
-        foreach ($friendIds as $id) {
-            if (!isset($members[$id])) {//存在聊天群成员记录
-                $insertArr[] = ['group_id' => $groupId, 'user_id' => $id, 'group_owner' => 0, 'status' => 0, 'created_at' => date('Y-m-d H:i:s')];
-            } elseif ($members[$id]['leader'] === 1) {
-                $updateArr[] = $members[$id]['id'];
+        foreach ($friendIds as $fid) {
+            if (!isset($members[$fid])) {
+                $insertArr[] = [
+                    'group_id'   => $groupId,
+                    'user_id'    => $fid,
+                    'leader'     => 0,
+                    'is_mute'    => 0,
+                    'is_quit'    => 0,
+                    'user_card'  => '',
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+            } elseif ($members[$fid]['status'] === 1) {
+                $updateArr[] = $members[$fid]['id'];
             }
 
-            if (!isset($chatArr[$id])) {
-                $insertArr1[] = ['type' => 2, 'uid' => $id, 'friend_id' => 0, 'group_id' => $groupId, 'status' => 1, 'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')];
-            } elseif ($chatArr[$id]['status'] === 0) {
-                $updateArr1[] = $chatArr[$id]['id'];
+            if (!isset($chatArr[$fid])) {
+                $insertArr1[] = [
+                    'type'       => 2,
+                    'uid'        => $fid,
+                    'friend_id'  => 0,
+                    'group_id'   => $groupId,
+                    'status'     => 1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+            } elseif ($chatArr[$fid]['status'] === 0) {
+                $updateArr1[] = $chatArr[$fid]['id'];
             }
         }
 
         try {
             if ($updateArr) {
-                GroupMember::whereIn('id', $updateArr)->update(['status' => 0]);
+                GroupMember::whereIn('id', $updateArr)->update([
+                    'leader'     => 0,
+                    'is_mute'    => 0,
+                    'is_quit'    => 0,
+                    'user_card'  => '',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
             }
+
             if ($insertArr) {
-                DB::table(GroupMember::newModelInstance()->getTable())->insert($insertArr);
+                Db::table(GroupMember::newModelInstance()->getTable())->insert($insertArr);
             }
+
             if ($updateArr1) {
-                UsersChatList::whereIn('id', $updateArr1)->update(['status' => 1, 'created_at' => date('Y-m-d H:i:s')]);
+                UsersChatList::whereIn('id', $updateArr1)->update([
+                    'status'     => 1,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
             }
 
             if ($insertArr1) {
-                DB::table('users_chat_list')->insert($insertArr1);
+                Db::table('users_chat_list')->insert($insertArr1);
             }
+
             $result = ChatRecord::create([
                 'msg_type'   => 3,
                 'source'     => 2,
                 'user_id'    => 0,
                 'receive_id' => $groupId,
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s')
             ]);
-            if (!$result) {
-                throw new RuntimeException('添加群通知记录失败1');
-            }
-            $result2 = ChatRecordsInvite::create([
+
+            ChatRecordsInvite::create([
                 'record_id'       => $result->id,
                 'type'            => 1,
                 'operate_user_id' => $uid,
-                'user_ids'        => implode(',', $friendIds),
+                'user_ids'        => implode(',', $friendIds)
             ]);
-            if (!$result2) {
-                throw new Exception('添加群通知记录失败2');
-            }
-            DB::commit();
-            LastMsgCache::set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $groupId, 0);
+
+            Db::commit();
+            make(LastMsgCache::class)->set(['created_at' => date('Y-m-d H:i:s'), 'text' => '入群通知'], $groupId);
             return [true, $result->id];
-        } catch (\Throwable $throwable) {
-            DB::rollBack();
+        } catch (Exception $e) {
+            Db::rollBack();
             return [false, 0];
         }
     }
@@ -232,44 +294,45 @@ class GroupService
      */
     public function quit(int $uid, int $groupId) : ?array
     {
-        $recordId = 0;
-        DB::beginTransaction();
+        if (Group::isManager($uid, $groupId)) {
+            return [false, 0];
+        }
+
+        Db::beginTransaction();
         try {
-            $res = GroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('group_owner', 0)->update(['status' => 1]);
-            if ($res) {
-                UsersChatList::where('uid', $uid)->where('type', 2)->where('group_id', $groupId)->update(['status' => 0]);
+            $count = GroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('is_quit', 0)->update([
+                'is_quit'    => 1,
+                'deleted_at' => date('Y-m-d H:i:s'),
+            ]);
 
-                $result = ChatRecord::create([
-                    'msg_type'   => 3,
-                    'source'     => 2,
-                    'user_id'    => 0,
-                    'receive_id' => $groupId,
-                    'content'    => $uid,
-                    'created_at' => date('Y-m-d H:i:s'),
-                ]);
-
-                if (!$result) {
-                    throw new RuntimeException('添加群通知记录失败 : quitGroupChat');
-                }
-
-                $result2 = ChatRecordsInvite::create([
-                    'record_id'       => $result->id,
-                    'type'            => 2,
-                    'operate_user_id' => $uid,
-                    'user_ids'        => $uid,
-                ]);
-
-                if (!$result2) {
-                    throw new RuntimeException('添加群通知记录失败2  : quitGroupChat');
-                }
-
-                $recordId = $result->id;
+            if ($count === 0) {
+                throw new Exception('更新记录失败...');
             }
 
-            DB::commit();
-            return [true, $recordId];
+            $result = ChatRecord::create([
+                'msg_type'   => 3,
+                'source'     => 2,
+                'user_id'    => 0,
+                'receive_id' => $groupId,
+                'content'    => $uid,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $record_id = $result->id;
+
+            ChatRecordsInvite::create([
+                'record_id'       => $result->id,
+                'type'            => 2,
+                'operate_user_id' => $uid,
+                'user_ids'        => $uid
+            ]);
+
+            UsersChatList::where('uid', $uid)->where('type', 2)->where('group_id', $groupId)->update(['status' => 0]);
+
+            Db::commit();
+            return [true, $record_id];
         } catch (Exception $e) {
-            DB::rollBack();
+            Db::rollBack();
             return [false, 0];
         }
     }
@@ -283,40 +346,40 @@ class GroupService
             return [false, 0];
         }
 
-        DB::beginTransaction();
+        Db::beginTransaction();
         try {
-            //更新用户状态
-            if (!GroupMember::where('group_id', $groupId)->whereIn('user_id', $memberIds)->where('is_quit', 0)->update(['status' => 1])) {
-                throw new RuntimeException('修改群成员状态失败');
-            }
+            $count = GroupMember::where('group_id', $groupId)->whereIn('user_id', $memberIds)->where('is_quit', 0)->update([
+                'is_quit'    => 1,
+                'deleted_at' => date('Y-m-d H:i:s'),
+            ]);
 
+            if ($count === 0) {
+                throw new Exception('更新记录失败...');
+            }
             $result = ChatRecord::create([
                 'msg_type'   => 3,
                 'source'     => 2,
                 'user_id'    => 0,
                 'receive_id' => $groupId,
-                'created_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s')
             ]);
 
-            if (!$result) {
-                throw new RuntimeException('添加群通知记录失败1');
-            }
-
-            $result2 = ChatRecordsInvite::create([
+            ChatRecordsInvite::create([
                 'record_id'       => $result->id,
                 'type'            => 3,
                 'operate_user_id' => $uid,
-                'user_ids'        => implode(',', $memberIds),
+                'user_ids'        => implode(',', $memberIds)
             ]);
 
-            if (!$result2) {
-                throw new RuntimeException('添加群通知记录失败2');
-            }
+            UsersChatList::whereIn('uid', $memberIds)->where('group_id', $groupId)->update([
+                'status'     => 0,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
 
-            DB::commit();
+            Db::commit();
             return [true, $result->id];
         } catch (Exception $e) {
-            DB::rollBack();
+            Db::rollBack();
             return [false, 0];
         }
     }

@@ -17,7 +17,8 @@ use App\Cache\FriendRemarkCache;
 use App\Cache\LastMsgCache;
 use App\Component\MessageParser;
 use App\Component\UnreadTalk;
-use App\Kernel\SocketIO\SocketIO;
+use App\Model\ChatRecordsDelete;
+use App\SocketIO\SocketIO;
 use App\Model\ChatRecord;
 use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;
@@ -34,7 +35,6 @@ use Hyperf\DbConnection\Db;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\Utils\ApplicationContext;
 use RuntimeException;
-use function Han\Utils\app;
 
 class TalkService
 {
@@ -93,10 +93,10 @@ class TalkService
             if ($item['type'] === 1) {
                 $data['name']       = $item['nickname'];
                 $data['avatar']     = $item['user_avatar'];
-                $data['unread_num'] = di(UnreadTalk::class)->get($uid, $item['friend_id']);
+                $data['unread_num'] = ApplicationContext::getContainer()->get(UnreadTalk::class)->get($uid, $item['friend_id']);
                 $data['online']     = $redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string)$item['friend_id']) ? 1 : 0;
 
-                $remark = FriendRemarkCache::get($uid, $item['friend_id'], $redis);
+                $remark = make(FriendRemarkCache::class)->get($uid, $item['friend_id']);
                 if ($remark) {
                     $data['remark_name'] = $remark;
                 } else {
@@ -109,7 +109,7 @@ class TalkService
                     if ($info) {
                         $data['remark_name'] = ($info->user1 === $item['friend_id']) ? $info->user2_remark : $info->user1_remark;
 
-                        FriendRemarkCache::set($uid, $item['friend_id'], $data['remark_name'], $redis);
+                        make(FriendRemarkCache::class)->set($uid, $item['friend_id'], $data['remark_name']);
                     }
                 }
             } else {
@@ -117,7 +117,7 @@ class TalkService
                 $data['avatar'] = $item['group_avatar'] ?? '';
             }
 
-            $records = LastMsgCache::get($item['type'] === 1 ? $item['friend_id'] : $item['group_id'], $item['type'] === 1 ? $uid : 0, $redis);
+            $records = make(LastMsgCache::class)->get($item['type'] === 1 ? $item['friend_id'] : $item['group_id'], $item['type'] === 1 ? $uid : 0);
 
             if ($records) {
                 $data['msg_text']   = $records['text'];
@@ -205,11 +205,6 @@ class TalkService
             $rows[$k]['invite']     = [];
 
             switch ($row['msg_type']) {
-                case 1://1:文本消息
-                    if (!empty($rows[$k]['content'])) {
-                        $rows[$k]['content'] = replace_url_link($row['content']);
-                    }
-                    break;
                 case 2://2:文件消息
                     $rows[$k]['file'] = $files[$row['id']] ?? [];
                     if ($rows[$k]['file']) {
@@ -222,13 +217,13 @@ class TalkService
                             'type'         => $invites[$row['id']]['type'],
                             'operate_user' => [
                                 'id'       => $invites[$row['id']]['operate_user_id'],
-                                'nickname' => User::where('id', $invites[$row['id']]['operate_user_id'])->value('nickname'),
+                                'nickname' => User::where('id', $invites[$row['id']]['operate_user_id'])->value('nickname')
                             ],
-                            'users'        => [],
+                            'users'        => []
                         ];
 
                         if ($rows[$k]['invite']['type'] === 1 || $rows[$k]['invite']['type'] === 3) {
-                            $rows[$k]['invite']['users'] = User::select(['id', 'nickname'])->whereIn('id', explode(',', $invites[$row['id']]['user_ids']))->get()->toArray();
+                            $rows[$k]['invite']['users'] = User::select('id', 'nickname')->whereIn('id', explode(',', $invites[$row['id']]['user_ids']))->get()->toArray();
                         } else {
                             $rows[$k]['invite']['users'] = $rows[$k]['invite']['operate_user'];
                         }
@@ -238,7 +233,7 @@ class TalkService
                     if (isset($forwards[$row['id']])) {
                         $rows[$k]['forward'] = [
                             'num'  => substr_count($forwards[$row['id']]['records_id'], ',') + 1,
-                            'list' => MessageParser::decode($forwards[$row['id']]['text']) ?? [],
+                            'list' => MessageParser::decode($forwards[$row['id']]['text']) ?? []
                         ];
                     }
                     break;
@@ -313,8 +308,8 @@ class TalkService
         //过滤用户删除记录
         $rowsSqlObj->whereNotExists(function ($query) use ($uid)
         {
-            $query->select(Db::raw(1))->from('chat_records_delete');
-            $query->whereRaw("im_chat_records_delete.record_id = im_chat_records.id and im_chat_records_delete.user_id = {$uid}");
+            $query->select(Db::raw(1))->from(ChatRecordsDelete::newModelInstance()->getTable());
+            $query->whereRaw("im_chat_records_delete.record_id = im_chat_records.id and im_chat_records_delete.user_id = $uid");
             $query->limit(1);
         });
 
@@ -599,8 +594,8 @@ class TalkService
         }
 
         $rows = ChatRecord::leftJoin('users', 'users.id', '=', 'chat_records.user_id')
-                           ->whereIn('chat_records.id', array_slice($records_ids, 0, 3))
-                           ->get(['chat_records.msg_type', 'chat_records.content', 'users.nickname']);
+                          ->whereIn('chat_records.id', array_slice($records_ids, 0, 3))
+                          ->get(['chat_records.msg_type', 'chat_records.content', 'users.nickname']);
 
         $jsonText = [];
         foreach ($rows as $row) {
@@ -621,7 +616,6 @@ class TalkService
                 ];
             }
         }
-
 
         $insRecordIds = [];
         DB::beginTransaction();
@@ -722,5 +716,134 @@ class TalkService
 
         $rows = $rowsSqlObj->orderBy('chat_records.id', 'desc')->forPage($page, $page_size)->get()->toArray();
         return $this->getPagingRows($this->handleChatRecords($rows), $count, $page, $page_size);
+    }
+
+    /**
+     * 创建图片消息
+     *
+     * @param $message
+     * @param $fileInfo
+     *
+     * @return bool|int
+     */
+    public function createImgMessage($message, $fileInfo)
+    {
+        Db::beginTransaction();
+        try {
+            $message['created_at'] = date('Y-m-d H:i:s');
+            $insert                = ChatRecord::create($message);
+
+            if (!$insert) {
+                throw new Exception('插入聊天记录失败...');
+            }
+
+            $fileInfo['record_id']  = $insert->id;
+            $fileInfo['created_at'] = date('Y-m-d H:i:s');
+            if (!ChatRecordsFile::create($fileInfo)) {
+                throw new Exception('插入聊天记录(文件消息)失败...');
+            }
+
+            Db::commit();
+            return $insert->id;
+        } catch (Exception $e) {
+            Db::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * 创建代码块消息
+     *
+     * @param array $message
+     * @param array $codeBlock
+     *
+     * @return bool|int
+     */
+    public function createCodeMessage(array $message, array $codeBlock)
+    {
+        Db::beginTransaction();
+        try {
+            $message['created_at'] = date('Y-m-d H:i:s');
+            $insert                = ChatRecord::create($message);
+            if (!$insert) {
+                throw new Exception('插入聊天记录失败...');
+            }
+
+            $codeBlock['record_id']  = $insert->id;
+            $codeBlock['created_at'] = date('Y-m-d H:i:s');
+            if (!ChatRecordsCode::create($codeBlock)) {
+                throw new Exception('插入聊天记录(代码消息)失败...');
+            }
+
+            Db::commit();
+            return $insert->id;
+        } catch (Exception $e) {
+            Db::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * 创建表情包消息
+     *
+     * @param array $message
+     * @param array $emoticon
+     *
+     * @return bool|int
+     */
+    public function createEmoticonMessage(array $message, array $emoticon)
+    {
+        Db::beginTransaction();
+        try {
+            $message['created_at'] = date('Y-m-d H:i:s');
+            $insert                = ChatRecord::create($message);
+            if (!$insert) {
+                throw new Exception('插入聊天记录失败...');
+            }
+
+            $emoticon['record_id']  = $insert->id;
+            $emoticon['created_at'] = date('Y-m-d H:i:s');
+            if (!ChatRecordsFile::create($emoticon)) {
+                throw new Exception('插入聊天记录(代码消息)失败...');
+            }
+
+            Db::commit();
+            return $insert->id;
+        } catch (Exception $e) {
+            Db::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * 创建文件消息
+     *
+     * @param array $message
+     * @param array $emoticon
+     *
+     * @return bool|int
+     */
+    public function createFileMessage(array $message, array $emoticon)
+    {
+        Db::beginTransaction();
+        try {
+            $message['created_at'] = date('Y-m-d H:i:s');
+            $insert                = ChatRecord::create($message);
+            if (!$insert) {
+                throw new Exception('插入聊天记录失败...');
+            }
+
+            $emoticon['record_id']  = $insert->id;
+            $emoticon['created_at'] = date('Y-m-d H:i:s');
+            if (!ChatRecordsFile::create($emoticon)) {
+                throw new Exception('插入聊天记录(代码消息)失败...');
+            }
+
+            Db::commit();
+            return $insert->id;
+        } catch (Exception $e) {
+            Db::rollBack();
+            return false;
+        }
     }
 }

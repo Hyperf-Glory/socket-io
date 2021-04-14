@@ -25,7 +25,7 @@ class UserController extends AbstractController
 {
     private UserService $service;
 
-    private $friendService;
+    private UserFriendService $friendService;
 
     protected ValidatorFactoryInterface $validationFactory;
 

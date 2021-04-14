@@ -13,9 +13,6 @@ declare(strict_types = 1);
  */
 namespace App\Cache;
 
-use Hyperf\Redis\RedisFactory;
-use Hyperf\Redis\RedisProxy;
-
 /**
  * Class FriendRemarkCache.
  */
@@ -39,7 +36,7 @@ class FriendRemarkCache extends AbstractCache
     /**
      * 获取好友备注.
      */
-    public function get(int $uid, int $fid, ) : string
+    public function get(int $uid, int $fid) : string
     {
         return wait(function () use ($uid, $fid)
         {

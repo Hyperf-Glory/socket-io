@@ -205,7 +205,7 @@ class UserService
             if ($info['id'] !== $user_id) {
                 $friend_id = $info['id'];
                 /**
-                 * @var UserFriends $friendInfo
+                 * @var UsersFriend $friendInfo
                  */
                 $friendInfo = UsersFriend::select(['id', 'user1', 'user2', 'active', 'user1_remark', 'user2_remark'])->where(function ($query) use ($friend_id, $user_id)
                 {

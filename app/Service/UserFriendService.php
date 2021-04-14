@@ -14,9 +14,6 @@ declare(strict_types = 1);
 namespace App\Service;
 
 use App\Model\User;
-use App\Model\Users;
-use App\Model\UsersFriend;
-use App\Model\UsersFriends;
 use App\Model\UsersFriendsApply;
 use App\Service\Traits\PagingTrait;
 use Exception;

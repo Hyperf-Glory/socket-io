@@ -16,9 +16,7 @@ namespace App\Service;
 use App\Model\ChatRecordsFile;
 use App\Model\EmoticonDetail;
 use App\Model\Group;
-use App\Model\GroupMember;
 use App\Model\UsersEmoticon;
-use App\Model\UsersGroup;
 
 /**
  * 表情服务层
