@@ -153,12 +153,12 @@ class UserService
     public function getUserChatGroups(int $uid) : array
     {
         $items = GroupMember::select(['User_group.id', 'User_group.group_name', 'User_group.avatar', 'User_group.group_profile', 'User_group.user_id as group_user_id'])
-                                ->join('User_group', 'User_group.id', '=', 'User_group_member.group_id')
-                                ->where([
-                                    ['User_group_member.user_id', '=', $uid],
-                                    ['User_group_member.status', '=', 0],
-                                ])
-                                ->orderBy('id', 'desc')->get()->toarray();
+                            ->join('User_group', 'User_group.id', '=', 'User_group_member.group_id')
+                            ->where([
+                                ['User_group_member.user_id', '=', $uid],
+                                ['User_group_member.status', '=', 0],
+                            ])
+                            ->orderBy('id', 'desc')->get()->toarray();
 
         foreach ($items as $key => $item) {
             // 判断当前用户是否是群主
@@ -226,5 +226,19 @@ class UserService
         }
 
         return $info;
+    }
+
+    /**
+     * 搜索联系人
+     *
+     * @param string $mobile 用户手机号/登录账号
+     *
+     * @return array
+     */
+    public function findContact(string $mobile) : array
+    {
+        $user = User::where('mobile', $mobile)->first(['id', 'nickname', 'mobile', 'avatar', 'gender']);
+
+        return $user ? $user->toArray() : [];
     }
 }

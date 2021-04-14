@@ -14,11 +14,13 @@ declare(strict_types = 1);
 namespace App\Service;
 
 use App\Model\User;
+use App\Model\UsersFriend;
 use App\Model\UsersFriendsApply;
 use App\Service\Traits\PagingTrait;
 use Exception;
 use Hyperf\DbConnection\Db;
 use RuntimeException;
+use Throwable;
 
 class UserFriendService
 {
@@ -36,9 +38,7 @@ class UserFriendService
     public function getFriends(int $uid) : ?array
     {
         try {
-            $prefix = config('databases.default.prefix');
-            $table  = $prefix . '_users_friends';
-            $sql    = <<<'SQL'
+            $sql = <<<'SQL'
 SELECT user2 as uid,user2_remark as remark
 from im_users_friends
 where user1 = ?
@@ -53,7 +53,7 @@ SQL;
                 $uid,
                 $uid,
             ]);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw new $throwable();
         }
     }
@@ -112,7 +112,16 @@ SQL;
         }
     }
 
-    public function handleFriendApply(int $uid, int $applyId, $remarks = '') : bool
+    /**
+     * 同意添加联系人 / 联系人申请
+     *
+     * @param int    $uid
+     * @param int    $applyId
+     * @param string $remarks 联系人备注名称
+     *
+     * @return bool
+     */
+    public function acceptInvitation(int $uid, int $applyId, $remarks = '') : bool
     {
         /**
          * @var UsersFriendsApply $info
@@ -226,7 +235,7 @@ SQL;
     }
 
     /**
-     * 编辑好友备注信息.
+     *编辑联系人备注
      */
     public function editFriendRemark(int $uid, int $friendId, string $remarks) : bool
     {
@@ -240,4 +249,29 @@ SQL;
 
         return (bool)UsersFriend::where('user1', $uid)->where('user2', $friendId)->update($data);
     }
+
+    /**
+     * 拒绝添加联系人 / 联系人申请
+     *
+     * @param int    $uid
+     * @param int    $applyId
+     * @param string $remarks 拒绝申请备注信息
+     *
+     * @return bool
+     */
+    public function declineInvitation(int $uid, int $applyId, string $remarks = '') : bool
+    {
+        $result = UsersFriendsApply::where([
+            ['id', '=', $applyId],
+            ['user_id', '=', $uid],
+            ['status', '=', 2],
+        ])->update([
+            'status'     => 2,
+            'remarks'    => $remarks,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return (bool)$result;
+    }
+
 }

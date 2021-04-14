@@ -3,20 +3,14 @@ declare(strict_types = 1);
 
 namespace App\Controller\Http;
 
-use App\Cache\ApplyNumCache;
-use App\Cache\FriendRemarkCache;
 use App\Component\Mail;
 use App\Component\Sms;
 use App\Controller\AbstractController;
 use App\Helper\ValidateHelper;
 use App\Model\User;
-use App\Model\UsersChatList;
-use App\Model\UsersFriend;
 use App\Service\UserFriendService;
 use App\Service\UserService;
-use App\SocketIO\SocketIO;
 use Hyperf\HttpServer\Contract\RequestInterface;
-use Hyperf\Redis\RedisFactory;
 use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
@@ -32,7 +26,6 @@ class UserController extends AbstractController
     public function __construct(UserService $service, UserFriendService $friendService, ValidatorFactoryInterface $validationFactory)
     {
         $this->service           = $service;
-        $this->friendService     = $friendService;
         $this->validationFactory = $validationFactory;
     }
 
@@ -61,16 +54,6 @@ class UserController extends AbstractController
     }
 
     /**
-     * 获取好友申请未读数.
-     */
-    public function getApplyUnreadNum() : ResponseInterface
-    {
-        return $this->response->success('success', [
-            'unread_num' => (int)ApplyNumCache::get($this->uid()),
-        ]);
-    }
-
-    /**
      * 获取我的信息.
      */
     public function getUserDetail() : ResponseInterface
@@ -84,21 +67,6 @@ class UserController extends AbstractController
             'email'    => $userInfo->email,
             'gender'   => $userInfo->gender,
         ]);
-    }
-
-    /**
-     * 获取我的好友列表.
-     */
-    public function getUserFriends() : ResponseInterface
-    {
-        $rows  = UsersFriend::getUserFriends($this->uid());
-        $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
-        $cache = array_keys($redis->hGetAll(SocketIO::HASH_UID_TO_SID_PREFIX));
-
-        foreach ($rows as $k => $row) {
-            $rows[$k]['online'] = in_array($row['id'], $cache, true);
-        }
-        return $this->response->success('success', $rows);
     }
 
     /**
@@ -155,149 +123,6 @@ class UserController extends AbstractController
         }
         $bool = $this->service->resetPassword($info->mobile, $request->input('new_password'));
         return $bool ? $this->response->success('密码修改成功...') : $this->response->parameterError('密码修改失败...');
-    }
-
-    /**
-     * 获取我的好友申请记录.
-     */
-    public function getFriendApplyRecords(RequestInterface $request) : ResponseInterface
-    {
-        $page     = (int)$request->input('page', 1);
-        $pageSize = (int)$request->input('page_size', 10);
-        $data     = $this->friendService->findApplyRecords($this->uid(), $page, $pageSize);
-        ApplyNumCache::del($this->uid());
-        return $this->response->success('success', $data);
-    }
-
-    /**
-     * 发送添加好友申请.
-     */
-    public function sendFriendApply(RequestInterface $request) : ResponseInterface
-    {
-        $validator = $this->validationFactory->make(
-            $request->all(),
-            [
-                'friend_id' => 'required',
-                'remarks'   => 'required',
-            ],
-            [
-                'friend_id.required' => '好友不能为空...',
-                'remarks.required'   => '备注不能为空...',
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-        $data = $validator->validated();
-        $bool = $this->friendService->addFriendApply($this->uid(), (int)$data['friend_id'], $data['remarks']);
-        if (!$bool) {
-            return $this->response->error('发送好友申请失败...');
-        }
-        $redis = $this->container->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
-
-        //断对方是否在线。如果在线发送消息通知
-        if ($redis->hGet(SocketIO::HASH_UID_TO_SID_PREFIX, (string)$data['friend_id'])) {
-
-        }
-        // 好友申请未读消息数自增
-        make(ApplyNumCache::class)->setInc((int)$data['friend_id']);
-        return $this->response->success('发送好友申请成功...');
-    }
-
-    /**
-     * 处理好友的申请.
-     */
-    public function handleFriendApply(RequestInterface $request) : ResponseInterface
-    {
-        $validator = $this->validationFactory->make(
-            $request->all(),
-            [
-                'apply_id' => 'required',
-                'remarks'  => 'required',
-            ],
-            [
-                'apply_id.required' => '申请不能为空...',
-                'remarks.required'  => '备注不能为空...',
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-        $data = $validator->validated();
-        $bool = $this->friendService->handleFriendApply($this->uid(), (int)$data['apply_id'], $data['remarks']);
-        //判断是否是同意添加好友
-        if ($bool) {
-            //... 推送处理消息
-        }
-        return $bool ? $this->response->success('处理完成...') : $this->response->error('处理失败，请稍后再试...');
-    }
-
-    /**
-     * 删除好友申请记录.
-     */
-    public function deleteFriendApply(RequestInterface $request) : ResponseInterface
-    {
-        $applyId = (int)$request->post('apply_id');
-        $bool    = $this->friendService->delFriendApply($this->uid(), $applyId);
-        return $bool ? $this->response->success('删除成功...') : $this->response->parameterError('删除失败...');
-    }
-
-    /**
-     * 编辑好友备注信息.
-     */
-    public function editFriendRemark(RequestInterface $request) : ResponseInterface
-    {
-        $validator = $this->validationFactory->make(
-            $request->all(),
-            [
-                'apply_id' => 'required',
-                'remarks'  => 'required',
-            ],
-            [
-                'apply_id.required' => '申请不能为空...',
-                'remarks.required'  => '备注不能为空...',
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-        $data = $validator->validated();
-        $bool = $this->friendService->editFriendRemark($this->uid(), (int)$data['friend_id'], $data['remarks']);
-        if ($bool) {
-            FriendRemarkCache::set($this->uid(), (int)$data['friend_id'], $data['remarks']);
-        }
-        return $bool ? $this->response->success('备注修改成功...') : $this->response->error('备注修改失败，请稍后再试...');
-    }
-
-    /**
-     * 获取指定用户信息.
-     */
-    public function searchUserInfo(RequestInterface $request) : ResponseInterface
-    {
-        $validator = $this->validationFactory->make(
-            $request->all(),
-            [
-                'mobile' => 'required|mobile',
-            ],
-            [
-                'mobile.required' => '手机号不能为空...',
-                'mobile.mobile'   => '手机号格式不正确...',
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-        $data            = $validator->validated();
-        $where           = [];
-        $where['mobile'] = $data['mobile'];
-        if ($data = $this->service->searchUserInfo($where, $this->uid())) {
-            return $this->response->success('success', $data);
-        }
-        return $this->response->error('success');
     }
 
     /**
@@ -370,33 +195,6 @@ class UserController extends AbstractController
         // ... 处理发送失败逻辑，当前默认发送成功
 
         return $this->response->success('验证码发送成功...', $data);
-    }
-
-    /**
-     * 解除好友关系.
-     */
-    public function removeFriend(RequestInterface $request) : ResponseInterface
-    {
-        $validator = $this->validationFactory->make(
-            $request->all(),
-            [
-                'friend_id' => 'required|integer',
-            ],
-            [
-                'friend_id.required' => '参数不能为空...',
-                'friend_id.integer'  => '参数不正确...',
-            ]
-        );
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
-        $data = $validator->validated();
-        //删除好友会话列表
-        UsersChatList::delItem($this->uid(), $data['friend_id'], 2);
-        UsersChatList::delItem($data['friend_id'], $this->uid(), 2);
-        //TODO ... 推送消息（待完善）
-        return $this->response->success('success');
     }
 
     /**
@@ -476,5 +274,33 @@ class UserController extends AbstractController
         $isTrue = User::where('id', $this->uid())->update(['avatar' => $avatar]);
 
         return $isTrue ? $this->response->success('头像修改成功') : $this->response->error('头像修改失败');
+    }
+
+    /**
+     * 通过手机号查找用户
+     */
+    public function searchUserInfo(RequestInterface $request) : ResponseInterface
+    {
+        $validator = $this->validationFactory->make(
+            $request->all(),
+            [
+                'mobile' => 'required|mobile',
+            ],
+            [
+                'mobile.required' => '手机号不能为空...',
+                'mobile.mobile'   => '手机号格式不正确...',
+            ]
+        );
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $data            = $validator->validated();
+        $where           = [];
+        $where['mobile'] = $data['mobile'];
+        if ($data = $this->service->searchUserInfo($where, $this->uid())) {
+            return $this->response->success('success', $data);
+        }
+        return $this->response->error('success');
     }
 }
