@@ -13,20 +13,20 @@ declare(strict_types = 1);
  */
 namespace App\Component;
 
-use App\Kernel\SocketIO\SocketIO as KernelSocketIO;
-use App\Model\ChatRecords;
+use App\Model\ChatRecord;
+use App\SocketIO\SocketIO as KernelSocketIO;
 use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;
 use App\Model\ChatRecordsForward;
 use App\Model\ChatRecordsInvite;
-use App\Model\Users;
+use App\Model\User;
 use Hyperf\Redis\RedisFactory;
 use Hyperf\SocketIOServer\SocketIO;
 use RuntimeException;
-
+use Hyperf\Utils\ApplicationContext;
 /**
  * Class Proxy.一定要注意该组件不能推送给自己,推送给自己请用$socketio->emit()即可.
- * //TODO 待优化
+ * TODO 待优化
  */
 class Proxy
 {
@@ -38,9 +38,9 @@ class Proxy
     public function groupNotify(int $record) : void
     {
         /**
-         * @var ChatRecords $recordInfo
+         * @var \App\Model\ChatRecord $recordInfo
          */
-        $recordInfo = ChatRecords::where('id', $record)->where('source', 2)->first([
+        $recordInfo = ChatRecord::where('id', $record)->where('source', 2)->first([
             'id',
             'msg_type',
             'user_id',
@@ -66,13 +66,13 @@ class Proxy
         }
 
         /**
-         * @var Users $userInfo
+         * @var User $userInfo
          */
-        $userInfo = Users::where('id', $notifyInfo->operate_user_id)->first(['nickname', 'id']);
+        $userInfo = User::where('id', $notifyInfo->operate_user_id)->first(['nickname', 'id']);
 
         $membersIds = explode(',', $notifyInfo->user_ids);
 
-        $io = di(SocketIO::class);
+        $io = ApplicationContext::getContainer()->get(SocketIO::class);
         //推送群聊消息
         $io->to('room' . $recordInfo->receive_id)->emit('chat_message', [
             'send_user'    => 0,
@@ -87,7 +87,7 @@ class Proxy
                 'invite'     => [
                     'type'         => $notifyInfo->type,
                     'operate_user' => ['id' => $userInfo->id, 'nickname' => $userInfo->nickname],
-                    'users'        => Users::select(['id', 'nickname'])->whereIn('id', $membersIds)->get()->toArray(),
+                    'users'        => User::select(['id', 'nickname'])->whereIn('id', $membersIds)->get()->toArray(),
                 ],
                 'created_at' => $recordInfo->created_at,
             ]),
@@ -102,20 +102,20 @@ class Proxy
     public function revokeRecords(int $record) : void
     {
         /**
-         * @var ChatRecords $records
+         * @var ChatRecord $records
          */
-        $records = ChatRecords::where('id', $record)->first(['id', 'source', 'user_id', 'receive_id']);
+        $records = ChatRecord::where('id', $record)->first(['id', 'source', 'user_id', 'receive_id']);
         if (!$records) {
             throw new RuntimeException('数据不存在...');
         }
-        $io    = di(SocketIO::class);
+        $io    = ApplicationContext::getContainer()->get(SocketIO::class);
         $data  = [
             'record_id'  => $records->id,
             'source'     => $records->source,
             'user_id'    => $records->user_id,
             'receive_id' => $records->receive_id,
         ];
-        $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
+        $redis = ApplicationContext::getContainer()->get(RedisFactory::class)->get(env('CLOUD_REDIS'));
         if ($records->source === 1) {
             //好友推送
             $client = $redis->hGet(KernelSocketIO::HASH_UID_TO_SID_PREFIX, (string)$records->receive_id);
@@ -152,7 +152,7 @@ class Proxy
         $io    = di(SocketIO::class);
         $redis = di(RedisFactory::class)->get(env('CLOUD_REDIS'));
         /**
-         * @var ChatRecords|ChatRecordsForward|Users $record
+         * @var ChatRecord|ChatRecordsForward|User $record
          */
         foreach ($rows as $record) {
             if ($records->source === 1) {
