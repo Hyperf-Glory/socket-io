@@ -201,7 +201,7 @@ class UserController extends AbstractController
 
         }
         // 好友申请未读消息数自增
-        ApplyNumCache::setInc((int)$data['friend_id']);
+        make(ApplyNumCache::class)->setInc((int)$data['friend_id']);
         return $this->response->success('发送好友申请成功...');
     }
 
@@ -395,7 +395,7 @@ class UserController extends AbstractController
         //删除好友会话列表
         UsersChatList::delItem($this->uid(), $data['friend_id'], 2);
         UsersChatList::delItem($data['friend_id'], $this->uid(), 2);
-
+        //TODO ... 推送消息（待完善）
         return $this->response->success('success');
     }
 
