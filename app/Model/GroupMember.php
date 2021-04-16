@@ -12,8 +12,8 @@ namespace App\Model;
  * @property int $is_quit 是否退群[0:否;1:是;]
  * @property string $user_card 群名片
  * @property string $deleted_at 退群时间
- * @property Carbon\Carbon $created_at 
- * @property Carbon\Carbon $updated_at 
+ * @property Carbon\Carbon $created_at
+ * @property Carbon\Carbon $updated_at
  */
 class GroupMember extends Model
 {
@@ -35,4 +35,37 @@ class GroupMember extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'group_id' => 'integer', 'user_id' => 'integer', 'leader' => 'integer', 'is_mute' => 'integer', 'is_quit' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+    /**
+     * 获取聊天群成员ID.
+     *
+     * @return array
+     */
+    public static function getGroupMemberIds(int $groupId)
+    {
+        return self::where('group_id', $groupId)->where('status', 0)->pluck('user_id')->toArray();
+    }
+
+    /**
+     * 获取用户的群名片.
+     *
+     * @param int $user_id 用户ID
+     * @param int $group_id 群ID
+     * @return mixed
+     */
+    public static function visitCard(int $user_id, int $group_id)
+    {
+        return self::where('group_id', $group_id)->where('user_id', $user_id)->value('visit_card');
+    }
+
+    /**
+     * 获取用户的所有群ID
+     *
+     * @param int $user_id 用户ID
+     * @return array
+     */
+    public static function getUserGroupIds(int $user_id) : array
+    {
+        return self::where('user_id', $user_id)->where('is_quit', 0)->pluck('group_id')->toArray() ?? [];
+    }
 }
