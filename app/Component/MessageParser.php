@@ -13,7 +13,7 @@ declare(strict_types = 1);
  */
 namespace App\Component;
 
-use App\Model\Users;
+use App\Model\User;
 use Hyperf\Utils\Codec\Json;
 
 class MessageParser
@@ -61,9 +61,9 @@ class MessageParser
         if (!isset($data['nickname'], $data['avatar']) || empty($data['nickname']) || empty($data['avatar'])) {
             if (isset($data['user_id']) && !empty($data['user_id'])) {
                 /**
-                 * @var Users $info
+                 * @var User $info
                  */
-                $info = Users::where('id', $data['user_id'])->first(['nickname', 'avatar']);
+                $info = User::where('id', $data['user_id'])->first(['nickname', 'avatar']);
                 if ($info) {
                     $data['nickname'] = $info->nickname;
                     $data['avatar']   = $info->avatar;

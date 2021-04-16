@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 /**
  *
  * This is my open source code, please do not use it for commercial applications.
@@ -37,4 +37,8 @@ class WsMessage extends AbstractConstants
     public const EVENT_GROUP_AGREE_APPLY = 'groupAgreeApply';
 
     public const EVENT_FRIEND_VIDEO_ROOM = 'friendVideoRoom';
+
+    public const EVENT_CHAT_MESSAGE = 'chat_message';
+
+    public const EVENT_REVOKE_RECORDS = 'revoke_records';
 }

@@ -4,14 +4,14 @@ namespace App\Controller\Http;
 
 use App\Component\Proxy;
 use App\Controller\AbstractController;
-use App\Kernel\Context\Coroutine;
+use Hyperf\Utils\Coroutine;
 use App\Service\GroupService;
 use Hyperf\HttpServer\Contract\RequestInterface;
 
 class GroupController extends AbstractController
 {
 
-    private $groupService;
+    private GroupService $groupService;
 
     public function __construct(GroupService $groupService)
     {
