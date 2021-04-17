@@ -65,7 +65,7 @@ class GroupController extends AbstractController
          * @var \App\Model\User|\App\Model\Group $groupInfo
          */
         $groupInfo = Group::leftJoin('users', 'users.id', '=', 'users_group.user_id')
-                               ->where('users_group.id', $groupId)->where('users_group.status', 0)->first([
+                          ->where('users_group.id', $groupId)->where('users_group.status', 0)->first([
                 'users_group.id',
                 'users_group.user_id',
                 'users_group.group_name',
@@ -90,6 +90,26 @@ class GroupController extends AbstractController
             'not_disturb'      => UsersChatList::where('uid', $this->uid())->where('group_id', $groupId)->where('type', 2)->value('not_disturb') ?? 0,
             'notice'           => $notice ? $notice->toArray() : [],
         ]);
+    }
+
+    /**
+     * 邀请好友加入群聊
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function invite() : ResponseInterface
+    {
+        $groupId = (int)$this->request->post('group_id');
+        $uids    = array_filter(explode(',', $this->request->post('uids', '')));
+        [$bool, $record] = $this->groupService->invite($this->uid(), $groupId, array_unique($uids));
+        if ($bool) {
+            Coroutine::create(function () use ($record)
+            {
+                $service = make(GroupNotify::class);
+                $service->process($record);
+            });
+            return $this->response->success('好友已成功加入群聊...');
+        }
+        return $this->response->error('邀请好友加入群聊失败...');
     }
 }
 
