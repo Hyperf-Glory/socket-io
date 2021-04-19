@@ -188,5 +188,30 @@ class GroupController extends AbstractController
         }
         return $this->response->error('设置失败');
     }
+
+    public function getInviteFriends()
+    {
+
+    }
+
+    public function getGroupMembers()
+    {
+
+    }
+
+    public function getGroupNotices()
+    {
+
+    }
+
+    public function editNotice()
+    {
+
+    }
+
+    public function deleteNotice()
+    {
+
+    }
 }
 
