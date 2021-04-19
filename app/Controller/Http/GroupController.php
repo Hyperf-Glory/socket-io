@@ -111,5 +111,25 @@ class GroupController extends AbstractController
         }
         return $this->response->error('邀请好友加入群聊失败...');
     }
+
+    public function removeMembers()
+    {
+
+    }
+
+    public function dismiss()
+    {
+
+    }
+
+    public function secede()
+    {
+
+    }
+
+    public function setGroupCard()
+    {
+
+    }
 }
 
