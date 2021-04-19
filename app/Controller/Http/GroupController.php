@@ -112,24 +112,81 @@ class GroupController extends AbstractController
         return $this->response->error('邀请好友加入群聊失败...');
     }
 
-    public function removeMembers()
+    /**
+     * 踢出群组(管理员特殊权限).
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function removeMembers() : ResponseInterface
     {
-
+        $groupId = (int)$this->request->post('group_id');
+        $mids    = $this->request->post('members_ids', []);
+        [$bool, $ret] = $this->groupService->removeMember($groupId, $this->uid(), $mids);
+        if ($bool) {
+            Coroutine::create(function () use ($ret)
+            {
+                $service = make(GroupNotify::class);
+                $service->process($ret);
+            });
+            return $this->response->success('群聊用户已被移除...');
+        }
+        return $this->response->error('群聊用户移除失败...');
     }
 
-    public function dismiss()
+    /**
+     * 解散群聊
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function dismiss() : ResponseInterface
     {
+        $groupId = (int)$this->request->post('group_id');
 
+        [$bool, $ret] = $this->groupService->dismiss($groupId, $this->uid());
+
+        if ($bool) {
+            //... TODO 推送群消息
+            Coroutine::create(static function () use ($ret)
+            {
+
+            });
+            return $this->response->success('群聊已解散成功...');
+        }
+        return $this->response->error('群聊解散失败...');
     }
 
-    public function secede()
+    /**
+     * 退出群组.
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function secede() : ResponseInterface
     {
-
+        $groupId = (int)$this->request->post('group_id');
+        try {
+            [$bool, $ret] = $this->groupService->quit($this->uid(), $groupId);
+            if ($bool) {
+                Coroutine::create(function () use ($ret)
+                {
+                    $service = make(GroupNotify::class);
+                    $service->process($ret);
+                });
+                return $this->response->success('已成功退出群聊...');
+            }
+        } catch (\Exception $e) {
+        }
+        return $this->response->error('退出群聊失败...');
     }
 
-    public function setGroupCard()
+    /**
+     * 设置群名片
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function setGroupCard() : ResponseInterface
     {
-
+        $groupId    = (int)$this->request->post('group_id');
+        $visit_card = $this->request->post('visit_card');
+        if (GroupMember::where('group_id', $groupId)->where('user_id', $this->uid)->where('is_quit', 0)->update(['visit_card' => $visit_card])) {
+            return $this->response->success('设置成功');
+        }
+        return $this->response->error('设置失败');
     }
 }
 
