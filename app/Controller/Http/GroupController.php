@@ -5,22 +5,28 @@ namespace App\Controller\Http;
 use App\Controller\AbstractController;
 use App\Model\Group;
 use App\Model\GroupMember;
+use App\Model\User;
 use App\Model\UsersChatList;
+use App\Model\UsersFriend;
 use App\Model\UsersGroupNotice;
 use App\SocketIO\Proxy\GroupNotify;
 use Hyperf\Utils\Coroutine;
 use App\Service\GroupService;
 use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Validation\Contract\ValidatorFactoryInterface;
+use Hyperf\Validation\ValidationException;
 use Psr\Http\Message\ResponseInterface;
 
 class GroupController extends AbstractController
 {
 
     private GroupService $groupService;
+    protected ValidatorFactoryInterface $validationFactory;
 
-    public function __construct(GroupService $groupService)
+    public function __construct(GroupService $groupService, ValidatorFactoryInterface $validationFactory)
     {
-        $this->groupService = $groupService;
+        $this->groupService      = $groupService;
+        $this->validationFactory = $validationFactory;
     }
 
     /**
@@ -189,29 +195,169 @@ class GroupController extends AbstractController
         return $this->response->error('设置失败');
     }
 
-    public function getInviteFriends()
+    /**
+     * 获取可邀请加入群组的好友列表
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function getInviteFriends() : ResponseInterface
     {
-
+        $groupId = (int)$this->request->input('group_id', 0);
+        $friends = UsersFriend::getUserFriends($this->uid());
+        if ($groupId > 0 && $friends) {
+            if ($ids = GroupMember::getGroupMemberIds($groupId)) {
+                foreach ($friends as $k => $value) {
+                    if (in_array($value['id'], $ids, true)) {
+                        unset($friends[$k]);
+                    }
+                }
+            }
+            $friends = array_values($friends);
+            return $this->response->success('success', $friends);
+        }
+        return $this->response->error('获取信息失败...');
     }
 
-    public function getGroupMembers()
+    /**
+     * 获取群组成员列表
+     */
+    public function getGroupMembers() : ResponseInterface
     {
-
+        $groupId = (int)$this->request->input('group_id', 0);
+        if (!Group::isMember($groupId, $this->uid())) {
+            return $this->response->fail(403, '非法操作');
+        }
+        $members = GroupMember::select([
+            'group_member.id',
+            'group_member.leader',
+            'group_member.user_card',
+            'group_member.user_id',
+            'users.avatar',
+            'users.nickname',
+            'users.gender',
+            'users.motto',
+        ])
+                              ->leftJoin('users', 'users.id', '=', 'group_member.user_id')
+                              ->where([
+                                  ['group_member.group_id', '=', $groupId],
+                                  ['group_member.is_quit', '=', 0],
+                              ])->orderBy('leader', 'desc')->get()->toArray();
+        return $this->response->success('success', $members);
     }
 
-    public function getGroupNotices()
+    /**
+     * 获取群组公告列表
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function getGroupNotices() : ResponseInterface
     {
 
+        $groupId = $this->request->input('group_id', 0);
+
+        // 判断用户是否是群成员
+        if (!Group::isMember($groupId, $this->uid())) {
+            return $this->response->fail('非管理员禁止操作...');
+        }
+
+        $rows = UsersGroupNotice::leftJoin(User::newModelInstance()->getTable(), 'users.id', '=', 'group_notice.creator_id')
+                                ->where([
+                                    ['group_notice.group_id', '=', $groupId],
+                                    ['group_notice.is_delete', '=', 0]
+                                ])
+                                ->orderBy('group_notice.is_top', 'desc')
+                                ->orderBy('group_notice.updated_at', 'desc')
+                                ->get([
+                                    'group_notice.id',
+                                    'group_notice.creator_id',
+                                    'group_notice.title',
+                                    'group_notice.content',
+                                    'group_notice.is_top',
+                                    'group_notice.is_confirm',
+                                    'group_notice.confirm_users',
+                                    'group_notice.created_at',
+                                    'group_notice.updated_at',
+                                    'users.avatar',
+                                    'users.nickname',
+                                ])->toArray();
+
+        return $this->response->success('success', $rows);
     }
 
-    public function editNotice()
+    /**
+     * 创建/编辑群公告
+     * @return null|\Psr\Http\Message\ResponseInterface
+     */
+    public function editNotice() : ?ResponseInterface
     {
+        $params    = $this->request->inputs(['group_id', 'notice_id', 'title', 'content', 'is_top', 'is_confirm']);
+        $validator = $this->validationFactory->make($params, [
+            'notice_id'  => 'required|integer',
+            'group_id'   => 'required|integer',
+            'title'      => 'required|max:50',
+            'is_top'     => 'integer|in:0,1',
+            'is_confirm' => 'integer|in:0,1',
+            'content'    => 'required'
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        // 判断用户是否是管理员
+        if (!Group::isManager($this->uid(), $params['group_id'])) {
+            return $this->response->fail('非管理员禁止操作...');
+        }
 
+        // 判断是否是新增数据
+        if (empty($params['notice_id'])) {
+            $result = UsersGroupNotice::create([
+                'group_id'   => $params['group_id'],
+                'creator_id' => $this->uid(),
+                'title'      => $params['title'],
+                'content'    => $params['content'],
+                'is_top'     => $params['is_top'],
+                'is_confirm' => $params['is_confirm'],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+
+            if (!$result) {
+                return $this->response->fail('添加群公告信息失败...');
+            }
+
+            // ... 推送群消息（预留）
+
+            return $this->response->success('添加群公告信息成功...', []);
+        }
     }
 
-    public function deleteNotice()
+    /**
+     * 删除群公告(软删除)
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function deleteNotice() : ResponseInterface
     {
+        $params    = $this->request->inputs(['group_id', 'notice_id']);
+        $validator = $this->validationFactory->make($params, [
+            'group_id'  => 'required|integer',
+            'notice_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
 
+        // 判断用户是否是管理员
+        if (!Group::isManager($this->uid(), $params['group_id'])) {
+            return $this->response->fail('非法操作...');
+        }
+
+        $result = UsersGroupNotice::where('id', $params['notice_id'])
+                             ->where('group_id', $params['group_id'])
+                             ->update([
+                                 'is_delete'  => 1,
+                                 'deleted_at' => date('Y-m-d H:i:s')
+                             ]);
+
+        return $result
+            ? $this->response->success('公告删除成功...')
+            : $this->response->fail('公告删除失败...');
     }
 }
 
