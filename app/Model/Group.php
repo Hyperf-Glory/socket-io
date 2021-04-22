@@ -3,6 +3,8 @@
 declare (strict_types = 1);
 namespace App\Model;
 
+use Hyperf\Database\Model\Relations\HasMany;
+
 /**
  * @property int           $id           群ID
  * @property int           $creator_id   创建者ID(群主ID)
@@ -40,28 +42,49 @@ class Group extends Model
     protected $casts = ['id' => 'integer', 'creator_id' => 'integer', 'max_num' => 'integer', 'is_overt' => 'integer', 'is_mute' => 'integer', 'is_dismiss' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
     /**
-     * 判断用户是否是管理员.
-     *
-     * @param int $uid     用户ID
-     * @param int $groupId 群ID
-     *
-     * @return bool
+     * 获取群聊成员
      */
-    public static function isManager(int $uid, int $groupId) : bool
+    public function members() : HasMany
     {
-        return self::where('id', $groupId)->where('user_id', $uid)->exists();
+        return $this->hasMany(GroupMember::class, 'group_id', 'id');
     }
 
     /**
-     * 判断用户是否是群成员.
+     * 判断用户是否是管理员
      *
-     * @param int $groupId 群ID
-     * @param int $uid     用户ID
+     * @param int       $user_id  用户ID
+     * @param int       $group_id 群ID
+     * @param int|array $leader   管理员类型[0:普通成员;1:管理员;2:群主;]
      *
      * @return bool
      */
-    public static function isMember(int $groupId, int $uid) : bool
+    public static function isManager(int $user_id, int $group_id, $leader = 2) : bool
     {
-        return GroupMember::where('group_id', $groupId)->where('user_id', $uid)->where('leader', 0)->exists();
+        return self::where('id', $group_id)->where('creator_id', $user_id)->exists();
+    }
+
+    /**
+     * 判断群组是否已解散
+     *
+     * @param int $group_id 群ID
+     *
+     * @return bool
+     */
+    public static function isDismiss(int $group_id) : bool
+    {
+        return self::where('id', $group_id)->where('is_dismiss', 1)->exists();
+    }
+
+    /**
+     * 判断用户是否是群成员
+     *
+     * @param int $group_id 群ID
+     * @param int $user_id  用户ID
+     *
+     * @return bool
+     */
+    public static function isMember(int $group_id, int $user_id) : bool
+    {
+        return GroupMember::where('group_id', $group_id)->where('user_id', $user_id)->where('is_quit', 0)->exists();
     }
 }
