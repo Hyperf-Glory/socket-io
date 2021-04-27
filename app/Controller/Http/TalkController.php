@@ -9,7 +9,9 @@ use App\Controller\AbstractController;
 use App\Helper\ArrayHelper;
 use App\Helper\StringHelper;
 use App\Model\ChatRecord;
+use App\Model\ChatRecordsCode;
 use App\Model\ChatRecordsFile;
+use App\Model\EmoticonDetail;
 use App\Model\FileSplitUpload;
 use App\Model\Group;
 use App\Model\User;
@@ -570,6 +572,7 @@ class TalkController extends AbstractController
 
     /**
      * 发送文件消息.
+     *
      * @param \Hyperf\Filesystem\FilesystemFactory $factory
      *
      * @return \Psr\Http\Message\ResponseInterface
@@ -667,14 +670,155 @@ class TalkController extends AbstractController
         return $this->response->success('消息发送成功...');
     }
 
-    public function sendCodeBlock(RequestInterface $request)
+    /**
+     * 发送代码块消息.
+     *
+     * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendCodeBlock(RequestInterface $request) : ResponseInterface
     {
+        $validator = $this->validationFactory->make($this->request->all(), [
+            'code'       => 'required',
+            'lang'       => 'required',
+            'source'     => 'required',
+            'receive_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $data    = $validator->validated();
+        $user_id = $this->uid();
+        Db::beginTransaction();
+        try {
+            $insert = ChatRecord::create([
+                'source'     => $data['source'],
+                'msg_type'   => 5,
+                'user_id'    => $user_id,
+                'receive_id' => $data['receive_id'],
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
 
+            if (!$insert) {
+                throw new RuntimeException('插入聊天记录失败...');
+            }
+
+            $result = ChatRecordsCode::create([
+                'record_id'  => $insert->id,
+                'user_id'    => $user_id,
+                'code_lang'  => $data['lang'],
+                'code'       => $data['code'],
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$result) {
+                throw new RuntimeException('插入聊天记录(代码消息)失败...');
+            }
+
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollBack();
+            return $this->response->error('消息发送失败...');
+        }
+
+        // 设置好友消息未读数
+        if ($insert->source === 1) {
+            $this->container->get(UnreadTalk::class)->setInc($insert->receive_id, $insert->user_id);
+        }
+
+        //这里需要调用WebSocket推送接口
+        Coroutine::create(function () use ($insert)
+        {
+            $proxy = $this->container->get(PushTalkMessage::class);
+            $proxy->process($insert->id);
+        });
+
+        return $this->response->success('消息发送成功...');
     }
 
-    public function sendEmoticon(RequestInterface $request)
+    /**
+     * 发送表情包.
+     *
+     * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendEmoticon(RequestInterface $request) : ResponseInterface
     {
+        $validator = $this->validationFactory->make($this->request->all(), [
+            'emoticon_id' => 'required',
+            'receive_id'  => 'required',
+            'source'      => 'required',
 
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+
+        $data    = $validator->validated();
+        $user_id = $this->uid();
+        /**
+         * @var EmoticonDetail $emoticon
+         */
+        $emoticon = EmoticonDetail::where('id', $data['emoticon_id'])->where('user_id', $user_id)->first([
+            'url',
+            'file_suffix',
+            'file_size',
+        ]);
+
+        if (!$emoticon) {
+            return $this->response->error('发送失败...');
+        }
+
+        Db::beginTransaction();
+        try {
+            $insert = ChatRecord::create([
+                'source'     => $data['source'],
+                'msg_type'   => 2,
+                'user_id'    => $user_id,
+                'receive_id' => $data['receive_id'],
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$insert) {
+                throw new RuntimeException('插入聊天记录失败...');
+            }
+
+            $result = ChatRecordsFile::create([
+                'record_id'     => $insert->id,
+                'user_id'       => $this->uid(),
+                'file_type'     => 1,
+                'file_suffix'   => $emoticon->file_suffix,
+                'file_size'     => $emoticon->file_size,
+                'save_dir'      => $emoticon->url,
+                'original_name' => '表情',
+                'created_at'    => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$result) {
+                throw new RuntimeException('插入聊天记录(文件消息)失败...');
+            }
+
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollBack();
+            return $this->response->error('表情发送失败');
+        }
+
+        // 设置好友消息未读数
+        if ($insert->source === 1) {
+            $this->container->get(UnreadTalk::class)->setInc($insert->receive_id, $insert->user_id);
+        }
+
+        //这里需要调用WebSocket推送接口
+        Coroutine::create(function () use ($insert)
+        {
+            $proxy = $this->container->get(PushTalkMessage::class);
+            $proxy->process($insert->id);
+        });
+
+        return $this->response->success('表情发送成功...');
     }
 
 }
