@@ -7,18 +7,29 @@ use App\Cache\LastMsgCache;
 use App\Component\UnreadTalk;
 use App\Controller\AbstractController;
 use App\Helper\ArrayHelper;
+use App\Helper\StringHelper;
+use App\Model\ChatRecord;
+use App\Model\ChatRecordsFile;
+use App\Model\FileSplitUpload;
 use App\Model\Group;
 use App\Model\User;
 use App\Model\UsersChatList;
 use App\Model\UsersFriend;
 use App\Service\TalkService;
 use App\SocketIO\Proxy\ForwardChatRecords;
+use App\SocketIO\Proxy\PushTalkMessage;
 use App\SocketIO\Proxy\RevokeRecord;
+use Exception;
+use Hyperf\DbConnection\Db;
+use Hyperf\Filesystem\FilesystemFactory;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\Utils\Coroutine;
 use Hyperf\Validation\Contract\ValidatorFactoryInterface;
 use Hyperf\Validation\ValidationException;
+use League\Flysystem\FileExistsException;
+use League\Flysystem\FileNotFoundException;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 class TalkController extends AbstractController
 {
@@ -349,7 +360,7 @@ class TalkController extends AbstractController
         if ($data['forward_mode'] === 1) {//单条转发
             try {
                 $ids = $this->service->forwardRecords($this->uid(), $data['receive_id'], $data['records_ids']);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
             }
         } else {//合并转发
             $ids = $this->service->mergeForwardRecords($this->uid(), $data['receive_id'], $data['source'], $data['records_ids'], $items);
@@ -403,30 +414,257 @@ class TalkController extends AbstractController
      * 查询聊天记录
      *
      * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function findChatRecords(RequestInterface $request)
+    public function findChatRecords(RequestInterface $request) : ResponseInterface
+    {
+        $validator = $this->validationFactory->make($request->all(), [
+            'source'     => 'required|in:1,2',//消息来源（1：好友消息 2：群聊消息）
+            'record_id'  => 'required|integer|min:0',
+            'receive_id' => 'required|integer|min:1',
+            'msg_type'   => 'required|in:0,1,2,3,4,5,6',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $data  = $validator->validated();
+        $limit = 30;
+
+        // 判断是否属于群成员
+        if ($data['source'] === 2 && Group::isMember($data['receive_id'], $this->uid()) === false) {
+            return $this->response->success('非群聊成员不能查看群聊信息...', [
+                'rows'      => [],
+                'record_id' => 0,
+                'limit'     => $limit
+            ]);
+        }
+
+        if (in_array($data['msg_type'], [1, 2, 4, 5], true)) {
+            $msg_type = [$data['msg_type']];
+        } else {
+            $msg_type = [1, 2, 4, 5];
+        }
+
+        $result = $this->service->getChatRecords(
+            $this->uid(),
+            $data['receive_id'],
+            $data['source'],
+            $data['record_id'],
+            $limit,
+            $msg_type
+        );
+
+        return $this->response->success('success', [
+            'rows'      => $result,
+            'record_id' => $result ? end($result)['id'] : 0,
+            'limit'     => $limit
+        ]);
+    }
+
+    /**
+     * 搜索聊天记录（待开发）
+     *
+     * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     */
+    public function searchChatRecords(RequestInterface $request) : ResponseInterface
     {
 
     }
 
-    public function searchChatRecords(RequestInterface $request)
+    /**
+     * 获取聊天记录上下文数据（待开发）
+     *
+     * @param \Hyperf\HttpServer\Contract\RequestInterface $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function getRecordsContext(RequestInterface $request) : ResponseInterface
     {
 
     }
 
-    public function getRecordsContext(RequestInterface $request)
+    /**
+     * 上传聊天对话图片（待优化）
+     *
+     * @param \Hyperf\Filesystem\FilesystemFactory $factory
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendImage(FilesystemFactory $factory) : ResponseInterface
     {
+        $fileSystem = $factory->get('qiniu');
+        $file       = $this->request->file('img');
 
+        $validator = $this->validationFactory->make($this->request->all(), [
+            'receive_id' => 'required',//消息来源（1：好友消息 2：群聊消息）
+            'msg_type'   => 'required|in:1,2',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $data = $validator->validated();
+
+        $ext = $file->getExtension();
+        if (!in_array($ext, ['jpg', 'png', 'jpeg', 'gif', 'webp'])) {
+            return $this->response->error('图片格式错误，目前仅支持jpg、png、jpeg、gif和webp');
+        }
+
+        $imgInfo  = getimagesize($file->getRealPath());
+        $filename = create_image_name($ext, $imgInfo[0], $imgInfo[1]);
+
+        $save_path = 'media/images/talks/' . date('Ymd') . $filename;
+        //保存图片
+        if (!$fileSystem->put($save_path, file_get_contents($file->getRealPath()))) {
+            return $this->response->error('图片上传失败');
+        }
+
+        Db::beginTransaction();
+        try {
+            $insert = ChatRecord::create([
+                'source'     => $data['source'],
+                'msg_type'   => 2,
+                'user_id'    => $this->uid(),
+                'receive_id' => $data['receive_id'],
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$insert) {
+                throw new RuntimeException('插入聊天记录失败...');
+            }
+
+            $result = ChatRecordsFile::create([
+                'record_id'     => $insert->id,
+                'user_id'       => $this->uid(),
+                'file_type'     => 1,
+                'file_suffix'   => $file->getBasename(),
+                'file_size'     => $file->getSize(),
+                'save_dir'      => $save_path,
+                'original_name' => $file->getClientFilename(),
+                'created_at'    => date('Y-m-d H:i:s'),
+            ]);
+            if (!$result) {
+                throw new RuntimeException('插入聊天记录(文件消息)失败...');
+            }
+
+            Db::commit();
+        } catch (Exception $e) {
+            Db::rollBack();
+            return $this->response->error('图片上传失败');
+        }
+
+        // 设置好友消息未读数
+        if ($insert->source === 1) {
+            $this->container->get(UnreadTalk::class)->setInc($insert->receive_id, $insert->user_id);
+        }
+
+        //这里需要调用WebSocket推送接口
+        Coroutine::create(function () use ($insert)
+        {
+            $proxy = $this->container->get(PushTalkMessage::class);
+            $proxy->process($insert->id);
+        });
+
+        return $this->response->success('图片上传成功...');
     }
 
-    public function sendImage(RequestInterface $request)
+    /**
+     * 发送文件消息.
+     * @param \Hyperf\Filesystem\FilesystemFactory $factory
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendFile(FilesystemFactory $factory) : ResponseInterface
     {
+        $fileSystem = $factory->get('qiniu');
 
-    }
+        $validator = $this->validationFactory->make($this->request->all(), [
+            'hash_name'  => 'required',
+            'receive_id' => 'required',
+            'source'     => 'required',
+        ]);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        $data = $validator->validated();
 
-    public function sendFile(RequestInterface $request)
-    {
+        $user_id = $this->uid();
+        /**
+         * @var FileSplitUpload $file
+         */
+        $file = FileSplitUpload::where('user_id', $user_id)->where('hash_name', $data['hash_name'])->where('file_type', 1)->first();
+        if (!$file || empty($file->save_dir)) {
+            return $this->response->fail(302, '文件不存在...');
+        }
 
+        $stream = fopen(config('file.storage.local.root') . '/' . $file->save_dir, 'rb+');
+
+        $file_hash_name = uniqid('', false) . StringHelper::randString() . '.' . $file->file_ext;
+        $save_dir       = 'files/talks/' . date('Ymd') . '/' . $file_hash_name;
+
+        try {
+            if (!$fileSystem->writeStream($save_dir, $stream)) {
+                fclose($stream);
+                return $this->response->fail(303, '文件上传失败...');
+            }
+        } catch (FileExistsException $e) {
+
+        }
+        fclose($stream);
+        unlink(config('file.storage.local.root') . '/' . $file->save_dir);
+        Db::beginTransaction();
+        try {
+            $insert = ChatRecord::create([
+                'source'     => $data['source'],
+                'msg_type'   => 2,
+                'user_id'    => $user_id,
+                'receive_id' => $data['receive_id'],
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$insert) {
+                throw new RuntimeException('插入聊天记录失败...');
+            }
+
+            $result = ChatRecordsFile::create([
+                'record_id'     => $insert->id,
+                'user_id'       => $user_id,
+                'file_source'   => 1,
+                'file_type'     => 4,
+                'original_name' => $file->original_name,
+                'file_suffix'   => $file->file_ext,
+                'file_size'     => $file->file_size,
+                'save_dir'      => $save_dir,
+                'created_at'    => date('Y-m-d H:i:s'),
+            ]);
+
+            if (!$result) {
+                throw new RuntimeException('插入聊天记录(代码消息)失败...');
+            }
+
+            Db::commit();
+        } catch (Exception $e) {
+            try {
+                $fileSystem->delete($save_dir);
+            } catch (FileNotFoundException $e) {
+            }
+            Db::rollBack();
+            return $this->response->error('消息发送失败...');
+        }
+
+        // 设置好友消息未读数
+        if ($insert->source === 1) {
+            $this->container->get(UnreadTalk::class)->setInc($insert->receive_id, $insert->user_id);
+        }
+
+        //这里需要调用WebSocket推送接口
+        Coroutine::create(function () use ($insert)
+        {
+            $proxy = $this->container->get(PushTalkMessage::class);
+            $proxy->process($insert->id);
+        });
+
+        return $this->response->success('消息发送成功...');
     }
 
     public function sendCodeBlock(RequestInterface $request)
